@@ -4,27 +4,29 @@ import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHandler, HttpHeaders } from '@angular/common/http';
 import { Match } from './models/match';
+import { RecentBallsComponent } from './recent-balls/recent-balls.component';
+import { RecentBalls } from './models/recent-balls';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, FormsModule,],
-  providers: [HttpClient,],
+  imports: [CommonModule, RouterOutlet, FormsModule, RecentBallsComponent, ],
+  providers: [HttpClient, ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   title = 'SportsBallPro';
-  gameId: string = '382527';
+  gameId: string = '';
   match: Match = new Match();
   gameSummary: any = {};
-  recentBalls: Array<any> = [];
+  recentBalls: RecentBalls = new RecentBalls;
   htmlContent: string = '';
 
   constructor(private http: HttpClient) { }
 
   ngOnInit(){
-    this.loadGame(this.gameId);
+    this.loadGame('395524');
   }
 
   onMatchSelect(event: any){
@@ -51,6 +53,7 @@ export class AppComponent implements OnInit {
 
   private loadRecentOvers(gameId: string) {
     const url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${gameId}/${this.match.aTeamID}/1`;
+    console.log(url);
     this.http.get<any>(url, {}).subscribe(overs => {
       this.recentBalls = overs;
     })
