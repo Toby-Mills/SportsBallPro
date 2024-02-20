@@ -1,0 +1,57 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+}
+
+.row {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.box {
+
+    text-align: center;
+    padding: 5px;
+}
+
+.team {
+    width: 400px;
+    background-color: lightblue;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adjust shadow as needed */
+    margin: 2px;
+}
+
+.header, .footer {
+    width: 800px;
+}
+
+.score {
+padding-left: 20px;
+padding-right: 20px;
+}
+
+.team-name {
+    font-size: 1.6em;
+}
+
+.team-logo {
+    height: 5em;
+}
+
+.runs {
+    font-size: 3em;
+    font-weight: 700;
+}
+
+.detail {
+    clear: both;
+}
+
+.result {
+    font-size: 1.5em;
+}

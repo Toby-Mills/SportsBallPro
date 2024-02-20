@@ -1,0 +1,31 @@
+export class Match {
+    LastUpdate: string = ''
+    gameID:string = '';
+    game: string = '';
+    fixtureDate: string = ''
+    datePlayed: Date = new Date();
+    venueDescription: string = '';
+    tossWonByTeam: string = '';
+    decidedTo: string = '';
+    aServerTeamID: number = 0;
+    bServerTeamID: number = 0;
+    aTeamID: number = 0;
+    bTeamID: number = 0;
+    aTeam: string = '';
+    bTeam: string = '';
+    aLogoName: string = '';
+    bLogoName: string = '';
+    aRuns: string = '';
+    bRuns: string = '';
+    aWickets: number = 0;
+    bWickets: number = 0;
+    aOvers: number = 0;
+    bOvers: number = 0;
+    aExtras: number = 0;
+    bExtras: number = 0;
+    ARunRate: number = 0;
+    bRunRate: number = 0;
+    RunsRequired: string = '';
+    BreaksInPlay: string = '';
+    result:string = '';
+}

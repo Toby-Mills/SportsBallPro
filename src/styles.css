@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    background-color: rgb(214, 215, 217);
+}
+
+/* Apply different font sizes at different screen widths */
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 12px;
+        /* Font size for screens up to 768px width */
+    }
+}
+
+@media screen and (max-width: 576px) {
+    body {
+        font-size: 10px;
+        /* Font size for screens up to 576px width */
+    }
+}
+
+/* Add more media queries and font sizes as needed */
