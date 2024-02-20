@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/sports-ball-pro",
+            "outputPath": "docs",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -31,6 +31,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "https://toby-mills.github.io/SportsBallPro/",
               "budgets": [
                 {
                   "type": "initial",
@@ -57,10 +58,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "WebSportsScraper:build:production"
+              "buildTarget": "SportsBallPro:build:production"
             },
             "development": {
-              "buildTarget": "WebSportsScraper:build:development"
+              "buildTarget": "SportsBallPro:build:development"
             }
           },
           "defaultConfiguration": "development"
