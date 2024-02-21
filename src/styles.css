@@ -19,4 +19,18 @@ body {
     }
 }
 
-/* Add more media queries and font sizes as needed */
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adjust shadow as needed */
+    padding: 1em;
+    margin: 1em;
+}
+
+.full-width {
+    width: 800px;
+}
+
+.half-width {
+    width: 400px;
+}

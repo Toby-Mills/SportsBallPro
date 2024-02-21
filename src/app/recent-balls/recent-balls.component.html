@@ -1,7 +1,13 @@
-<div class="container">
-   <div *ngFor="let ball of this.recentBalls.ballcountdown" class="ball">
-    <div class="over">{{ball.Over}}</div>
-    <hr>
-    <div class="desciption">{{ball.BallDescription}}</div>
-</div> 
+<div class="card">
+    <h3>Recent Overs:</h3>
+    <div *ngFor="let over of this.recentBalls.overs" class="over" [ngClass]="{'current':over.current}">
+        <div class="over-number">{{over.number}}</div>
+        <div *ngFor="let ball of over.balls" class="ball" [ngClass]="{'current':ball.current, 'old':ball.old, 'future':ball.future, 'wicket': ball.description=='W'}">
+            <div class="number">{{ball.number}}</div>
+            <div class="description"><span *ngIf="ball.description != '0';else dotBall">{{ball.description}}</span>
+            </div>
+        </div>
+    </div>
 </div>
+
+<ng-template #dotBall>-</ng-template>

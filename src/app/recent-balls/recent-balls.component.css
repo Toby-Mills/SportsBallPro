@@ -1,12 +1,55 @@
 .container {
-    display: flex; 
-    flex-direction: row;
+    display: flex;
+    flex-direction: column;
     width: 100vw;
-  }
-  
-  .ball {
-    width: 100px;
-    padding: 10px;
-    margin: 0;
+}
+
+.ball {
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    padding: 3px;
+    margin: 1pt;
     text-align: center;
-  }
+    background-color: rgb(165, 194, 223);
+    border-radius: 30px;
+    font-size: 0.8em;
+}
+
+.ball.current {
+    background-color: rgb(114, 140, 162);
+    border: 1px solid rgb(69, 96, 121);
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.5);
+}
+
+.old {
+    background-color: rgba(205, 226, 255, 0.584);
+}
+
+.old .number {
+    display: none;
+}
+
+.future {
+    background-color: transparent;
+    border: 1pt dashed rgba(0, 0, 0, 0.381);
+}
+
+.ball.wicket {
+    background-color: rgb(250, 105, 105);
+}
+
+.over {
+    display: flex;
+    flex-direction: row;
+
+}
+.over-number {
+    padding: 12px;
+    font-size: 1.3em;
+}
+
+.description {
+    font-weight: 700;
+    font-size: 1.5em;
+}

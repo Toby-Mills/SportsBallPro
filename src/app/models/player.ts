@@ -1,0 +1,34 @@
+export class Player   {
+    "GameID": string;
+    "InningsID": number;
+    "TeamID": number;
+    "Team": string;
+    "BattingNr": number;
+    "PlayerID": number;
+    "ServerPlayerID": number;
+    "PlayerName": string;
+    "PlayerSurname": string;
+    "BatRuns": number;
+    "BatBalls": number;
+    "BatMins": number;
+    "BatFours": number;
+    "BatSixes": number;
+    "HowOut": string;
+    "WicketTaker": string;
+    "BowlNr": number;
+    "OversBowled": number;
+    "TotalBowlerBalls": number;
+    "MaidensBowled": number;
+    "RunsAgainst": number;
+    "Wickets": number;
+    "NoBalls": number;
+    "Wides": number;
+    "PlayerIndicator": string;
+    "CurrentPlayer": string;
+    "BattingHandID": number;
+    "BowlingHandID": number;
+    "BowlingActionID": number;
+    "PSServerTeamID": number;
+    "BatStrikeRate": number;
+    "BowlingEconomyRate": number;
+  }

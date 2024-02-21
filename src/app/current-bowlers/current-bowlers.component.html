@@ -1,0 +1,21 @@
+<div class="card">
+    <h3>Bowling</h3>
+    <table *ngIf="this.currentBowlers.length > 0">
+        <thead>
+            <th></th>
+            <th>O</th>
+            <th>M</th>
+            <th>R</th>
+            <th>W</th>
+            <th>E</th>
+        </thead>
+        <tr *ngFor="let bowler of this.currentBowlers" class="bowler" [ngClass]="{'on-strike': bowler.CurrentPlayer=='BowlOn'}">
+            <td class="name">{{bowler.PlayerName}} <span nowrap="nowrap">{{bowler.PlayerSurname}}<span *ngIf="bowler.CurrentPlayer=='BowlOn'">*</span></span></td>
+            <td>{{bowler.OversBowled}}</td>
+            <td>{{bowler.MaidensBowled}}</td>
+            <td>{{bowler.RunsAgainst}}</td>
+            <td>{{bowler.Wickets}}</td>
+            <td>{{bowler.BowlingEconomyRate | number:'1.1-1'}}</td>
+        </tr>
+    </table>
+</div>
