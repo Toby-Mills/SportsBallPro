@@ -23,7 +23,7 @@
       <img class="team-logo" src="assets/logos/small_{{match.aLogoName}}">
       <div class="score">
         <div class="team-name">{{match.aTeam}}</div>
-        <div class="runs">{{match.aRuns}}<span *ngIf="match.aWickets > 0">/{{match.aWickets}}</span></div>
+        <div class="runs">{{match.aRuns}} / {{match.aWickets}}</div>
       </div>
       <div class="detail">
         <div>Overs: {{match.aOvers}}</div>
@@ -35,7 +35,7 @@
       <img class="team-logo" src="assets/logos/small_{{match.bLogoName}}">
       <div class="score">
         <div class="team-name">{{match.bTeam}}</div>
-        <div class="runs">{{match.bRuns}}<span *ngIf="match.bWickets > 0">/{{match.bWickets}}</span></div>
+        <div class="runs">{{match.bRuns}} / {{match.bWickets}}</div>
       </div>
       <div class="detail">
         <div>Overs: {{match.bOvers}}</div>
@@ -58,3 +58,6 @@
 </ng-container>
 
 <ng-template #noMatch><div class="no-match">Please select a Match to load</div></ng-template>
+<app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()"></app-refresh-timer>
+
+<pre>{{this.match|json}}</pre>

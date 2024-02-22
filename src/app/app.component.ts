@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -9,24 +9,29 @@ import { RecentBalls, Over, Ball } from './models/recent-balls';
 import { Observable, concat, concatMap, map } from 'rxjs';
 import { CurrentBattersComponent } from './current-batters/current-batters.component';
 import { CurrentBowlersComponent } from './current-bowlers/current-bowlers.component';
+import { RefreshTimerComponent } from './refresh-timer/refresh-timer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterOutlet, 
-    FormsModule, 
-    RecentBallsComponent, 
-    CurrentBattersComponent, 
+    CommonModule,
+    RouterOutlet,
+    FormsModule,
+    RecentBallsComponent,
+    CurrentBattersComponent,
     CurrentBowlersComponent,
+    RefreshTimerComponent
   ],
   providers: [HttpClient,],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent  {
+  @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
+
   title = 'SportsBallPro';
+
   gameId: string = '';
   match: Match = new Match();
   gameSummary: any = {};
@@ -36,8 +41,8 @@ export class AppComponent implements OnInit {
 
   constructor(private http: HttpClient) { }
 
-  ngOnInit() {
-    this.loadGame('395524');
+  ngAfterViewInit () {
+    this.loadGame('396706');
   }
 
   onMatchSelect(event: any) {
@@ -46,19 +51,29 @@ export class AppComponent implements OnInit {
 
   public loadGame(gameId: string) {
     this.gameId = gameId;
+    this.refreshGame();
+    this.refreshTimer.setTimer(30000);
+  }
+
+  public refreshGame() {
+    console.log('refresh');
     this.loadGameSummary().pipe(
       concatMap(x => this.loadGameTeamIDs()),
       concatMap(x => this.loadRecentOvers()),
       concatMap(x => this.loadCurrentBatters()),
       concatMap(x => this.loadCurrentBowlers()),
-      ).subscribe()
+    ).subscribe()
   }
 
   private loadGameSummary(): Observable<any> {
     const url: string = `https://www.websports.co.za/api/live/getfixture/${this.gameId}/1`;
     return this.http.get<any>(url, {}).pipe(
       map(matches => {
-        this.match = matches.fixtures[0];
+        if (matches.fixtures.length > 0) {
+          this.match = matches.fixtures[0];
+        } else {
+          this.match = new Match;
+        }
       })
     )
   }
@@ -67,8 +82,13 @@ export class AppComponent implements OnInit {
     const url: string = `https://www.websports.co.za/api/live/getfixturebysport/${this.gameId}/sport/1`;
     return this.http.get<any>(url, {}).pipe(
       map(matches => {
-        this.match.aTeamID = matches.fixtures[0].aTeamID;
-        this.match.bTeamID = matches.fixtures[0].bTeamID;
+        if (matches.fixtures.length > 0) {
+          this.match.aTeamID = matches.fixtures[0].aTeamID;
+          this.match.bTeamID = matches.fixtures[0].bTeamID;
+        } else {
+          this.match.aTeamID = 0;
+          this.match.bTeamID = 0;
+        }
       })
     )
   }
@@ -77,72 +97,79 @@ export class AppComponent implements OnInit {
     const url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.bTeamID}/2`;
     return this.http.get<any>(url, {}).pipe(
       map(balls => {
-        let recentBalls = new RecentBalls();
-        this.recentBalls = recentBalls;
-        for(let recentBall of balls.ballcountdown){
-          let overNumber = Number(recentBall.Over.split('.')[0]) + 1;
-          let ballNumber = recentBall.Over.split('.')[1];
-          let over = recentBalls.overs.find(over=>over.number==overNumber);
-          if (!over){
-          over = new Over;
-          over.number = overNumber;
-          recentBalls.overs.push(over);
+        if (balls.ballcountdown.length > 0 ) {
+          let recentBalls = new RecentBalls();
+          this.recentBalls = recentBalls;
+          for (let recentBall of balls.ballcountdown) {
+            let overNumber = Number(recentBall.Over.split('.')[0]) + 1;
+            let ballNumber = recentBall.Over.split('.')[1];
+            let over = recentBalls.overs.find(over => over.number == overNumber);
+            if (!over) {
+              over = new Over;
+              over.number = overNumber;
+              recentBalls.overs.push(over);
+            }
+            let ball = new Ball;
+            ball.number = ballNumber;
+            ball.description = recentBall.BallDescription;
+            over.balls.push(ball);
           }
-          let ball = new Ball;
-          ball.number = ballNumber;
-          ball.description = recentBall.BallDescription;
-          over.balls.push(ball);
-        }
-        
-        //sort the overs
-        recentBalls.overs.sort((a,b)=>{if(a.number < b.number){return 1} else {return -1}})
 
-        //sort the balls in each over
-        for(let over of recentBalls.overs){
-          over.balls = over.balls.sort((a, b) => {if(a.number > b.number){return 1} else {return -1}})
-        }
+          //sort the overs
+          recentBalls.overs.sort((a, b) => { if (a.number < b.number) { return 1 } else { return -1 } })
 
-        //mark the current over
-        let currentOver = recentBalls.overs[0];
-        currentOver.current = true;
-
-        //mark the current ball
-        let currentBall = currentOver.balls[currentOver.balls.length -1]
-        currentBall.current = true;
-
-        //add any missing balls at beginning of each over
-        for(let over of recentBalls.overs){
-          let firstBall = over.balls[0];
-          let newBalls = [];
-          for(let i = 1; i < firstBall.number; i++){
-            let newBall = new Ball;
-            newBall.number = i;
-            newBall.description = '';
-            newBall.old = true;
-            newBalls.push(newBall);
+          //sort the balls in each over
+          for (let over of recentBalls.overs) {
+            over.balls = over.balls.sort((a, b) => { if (a.number > b.number) { return 1 } else { return -1 } })
           }
-          over.balls.unshift(...newBalls);
-        }
-        
-        //add any future balls remaining at end of each over
-        for(let over of recentBalls.overs){
-          over.balls = over.balls.sort((a, b) => {if(a.number > b.number){return 1} else {return -1}})
-          let lastBall = over.balls[over.balls.length -1];
-          let lastNumber = Number(lastBall.number);
-          let newBalls = [];
-          for(let i = lastNumber + 1; i <= 6; i++){
-            let newBall = new Ball;
-            newBall.number = i;
-            newBall.description = '';
-            newBall.future = true;
-            newBalls.push(newBall);
+
+          //mark the current over
+          let currentOver = recentBalls.overs[0];
+          currentOver.current = true;
+
+          //mark the current ball
+          let currentBall = currentOver.balls[currentOver.balls.length - 1]
+          currentBall.current = true;
+
+          //add any missing balls at beginning of each over
+          for (let over of recentBalls.overs) {
+            let firstBall = over.balls[0];
+            let newBalls = [];
+            for (let i = 1; i < firstBall.number; i++) {
+              let newBall = new Ball;
+              newBall.number = i;
+              newBall.description = '';
+              newBall.old = true;
+              newBalls.push(newBall);
+            }
+            over.balls.unshift(...newBalls);
           }
-          over.balls.push(...newBalls);
+
+          //add any future balls remaining at end of each over
+          for (let over of recentBalls.overs) {
+            over.balls = over.balls.sort((a, b) => { if (a.number > b.number) { return 1 } else { return -1 } })
+            let lastBall = over.balls[over.balls.length - 1];
+            let lastNumber = Number(lastBall.number);
+            let newBalls = [];
+            for (let i = lastNumber + 1; i <= 6; i++) {
+              let newBall = new Ball;
+              newBall.number = i;
+              newBall.description = '';
+              newBall.future = true;
+              newBalls.push(newBall);
+            }
+            over.balls.push(...newBalls);
+          }
+
+          this.recentBalls = recentBalls;
+          return recentBalls;
+        } 
+        else
+        {
+          this.recentBalls = new RecentBalls;
+          return this.recentBalls;
         }
 
-
-        this.recentBalls = recentBalls;
-        return recentBalls;
       })
     )
   }
@@ -152,8 +179,8 @@ export class AppComponent implements OnInit {
     return this.http.get<any>(url, {}).pipe(
       map(batting => {
         this.batting = batting.batsmen;
-        for (let batter of this.batting){
-          if (batter.BatBalls > 0){
+        for (let batter of this.batting) {
+          if (batter.BatBalls > 0) {
             batter.BatStrikeRate = (batter.BatRuns / batter.BatBalls) * 100
           }
         }
@@ -166,19 +193,23 @@ export class AppComponent implements OnInit {
     return this.http.get<any>(url, {}).pipe(
       map(bowling => {
         this.bowling = bowling.bowlers;
-        for (let bowler of this.bowling){
-          if (bowler.TotalBowlerBalls > 0){
+        for (let bowler of this.bowling) {
+          if (bowler.TotalBowlerBalls > 0) {
             bowler.BowlingEconomyRate = (bowler.RunsAgainst / bowler.TotalBowlerBalls) * 6;
           }
         }
       })
     )
   }
+
+  public onRefreshTimer(){
+    this.refreshGame();
+  }
 }
 
 
 
-//https://www.websports.co.za/api/live/getfixturebysport/${this.gameId}/sport/1 //Short Summary 
+//https://www.websports.co.za/api/live/getfixturebysport/${this.gameId}/sport/1 //Short Summary
 //https://www.websports.co.za/api/live/getfixture/${this.gameId}/1 //Full Summary
 
 //https://www.websports.co.za/api/live/fixture/scorecard/bowling/${this.gameId}/${this.teamId}/1 // bowling

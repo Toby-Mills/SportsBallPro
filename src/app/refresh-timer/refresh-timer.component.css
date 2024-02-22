@@ -1,0 +1,11 @@
+.wrapper {
+    position: relative;
+    /* Add other styles for the wrapper as needed */
+  }
+
+  #pieChartIcon {
+    position: fixed;
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    z-index: 9999; /* Ensure it's on top of other content */
+  }
