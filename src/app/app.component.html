@@ -12,6 +12,7 @@
       <option value="U1U201Oct2023">UWC Ladies vs UCT Ladies</option>
     </select>
   </div>
+  <ng-container *ngIf="match.gameID; else noMatch">
     <div class="box fixture">
       <h1>{{this.match.game}}</h1>
       <span>{{this.match.fixtureDate}} | {{this.match.venueDescription}}</span>
@@ -42,19 +43,18 @@
         <div>Run Rate: {{match.bRunRate}}</div>
       </div>
     </div>
-
     <div class="box summary">
       <div class="result">{{match.result}}</div>
       <div *ngIf="match.RunsRequired" class="runRequired">{{match.RunsRequired}}</div>
     </div>
-
     <div class="small-box card">
       <app-current-batters [currentBatters]="this.batting"></app-current-batters>
     </div>
     <div class="small-box card"><app-current-bowlers [currentBowlers]="this.bowling"></app-current-bowlers>
     </div>
-    <div class="small-box card" >
+    <div class="small-box card">
       <app-recent-balls [recentBalls]="this.recentBalls"></app-recent-balls>
     </div>
+</ng-container>
 
-</div>
+<ng-template #noMatch><div class="no-match">Please select a Match to load</div></ng-template>

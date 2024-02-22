@@ -97,3 +97,9 @@ padding-right: 20px;
 .result {
     font-size: 1.5em;
 }
+
+.no-match {
+    font-size: 1.5em;
+    text-align: center;
+    padding: 10px;
+}
