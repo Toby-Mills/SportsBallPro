@@ -1,21 +1,20 @@
-<div class="card">
-    <h3>Batting</h3>
-    <table *ngIf="this.currentBatters.length > 0">
-        <thead>
-            <th></th>
-            <th>R</th>
-            <th>B</th>
-            <th>4s</th>
-            <th>6s</th>
-            <th>SR</th>
-        </thead>
-        <tr *ngFor="let batter of this.currentBatters" class="batter" [ngClass]="{'on-strike': batter.CurrentPlayer=='OnStrike'}">
-            <td class="name">{{batter.PlayerName}} <span nowrap="nowrap">{{batter.PlayerSurname}}<span *ngIf="batter.CurrentPlayer=='OnStrike'">*</span></span></td>
-            <td>{{batter.BatRuns}}</td>
-            <td>{{batter.BatBalls}}</td>
-            <td>{{batter.BatFours}}</td>
-            <td>{{batter.BatSixes}}</td>
-            <td>{{batter.BatStrikeRate|number:'1.0-0'}}</td>
-        </tr>
-    </table>
-</div>
+<table *ngIf="this.currentBatters.length > 0">
+    <thead>
+        <th><h3>Batting</h3></th>
+        <th>R</th>
+        <th>B</th>
+        <th>4s</th>
+        <th>6s</th>
+        <th>SR</th>
+    </thead>
+    <tr *ngFor="let batter of this.currentBatters" class="batter"
+        [ngClass]="{'on-strike': batter.CurrentPlayer=='OnStrike'}">
+        <td class="name">{{batter.PlayerName}} <span nowrap="nowrap">{{batter.PlayerSurname}}<span
+                    *ngIf="batter.CurrentPlayer=='OnStrike'">*</span></span></td>
+        <td>{{batter.BatRuns}}</td>
+        <td>{{batter.BatBalls}}</td>
+        <td>{{batter.BatFours}}</td>
+        <td>{{batter.BatSixes}}</td>
+        <td>{{batter.BatStrikeRate|number:'1.0-0'}}</td>
+    </tr>
+</table>

@@ -1,11 +1,10 @@
-<div class="card">
-    <h3>Recent Overs:</h3>
-    <div *ngFor="let over of this.recentBalls.overs" class="over" [ngClass]="{'current':over.current}">
-        <div class="over-number">{{over.number}}</div>
-        <div *ngFor="let ball of over.balls" class="ball" [ngClass]="{'current':ball.current, 'old':ball.old, 'future':ball.future, 'wicket': ball.description=='W'}">
-            <div class="number">{{ball.number}}</div>
-            <div class="description"><span *ngIf="ball.description != '0';else dotBall">{{ball.description}}</span>
-            </div>
+<h3>Recent Overs:</h3>
+<div *ngFor="let over of this.recentBalls.overs" class="over" [ngClass]="{'current':over.current}">
+    <div class="over-number">{{over.number}}</div>
+    <div *ngFor="let ball of over.balls" class="ball"
+        [ngClass]="{'current':ball.current, 'old':ball.old, 'future':ball.future, 'wicket': ball.description=='W'}">
+        <div class="number">{{ball.number}}</div>
+        <div class="description"><span *ngIf="ball.description != '0';else dotBall">{{ball.description}}</span>
         </div>
     </div>
 </div>

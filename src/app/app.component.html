@@ -1,5 +1,5 @@
 <div class="container">
-  <div>
+  <div class="box">
     <label for="urlInput">Game ID:</label>
     <input type="text" id="urlInput" [(ngModel)]="gameId" placeholder="Enter Game ID"><button
       (click)="loadGame(this.gameId)">Load Match</button>
@@ -12,18 +12,15 @@
       <option value="U1U201Oct2023">UWC Ladies vs UCT Ladies</option>
     </select>
   </div>
-  <div class="row">
-    <div class="box full-width">
+    <div class="box fixture">
       <h1>{{this.match.game}}</h1>
       <span>{{this.match.fixtureDate}} | {{this.match.venueDescription}}</span>
       <div *ngIf="match.tossWonByTeam" class="toss">{{match.tossWonByTeam}} won the toss and decided to
         {{match.decidedTo}}</div>
     </div>
-  </div>
-  <div class="row">
-    <div class="box team a card half-width">
+    <div class="small-box team a card ">
       <img class="team-logo" src="assets/logos/small_{{match.aLogoName}}">
-      <div class="score" style="float:left">
+      <div class="score">
         <div class="team-name">{{match.aTeam}}</div>
         <div class="runs">{{match.aRuns}}<span *ngIf="match.aWickets > 0">/{{match.aWickets}}</span></div>
       </div>
@@ -33,9 +30,9 @@
         <div>Run Rate: {{match.ARunRate}}</div>
       </div>
     </div>
-    <div class="box team b card half-width">
+    <div class="small-box team b card">
       <img class="team-logo" src="assets/logos/small_{{match.bLogoName}}">
-      <div class="score" style="float:right">
+      <div class="score">
         <div class="team-name">{{match.bTeam}}</div>
         <div class="runs">{{match.bRuns}}<span *ngIf="match.bWickets > 0">/{{match.bWickets}}</span></div>
       </div>
@@ -45,21 +42,19 @@
         <div>Run Rate: {{match.bRunRate}}</div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="box full-width">
+
+    <div class="box summary">
       <div class="result">{{match.result}}</div>
       <div *ngIf="match.RunsRequired" class="runRequired">{{match.RunsRequired}}</div>
+    </div>
 
-    </div>
-  </div>
-  <div class="row">
-    <div class="box half-width">
+    <div class="small-box card">
       <app-current-batters [currentBatters]="this.batting"></app-current-batters>
-      <app-current-bowlers [currentBowlers]="this.bowling"></app-current-bowlers>
     </div>
-    <div class="box half-width">
+    <div class="small-box card"><app-current-bowlers [currentBowlers]="this.bowling"></app-current-bowlers>
+    </div>
+    <div class="small-box card" >
       <app-recent-balls [recentBalls]="this.recentBalls"></app-recent-balls>
     </div>
-  </div>
+
 </div>
