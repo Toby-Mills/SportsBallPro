@@ -32,7 +32,6 @@ export class RefreshTimerComponent implements OnDestroy {
   }
 
   setTimer(interval: number) {
-    console.log('setTimer', interval)
     this.interval = interval;
     this.stopTimer();
     this.count = 0;

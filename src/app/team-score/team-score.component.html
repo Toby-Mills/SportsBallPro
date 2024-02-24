@@ -1,0 +1,13 @@
+<div [ngClass]="{'a':teamNumber==1, 'b':teamNumber ==2}">
+    <img class="team-logo" src="assets/logos/small_{{teamScore.logoName}}">
+    <div class="score">
+        <div class="team-name">{{teamScore.teamName}}</div>
+        <div class="runs">{{teamScore.runs}} / {{teamScore.wickets}}</div>
+    </div>
+    <div class="detail">
+        <div>Overs: {{teamScore.overs}}</div>
+        <div>Extras: {{teamScore.extras}}</div>
+        <div>Run Rate: {{teamScore.runRate | number:"1.2-2"}}</div>
+    </div>
+</div>
+<!--<pre>{{teamScore|json}}</pre>-->

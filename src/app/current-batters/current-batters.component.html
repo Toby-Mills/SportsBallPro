@@ -1,4 +1,4 @@
-<table *ngIf="this.currentBatters.length > 0">
+<table *ngIf="this.currentBatters.batters.length > 0">
     <thead>
         <th><h3>Batting</h3></th>
         <th>R</th>
@@ -7,14 +7,15 @@
         <th>6s</th>
         <th>SR</th>
     </thead>
-    <tr *ngFor="let batter of this.currentBatters" class="batter"
-        [ngClass]="{'on-strike': batter.CurrentPlayer=='OnStrike'}">
-        <td class="name">{{batter.PlayerName}} <span nowrap="nowrap">{{batter.PlayerSurname}}<span
-                    *ngIf="batter.CurrentPlayer=='OnStrike'">*</span></span></td>
-        <td>{{batter.BatRuns}}</td>
-        <td>{{batter.BatBalls}}</td>
-        <td>{{batter.BatFours}}</td>
-        <td>{{batter.BatSixes}}</td>
-        <td>{{batter.BatStrikeRate|number:'1.0-0'}}</td>
+    <tr *ngFor="let batter of this.currentBatters.batters" class="batter"
+        [ngClass]="{'on-strike': batter.currentPlayer=='OnStrike'}">
+        <td class="name">{{batter.name}} <span nowrap="nowrap">{{batter.surname}}<span
+                    *ngIf="batter.currentPlayer=='OnStrike'">*</span></span></td>
+        <td>{{batter.runs}}</td>
+        <td>{{batter.balls}}</td>
+        <td>{{batter.fours}}</td>
+        <td>{{batter.sixes}}</td>
+        <td>{{batter.strikeRate|number:'1.0-0'}}</td>
     </tr>
 </table>
+<!--<pre>{{this.currentBatters|json}}</pre>-->

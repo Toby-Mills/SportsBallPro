@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { RecentBalls } from '../models/recent-balls';
+import { Ball, Over, RecentBalls } from '../models/recent-balls';
 import { CommonModule, NgFor } from '@angular/common';
 
 @Component({
@@ -10,5 +10,5 @@ import { CommonModule, NgFor } from '@angular/common';
   styleUrl: './recent-balls.component.css'
 })
 export class RecentBallsComponent {
-@Input() recentBalls:RecentBalls = new RecentBalls();
+  @Input() recentBalls: RecentBalls = new RecentBalls();
 }

@@ -1,4 +1,4 @@
-<table *ngIf="this.currentBowlers.length > 0">
+<table *ngIf="this.currentBowlers.bowlers.length > 0">
     <thead>
         <th><h3>Bowling</h3></th>
         <th>O</th>
@@ -7,14 +7,14 @@
         <th>W</th>
         <th>E</th>
     </thead>
-    <tr *ngFor="let bowler of this.currentBowlers" class="bowler"
-        [ngClass]="{'on-strike': bowler.CurrentPlayer=='BowlOn'}">
-        <td class="name">{{bowler.PlayerName}} <span nowrap="nowrap">{{bowler.PlayerSurname}}<span
-                    *ngIf="bowler.CurrentPlayer=='BowlOn'">*</span></span></td>
-        <td>{{bowler.OversBowled}}</td>
-        <td>{{bowler.MaidensBowled}}</td>
-        <td>{{bowler.RunsAgainst}}</td>
-        <td>{{bowler.Wickets}}</td>
-        <td>{{bowler.BowlingEconomyRate | number:'1.1-1'}}</td>
+    <tr *ngFor="let bowler of this.currentBowlers.bowlers" class="bowler"
+        [ngClass]="{'on-strike': bowler.currentPlayer=='BowlOn'}">
+        <td class="name">{{bowler.playerName}} <span nowrap="nowrap">{{bowler.playerSurname}}<span
+                    *ngIf="bowler.currentPlayer=='BowlOn'">*</span></span></td>
+        <td>{{bowler.oversBowled}}</td>
+        <td>{{bowler.maidensBowled}}</td>
+        <td>{{bowler.runsAgainst}}</td>
+        <td>{{bowler.wickets}}</td>
+        <td>{{bowler.bowlingEconomyRate | number:'1.1-1'}}</td>
     </tr>
 </table>

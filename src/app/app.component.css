@@ -29,67 +29,6 @@
     text-align: center;
 }
 
-.score {
-padding-left: 20px;
-padding-right: 20px;
-}
-
-.team-name {
-    font-size: 1.6em;
-}
-
-.team-logo {
-    height: 5em;
-}
-
-.a .score {
-    float: right;
-}
-
-.a .team-logo {
-    float: left;
-}
-
-.a .runs {
-    float: right;
-}
-
-@media only screen and (max-width: 600px) {
-    .a .score {
-        float: left;
-    }
-
-    .a .runs {
-        float: left;
-    }
-
-    .a .team-logo {
-        float: right;
-    }
-}
-
-.b .score {
-    float: left;
-}
-
-.b .team-logo {
-    float: right;
-}
-
-.b .runs {
-    float: left;
-}
-
-.runs {
-    font-size: 3em;
-    font-weight: 700;
-}
-
-.detail {
-    clear: both;
-    text-align: center;
-}
-
 .summary {
     text-align: center;
 }

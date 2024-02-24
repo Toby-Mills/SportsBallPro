@@ -19,41 +19,23 @@
       <div *ngIf="match.tossWonByTeam" class="toss">{{match.tossWonByTeam}} won the toss and decided to
         {{match.decidedTo}}</div>
     </div>
-    <div class="small-box team a card ">
-      <img class="team-logo" src="assets/logos/small_{{match.aLogoName}}">
-      <div class="score">
-        <div class="team-name">{{match.aTeam}}</div>
-        <div class="runs">{{match.aRuns}} / {{match.aWickets}}</div>
-      </div>
-      <div class="detail">
-        <div>Overs: {{match.aOvers}}</div>
-        <div>Extras: {{match.aExtras}}</div>
-        <div>Run Rate: {{match.ARunRate}}</div>
-      </div>
+    <div class="small-box card ">
+      <app-team-score [teamScore]="this.teamAScore" [teamNumber]="1"></app-team-score>
     </div>
-    <div class="small-box team b card">
-      <img class="team-logo" src="assets/logos/small_{{match.bLogoName}}">
-      <div class="score">
-        <div class="team-name">{{match.bTeam}}</div>
-        <div class="runs">{{match.bRuns}} / {{match.bWickets}}</div>
-      </div>
-      <div class="detail">
-        <div>Overs: {{match.bOvers}}</div>
-        <div>Extras: {{match.bExtras}}</div>
-        <div>Run Rate: {{match.bRunRate}}</div>
-      </div>
+    <div class="small-box card">
+      <app-team-score [teamScore]="this.teamBScore" [teamNumber]="2"></app-team-score>
     </div>
     <div class="box summary">
       <div class="result">{{match.result}}</div>
       <div *ngIf="match.RunsRequired" class="runRequired">{{match.RunsRequired}}</div>
     </div>
     <div class="small-box card">
-      <app-current-batters [currentBatters]="this.batting"></app-current-batters>
+      <app-current-batters [currentBatters]="currentBatters"></app-current-batters>
     </div>
-    <div class="small-box card"><app-current-bowlers [currentBowlers]="this.bowling"></app-current-bowlers>
+    <div class="small-box card"><app-current-bowlers [currentBowlers]="currentBowlers"></app-current-bowlers>
     </div>
     <div class="small-box card">
-      <app-recent-balls [recentBalls]="this.recentBalls"></app-recent-balls>
+      <app-recent-balls #recentBalls [recentBalls]="this.recentOvers"></app-recent-balls>
     </div>
 </ng-container>
 

@@ -28,4 +28,5 @@ export class Match {
     RunsRequired: string = '';
     BreaksInPlay: string = '';
     result:string = '';
+    signature: string = '';
 }

@@ -10,6 +10,11 @@ import { Observable, concat, concatMap, map } from 'rxjs';
 import { CurrentBattersComponent } from './current-batters/current-batters.component';
 import { CurrentBowlersComponent } from './current-bowlers/current-bowlers.component';
 import { RefreshTimerComponent } from './refresh-timer/refresh-timer.component';
+import * as CryptoJS from 'crypto-js';
+import { TeamScoreComponent } from './team-score/team-score.component';
+import { TeamScore } from './models/team-score';
+import { CurrentBowlers } from './models/current-bowlers';
+import { CurrentBatters } from './models/current-batters';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +23,7 @@ import { RefreshTimerComponent } from './refresh-timer/refresh-timer.component';
     CommonModule,
     RouterOutlet,
     FormsModule,
+    TeamScoreComponent,
     RecentBallsComponent,
     CurrentBattersComponent,
     CurrentBowlersComponent,
@@ -27,21 +33,24 @@ import { RefreshTimerComponent } from './refresh-timer/refresh-timer.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent  {
+export class AppComponent {
   @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
   title = 'SportsBallPro';
 
   gameId: string = '';
   match: Match = new Match();
-  gameSummary: any = {};
-  recentBalls: RecentBalls = new RecentBalls;
-  batting: any = {};
-  bowling: any = {};
+  teamAScore: TeamScore = new TeamScore;
+  teamBScore: TeamScore = new TeamScore;
+  currentBowlers: CurrentBowlers = new CurrentBowlers;
+  currentBatters: CurrentBatters = new CurrentBatters;
+  recentOvers: RecentBalls = new RecentBalls;
+
+  updateFound: boolean = false;
 
   constructor(private http: HttpClient) { }
 
-  ngAfterViewInit () {
+  ngAfterViewInit() {
     this.loadGame('396706');
   }
 
@@ -52,11 +61,11 @@ export class AppComponent  {
   public loadGame(gameId: string) {
     this.gameId = gameId;
     this.refreshGame();
-    this.refreshTimer.setTimer(30000);
+    //this.refreshTimer.setTimer(30000);
   }
 
   public refreshGame() {
-    console.log('refresh');
+    this.updateFound = false;
     this.loadGameSummary().pipe(
       concatMap(x => this.loadGameTeamIDs()),
       concatMap(x => this.loadRecentOvers()),
@@ -70,7 +79,14 @@ export class AppComponent  {
     return this.http.get<any>(url, {}).pipe(
       map(matches => {
         if (matches.fixtures.length > 0) {
-          this.match = matches.fixtures[0];
+          let newMatch = matches.fixtures[0];
+          this.addSignature(newMatch);
+          if (newMatch.signature != this.match.signature) {
+            this.updateFound = true;
+            this.match = newMatch;
+          }
+          this.teamAScore.load(newMatch, 1);
+          this.teamBScore.load(newMatch, 2);
         } else {
           this.match = new Match;
         }
@@ -93,83 +109,12 @@ export class AppComponent  {
     )
   }
 
-  private loadRecentOvers(): Observable<RecentBalls> {
+  private loadRecentOvers(): Observable<any> {
     const url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.bTeamID}/2`;
     return this.http.get<any>(url, {}).pipe(
       map(balls => {
-        if (balls.ballcountdown.length > 0 ) {
-          let recentBalls = new RecentBalls();
-          this.recentBalls = recentBalls;
-          for (let recentBall of balls.ballcountdown) {
-            let overNumber = Number(recentBall.Over.split('.')[0]) + 1;
-            let ballNumber = recentBall.Over.split('.')[1];
-            let over = recentBalls.overs.find(over => over.number == overNumber);
-            if (!over) {
-              over = new Over;
-              over.number = overNumber;
-              recentBalls.overs.push(over);
-            }
-            let ball = new Ball;
-            ball.number = ballNumber;
-            ball.description = recentBall.BallDescription;
-            over.balls.push(ball);
-          }
-
-          //sort the overs
-          recentBalls.overs.sort((a, b) => { if (a.number < b.number) { return 1 } else { return -1 } })
-
-          //sort the balls in each over
-          for (let over of recentBalls.overs) {
-            over.balls = over.balls.sort((a, b) => { if (a.number > b.number) { return 1 } else { return -1 } })
-          }
-
-          //mark the current over
-          let currentOver = recentBalls.overs[0];
-          currentOver.current = true;
-
-          //mark the current ball
-          let currentBall = currentOver.balls[currentOver.balls.length - 1]
-          currentBall.current = true;
-
-          //add any missing balls at beginning of each over
-          for (let over of recentBalls.overs) {
-            let firstBall = over.balls[0];
-            let newBalls = [];
-            for (let i = 1; i < firstBall.number; i++) {
-              let newBall = new Ball;
-              newBall.number = i;
-              newBall.description = '';
-              newBall.old = true;
-              newBalls.push(newBall);
-            }
-            over.balls.unshift(...newBalls);
-          }
-
-          //add any future balls remaining at end of each over
-          for (let over of recentBalls.overs) {
-            over.balls = over.balls.sort((a, b) => { if (a.number > b.number) { return 1 } else { return -1 } })
-            let lastBall = over.balls[over.balls.length - 1];
-            let lastNumber = Number(lastBall.number);
-            let newBalls = [];
-            for (let i = lastNumber + 1; i <= 6; i++) {
-              let newBall = new Ball;
-              newBall.number = i;
-              newBall.description = '';
-              newBall.future = true;
-              newBalls.push(newBall);
-            }
-            over.balls.push(...newBalls);
-          }
-
-          this.recentBalls = recentBalls;
-          return recentBalls;
-        } 
-        else
-        {
-          this.recentBalls = new RecentBalls;
-          return this.recentBalls;
-        }
-
+        balls.signature = this.addSignature(balls);
+        this.recentOvers.loadRecentOvers(balls)
       })
     )
   }
@@ -178,12 +123,7 @@ export class AppComponent  {
     const url = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.bTeamID}/1`;
     return this.http.get<any>(url, {}).pipe(
       map(batting => {
-        this.batting = batting.batsmen;
-        for (let batter of this.batting) {
-          if (batter.BatBalls > 0) {
-            batter.BatStrikeRate = (batter.BatRuns / batter.BatBalls) * 100
-          }
-        }
+        this.currentBatters.loadCurrentBatters(batting);
       })
     )
   }
@@ -192,19 +132,21 @@ export class AppComponent  {
     const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/${this.match.aTeamID}`;
     return this.http.get<any>(url, {}).pipe(
       map(bowling => {
-        this.bowling = bowling.bowlers;
-        for (let bowler of this.bowling) {
-          if (bowler.TotalBowlerBalls > 0) {
-            bowler.BowlingEconomyRate = (bowler.RunsAgainst / bowler.TotalBowlerBalls) * 6;
-          }
-        }
+        this.currentBowlers.loadCurrentBowlers(bowling);
       })
     )
   }
 
-  public onRefreshTimer(){
+  public onRefreshTimer() {
     this.refreshGame();
   }
+
+  addSignature(obj: any): void {
+    const objString = JSON.stringify(obj);
+    const hash = CryptoJS.SHA256(objString).toString(CryptoJS.enc.Hex);
+    obj['signature'] = hash;
+  }
+
 }
 
 
