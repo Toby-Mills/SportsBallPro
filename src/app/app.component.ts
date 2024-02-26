@@ -146,8 +146,8 @@ export class AppComponent {
   }
 
   private loadCurrentBowlers(): Observable<any> {
-    //not sure why, but the bowlers end-point always seems to use the A Team ID, regardless of Innings
-    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/${this.match.aTeamId}`;
+    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
+    console.log(url);
     return this.http.get<any>(url, {}).pipe(
       map(bowling => {
         this.currentBowlers.loadCurrentBowlers(bowling);
