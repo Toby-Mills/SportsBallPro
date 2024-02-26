@@ -1,0 +1,16 @@
+<table>
+    <thead>
+           <tr>
+        <th></th>
+        <th>Player</th>
+        <th>Fall of Wicket</th>
+    </tr> 
+    </thead>
+    <tbody>
+        <tr *ngFor="let fow of this.fallOfWickets.wickets">
+            <td>{{fow.teamWickets}}</td>
+            <td>{{fow.firstName}} {{fow.surname}}</td>
+            <td>{{fow.teamRuns}}</td>
+        </tr>
+    </tbody>
+</table>

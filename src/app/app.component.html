@@ -39,6 +39,7 @@
       <app-recent-balls [recentBalls]="this.recentOvers"></app-recent-balls>
     </div>
     <div class="small-box card">
+      <app-fall-of-wickets [fallOfWickets]="this.fallOfWickets"></app-fall-of-wickets>
     </div>
   </ng-container>
 
@@ -46,5 +47,3 @@
     <div class="no-match">Please select a Match to load</div>
   </ng-template>
   <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()"></app-refresh-timer>
-
-  <pre>{{this.match|json}}</pre>

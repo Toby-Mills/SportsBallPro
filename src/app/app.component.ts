@@ -15,6 +15,8 @@ import { TeamScoreComponent } from './team-score/team-score.component';
 import { TeamScore } from './models/team-score';
 import { CurrentBowlers } from './models/current-bowlers';
 import { CurrentBatters } from './models/current-batters';
+import { FallOfWickets } from './models/fall-of-wickets';
+import { FallOfWicketsComponent } from './fall-of-wickets/fall-of-wickets.component';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +29,7 @@ import { CurrentBatters } from './models/current-batters';
     RecentBallsComponent,
     CurrentBattersComponent,
     CurrentBowlersComponent,
+    FallOfWicketsComponent,
     RefreshTimerComponent
   ],
   providers: [HttpClient,],
@@ -45,7 +48,7 @@ export class AppComponent {
   currentBowlers: CurrentBowlers = new CurrentBowlers;
   currentBatters: CurrentBatters = new CurrentBatters;
   recentOvers: RecentBalls = new RecentBalls;
-
+  fallOfWickets: FallOfWickets = new FallOfWickets;
   updateFound: boolean = false;
 
   constructor(private http: HttpClient) { }
@@ -71,7 +74,8 @@ export class AppComponent {
       concatMap(x => this.loadRecentOvers()),
       concatMap(x => this.loadCurrentBatters()),
       concatMap(x => this.loadCurrentBowlers()),
-    ).subscribe()
+      concatMap(x => this.loadFallOfWickets()),
+      ).subscribe()
   }
 
   private loadGameSummary(): Observable<any> {
@@ -151,6 +155,16 @@ export class AppComponent {
     return this.http.get<any>(url, {}).pipe(
       map(bowling => {
         this.currentBowlers.loadCurrentBowlers(bowling);
+      })
+    )
+  }
+
+  private loadFallOfWickets(): Observable<any> {
+    const url = `https://www.websports.co.za/api/live/fixture/scorecard/fownew/${this.gameId}/${this.match.aTeamId}/1`;
+    console.log(url);
+    return this.http.get<any>(url, {}).pipe(
+      map(fallOfWickets => {
+        this.fallOfWickets.loadFallOfWickets(fallOfWickets);
       })
     )
   }

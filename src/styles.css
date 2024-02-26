@@ -25,3 +25,13 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adjust shadow as needed */
     padding: 1em;
 }
+
+table {
+    border: none;
+    border-collapse: collapse;
+}
+
+td, th {
+    text-align: left;
+    padding: 0.6em;
+}
