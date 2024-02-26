@@ -32,14 +32,19 @@
     <div class="small-box card">
       <app-current-batters [currentBatters]="currentBatters"></app-current-batters>
     </div>
-    <div class="small-box card"><app-current-bowlers [currentBowlers]="currentBowlers"></app-current-bowlers>
+    <div class="small-box card">
+      <app-current-bowlers [currentBowlers]="currentBowlers"></app-current-bowlers>
     </div>
     <div class="small-box card">
-      <app-recent-balls #recentBalls [recentBalls]="this.recentOvers"></app-recent-balls>
+      <app-recent-balls [recentBalls]="this.recentOvers"></app-recent-balls>
     </div>
-</ng-container>
+    <div class="small-box card">
+    </div>
+  </ng-container>
 
-<ng-template #noMatch><div class="no-match">Please select a Match to load</div></ng-template>
-<app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()"></app-refresh-timer>
+  <ng-template #noMatch>
+    <div class="no-match">Please select a Match to load</div>
+  </ng-template>
+  <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()"></app-refresh-timer>
 
-<pre>{{this.match|json}}</pre>
+  <pre>{{this.match|json}}</pre>

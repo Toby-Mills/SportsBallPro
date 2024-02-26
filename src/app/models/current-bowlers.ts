@@ -9,11 +9,11 @@ export class CurrentBowlers {
             bowler.currentPlayer = inputBowler.CurrentPlayer;
             bowler.playerName = inputBowler.PlayerName;
             bowler.playerSurname = inputBowler.PlayerSurname;
-            bowler.oversBowled = inputBowler.OversBowled;
-            bowler.totalBowlerBalls = inputBowler.TotalBowlerBalls;
-            bowler.maidensBowled = inputBowler.maidensBowled;
-            bowler.runsAgainst = inputBowler.RunsAgainst;
-            bowler.wickets = inputBowler.Wickets;
+            bowler.oversBowled = inputBowler.OversBowled || 0;
+            bowler.totalBowlerBalls = inputBowler.TotalBowlerBalls || 0;
+            bowler.maidensBowled = inputBowler.maidensBowled || 0;
+            bowler.runsAgainst = inputBowler.RunsAgainst || 0;
+            bowler.wickets = inputBowler.Wickets || 0;
             if (bowler.totalBowlerBalls > 0) {
                 bowler.bowlingEconomyRate = (bowler.runsAgainst / bowler.totalBowlerBalls) * 6;
             } else {

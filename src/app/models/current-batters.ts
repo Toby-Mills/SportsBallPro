@@ -9,10 +9,10 @@ export class CurrentBatters {
             batter.currentPlayer = inputBatter.CurrentPlayer;
             batter.name = inputBatter.PlayerName;
             batter.surname = inputBatter.PlayerSurname;
-            batter.runs = inputBatter.BatRuns;
-            batter.balls = inputBatter.BatBalls;
-            batter.fours = inputBatter.batFours;
-            batter.sixes = inputBatter.batSixes;
+            batter.runs = inputBatter.BatRuns || 0;
+            batter.balls = inputBatter.BatBalls || 0;
+            batter.fours = inputBatter.batFours || 0;
+            batter.sixes = inputBatter.batSixes || 0;
 
             if (batter.balls > 0) {
                 batter.strikeRate = (batter.runs / batter.balls) * 100;
