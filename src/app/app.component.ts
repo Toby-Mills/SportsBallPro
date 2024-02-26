@@ -68,10 +68,8 @@ export class AppComponent {
     this.updateFound = false;
     this.loadGameSummary().pipe(
       concatMap(x => this.loadGameTeamIDs()),
-      concatMap(x => this.loadRecentOvers1()),
-      concatMap(x => this.loadRecentOvers2()),
-      concatMap(x => this.loadCurrentBatters1()),
-      concatMap(x => this.loadCurrentBatters2()),
+      concatMap(x => this.loadRecentOvers()),
+      concatMap(x => this.loadCurrentBatters()),
       concatMap(x => this.loadCurrentBowlers()),
     ).subscribe()
   }
@@ -103,45 +101,46 @@ export class AppComponent {
     )
   }
 
-  private loadRecentOvers1(): Observable<any> {
-    //always refresh with 1st Innings data. Will be overwritten with 2nd Innings data if there is some
+  private loadRecentOvers(): Observable<any> {
+
     let url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.aTeamId}/1`;
+
     return this.http.get<any>(url, {}).pipe(
-      map(balls => {
-        balls.signature = this.addSignature(balls);
-        this.recentOvers.loadRecentOvers(balls)
-      })
+      concatMap(balls => {
+        //always refresh with 1st Innings data. Will be overwritten with 2nd Innings data if there is some
+        this.recentOvers.loadRecentOvers(balls);
+
+        //check for 2nd Innings data
+        url = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.bTeamId}/2`;
+        return this.http.get<any>(url, {}).pipe(
+          map(balls => {
+            //only update with 2nd Innings data if data was found
+            if (balls?.ballcountdown?.length > 0) { this.recentOvers.loadRecentOvers(balls) }
+          })
+        )
+      }
+      )
     )
   }
 
-  private loadRecentOvers2(): Observable<any> {
-    let url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.bTeamId}/2`;
-    return this.http.get<any>(url, {}).pipe(
-      map(balls => {
-        //only update with 2nd Innigs data if data was found
-        if (balls?.ballcountdown?.length > 0) { this.recentOvers.loadRecentOvers(balls) }
-      })
-    )
-  }
-
-  private loadCurrentBatters1(): Observable<any> {
+  private loadCurrentBatters(): Observable<any> {
     let url: string = '';
     url = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.aTeamId}/1`;
     return this.http.get<any>(url, {}).pipe(
-      map(batting => {
+      concatMap(batting => {
         //always refresh with 1st Innings data. Will be overwritten with 2nd Innings data if there is some
-        if (batting) { this.currentBatters.loadCurrentBatters(batting); }
-      })
-    )
-  }
+        this.currentBatters.loadCurrentBatters(batting);
 
-  private loadCurrentBatters2(): Observable<any> {
-    let url: string = '';
-    url = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.bTeamId}/1`;
-    return this.http.get<any>(url, {}).pipe(
-      map(batting => {
-        //only update with 2nd Innigs data if data was found
-        if (batting?.batsmen?.length > 0) { this.currentBatters.loadCurrentBatters(batting); }
+        //check for 2nd Innings data
+        url = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.bTeamId}/1`;
+        return this.http.get<any>(url, {}).pipe(
+          map(batting => {
+            //only update with 2nd Innigs data if data was found
+            if (batting?.batsmen?.length > 0) { this.currentBatters.loadCurrentBatters(batting); }
+          })
+        )
+
+
       })
     )
   }
