@@ -10,7 +10,9 @@
       <option value="395528">Wynberg BHS 1st XI vs Rondebosch BHS 1st XI</option>
       <option value="382527">Protearif 1 vs Daggies 0/11</option>
       <option value="U1U201Oct2023">UWC Ladies vs UCT Ladies</option>
+      <option *ngFor="let fixture of this.fixtures.fixtures" [value]="fixture.gameId">{{fixture.game}} - {{fixture.date}}</option>
     </select>
+    <input type="text" [(ngModel)]="currentInnings">
   </div>
   <ng-container *ngIf="match.gameID; else noMatch">
     <div class="box fixture">
@@ -30,16 +32,20 @@
       <div *ngIf="match.RunsRequired" class="runRequired">{{match.RunsRequired}}</div>
     </div>
     <div class="small-box card">
-      <app-current-batters [currentBatters]="currentBatters"></app-current-batters>
+      <app-current-batters *ngIf="currentInnings==1" [currentBatters]="this.innings1Detail.currentBatters"></app-current-batters>
+      <app-current-batters *ngIf="currentInnings==2" [currentBatters]="this.innings2Detail.currentBatters"></app-current-batters>
     </div>
     <div class="small-box card">
-      <app-current-bowlers [currentBowlers]="currentBowlers"></app-current-bowlers>
+      <app-current-bowlers  *ngIf="currentInnings==1" [currentBowlers]="this.innings1Detail.currentBowlers"></app-current-bowlers>
+      <app-current-bowlers  *ngIf="currentInnings==2" [currentBowlers]="this.innings2Detail.currentBowlers"></app-current-bowlers>
     </div>
     <div class="small-box card">
-      <app-recent-balls [recentBalls]="this.recentOvers"></app-recent-balls>
+      <app-recent-balls *ngIf="currentInnings==1" [recentBalls]="this.innings1Detail.recentOvers"></app-recent-balls>
+      <app-recent-balls *ngIf="currentInnings==2" [recentBalls]="this.innings2Detail.recentOvers"></app-recent-balls>
     </div>
     <div class="small-box card">
-      <app-fall-of-wickets [fallOfWickets]="this.fallOfWickets"></app-fall-of-wickets>
+      <app-fall-of-wickets *ngIf="currentInnings==1" [fallOfWickets]="this.innings1Detail.fallOfWickets"></app-fall-of-wickets>
+      <app-fall-of-wickets *ngIf="currentInnings==2" [fallOfWickets]="this.innings2Detail.fallOfWickets"></app-fall-of-wickets>
     </div>
   </ng-container>
 

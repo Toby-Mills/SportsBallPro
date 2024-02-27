@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, viewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHandler, HttpHeaders } from '@angular/common/http';
@@ -17,6 +17,8 @@ import { CurrentBowlers } from './models/current-bowlers';
 import { CurrentBatters } from './models/current-batters';
 import { FallOfWickets } from './models/fall-of-wickets';
 import { FallOfWicketsComponent } from './fall-of-wickets/fall-of-wickets.component';
+import { InningsDetail } from './models/innings-detail';
+import { Fixtures } from './models/fixture';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +32,8 @@ import { FallOfWicketsComponent } from './fall-of-wickets/fall-of-wickets.compon
     CurrentBattersComponent,
     CurrentBowlersComponent,
     FallOfWicketsComponent,
-    RefreshTimerComponent
+    RefreshTimerComponent,
+    NgFor,
   ],
   providers: [HttpClient,],
   templateUrl: './app.component.html',
@@ -40,42 +43,49 @@ export class AppComponent {
   @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
   title = 'SportsBallPro';
+  fixtures: Fixtures = new Fixtures;
 
   gameId: string = '';
   match: Match = new Match();
   teamAScore: TeamScore = new TeamScore;
   teamBScore: TeamScore = new TeamScore;
-  currentBowlers: CurrentBowlers = new CurrentBowlers;
-  currentBatters: CurrentBatters = new CurrentBatters;
-  recentOvers: RecentBalls = new RecentBalls;
-  fallOfWickets: FallOfWickets = new FallOfWickets;
+  currentInnings: number = 1;
+  innings1Detail: InningsDetail = new InningsDetail;
+  innings2Detail: InningsDetail = new InningsDetail;
+
   updateFound: boolean = false;
 
   constructor(private http: HttpClient) { }
 
   ngAfterViewInit() {
     this.loadGame('396706');
+    this.loadFixtures();
   }
 
   onMatchSelect(event: any) {
+    console.log(event.target.value);
     this.loadGame(event.target.value);
   }
 
   public loadGame(gameId: string) {
     this.gameId = gameId;
     this.refreshGame();
-    //this.refreshTimer.setTimer(30000);
+    this.refreshTimer.setTimer(30000);
   }
 
   public refreshGame() {
     this.updateFound = false;
     this.loadGameSummary().pipe(
       concatMap(x => this.loadGameTeamIDs()),
-      concatMap(x => this.loadRecentOvers()),
-      concatMap(x => this.loadCurrentBatters()),
-      concatMap(x => this.loadCurrentBowlers()),
-      concatMap(x => this.loadFallOfWickets()),
-      ).subscribe()
+      concatMap(x => this.loadRecentOvers(1)),
+      concatMap(x => this.loadRecentOvers(2)),
+      concatMap(x => this.loadCurrentBatters(1)),
+      concatMap(x => this.loadCurrentBatters(2)),
+      concatMap(x => this.loadCurrentBowlers(1)),
+      concatMap(x => this.loadCurrentBowlers(2)),
+      concatMap(x => this.loadFallOfWickets(1)),
+      concatMap(x => this.loadFallOfWickets(2)),
+    ).subscribe()
   }
 
   private loadGameSummary(): Observable<any> {
@@ -105,68 +115,76 @@ export class AppComponent {
     )
   }
 
-  private loadRecentOvers(): Observable<any> {
-
+  private loadRecentOvers(innings: number): Observable<any> {
     let url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.aTeamId}/1`;
-
-    return this.http.get<any>(url, {}).pipe(
-      concatMap(balls => {
-        //always refresh with 1st Innings data. Will be overwritten with 2nd Innings data if there is some
-        this.recentOvers.loadRecentOvers(balls);
-
-        //check for 2nd Innings data
-        url = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.bTeamId}/2`;
-        return this.http.get<any>(url, {}).pipe(
-          map(balls => {
-            //only update with 2nd Innings data if data was found
-            if (balls?.ballcountdown?.length > 0) { this.recentOvers.loadRecentOvers(balls) }
-          })
-        )
-      }
+    if (innings == 1) {
+      return this.http.get<any>(url, {}).pipe(
+        map(balls => {
+          this.innings1Detail.recentOvers.loadRecentOvers(balls);
+        })
       )
-    )
+    } else {
+      url = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.bTeamId}/2`;
+      return this.http.get<any>(url, {}).pipe(
+        map(balls => {
+          this.innings2Detail.recentOvers.loadRecentOvers(balls)
+        })
+      )
+    }
   }
 
-  private loadCurrentBatters(): Observable<any> {
-    let url: string = '';
-    url = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.aTeamId}/1`;
-    return this.http.get<any>(url, {}).pipe(
-      concatMap(batting => {
-        //always refresh with 1st Innings data. Will be overwritten with 2nd Innings data if there is some
-        this.currentBatters.loadCurrentBatters(batting);
-
-        //check for 2nd Innings data
-        url = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.bTeamId}/1`;
-        return this.http.get<any>(url, {}).pipe(
-          map(batting => {
-            //only update with 2nd Innigs data if data was found
-            if (batting?.batsmen?.length > 0) { this.currentBatters.loadCurrentBatters(batting); }
-          })
+  private loadCurrentBatters(innings: number): Observable<any> {
+    if (innings == 1) {
+      let url: string = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.aTeamId}/1`;
+      return this.http.get<any>(url, {}).pipe(
+        map(batting => this.innings1Detail.currentBatters.loadCurrentBatters(batting)
         )
-
-
-      })
-    )
+      )
+    } else {
+      let url = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.bTeamId}/1`;
+      return this.http.get<any>(url, {}).pipe(
+        map(batting => {
+          this.innings2Detail.currentBatters.loadCurrentBatters(batting);
+        })
+      )
+    }
   }
 
-  private loadCurrentBowlers(): Observable<any> {
-    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
-    console.log(url);
-    return this.http.get<any>(url, {}).pipe(
-      map(bowling => {
-        this.currentBowlers.loadCurrentBowlers(bowling);
-      })
-    )
+  private loadCurrentBowlers(innings: number): Observable<any> {
+    if (innings == 1) {
+      const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
+      return this.http.get<any>(url, {}).pipe(
+        map(bowling => {
+          this.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
+        })
+      )
+    } else {
+      const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
+      return this.http.get<any>(url, {}).pipe(
+        map(bowling => {
+          this.innings2Detail.currentBowlers.loadCurrentBowlers(bowling);
+        })
+      )
+    }
   }
 
-  private loadFallOfWickets(): Observable<any> {
-    const url = `https://www.websports.co.za/api/live/fixture/scorecard/fownew/${this.gameId}/${this.match.aTeamId}/1`;
-    console.log(url);
-    return this.http.get<any>(url, {}).pipe(
-      map(fallOfWickets => {
-        this.fallOfWickets.loadFallOfWickets(fallOfWickets);
-      })
-    )
+  private loadFallOfWickets(innings: number): Observable<any> {
+    if (innings == 1) {
+      const url = `https://www.websports.co.za/api/live/fixture/scorecard/fownew/${this.gameId}/${this.match.aTeamId}/1`;
+      return this.http.get<any>(url, {}).pipe(
+        map(fallOfWickets => {
+          this.innings1Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
+        })
+      )
+    } else {
+      const url = `https://www.websports.co.za/api/live/fixture/scorecard/fownew/${this.gameId}/${this.match.bTeamId}/1`;
+      return this.http.get<any>(url, {}).pipe(
+        map(fallOfWickets => {
+          this.innings2Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
+        })
+      )
+    }
+
   }
 
   public onRefreshTimer() {
@@ -177,6 +195,14 @@ export class AppComponent {
     const objString = JSON.stringify(obj);
     const hash = CryptoJS.SHA256(objString).toString(CryptoJS.enc.Hex);
     obj['signature'] = hash;
+  }
+
+  private loadFixtures(){
+    const url = `https://www.websports.co.za/api/summary/fixturesother/session?action=GET`;
+
+    this.http.get<any>(url, {}).subscribe(
+      fixtures => this.fixtures.loadFixtures(fixtures)
+    )
   }
 
 }
