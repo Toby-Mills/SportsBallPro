@@ -1,0 +1,25 @@
+<table>
+    <thead>
+        <th></th>
+        <th>Bowler</th>
+        <th>O</th>
+        <th>M</th>
+        <th>R</th>
+        <th>W</th>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let bowler of scorecard.bowlers">
+            <tr *ngIf="bowler.bowlerNumber > 0">
+            <td>{{bowler.bowlerNumber}}</td>
+            <td>{{bowler.firstname}} {{bowler.surname}}</td>
+            <td>{{bowler.overs}}</td>
+            <td>{{bowler.maidens}}</td>
+            <td>{{bowler.runs}}</td>
+            <td>{{bowler.wickets}}</td>
+
+            
+            
+        </tr>
+        </ng-container>
+    </tbody>
+</table>

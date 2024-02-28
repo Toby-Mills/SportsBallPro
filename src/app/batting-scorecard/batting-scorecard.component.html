@@ -1,0 +1,27 @@
+<table>
+    <thead>
+        <th></th>
+        <th>Batter</th>
+        <th></th>
+        <th>R</th>
+        <th>B</th>
+        <th>4</th>
+        <th>6</th>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let batter of scorecard.batters">
+            <tr *ngIf="batter.howOutFull != 'dnb' && batter.howOutFull !=''" [ngClass]="{'not-out':batter.howOutFull=='n/o'}">
+            <td>{{batter.batterNumber}}</td>
+            <td>{{batter.firstname}} {{batter.surname}}</td>
+            <td class="how-out">{{batter.howOutFull}}</td>
+            <td>{{batter.runs}}</td>
+            <td>{{batter.balls}}</td>
+            <td>{{batter.fours}}</td>
+            <td>{{batter.sixes}}</td>
+        </tr>
+        </ng-container>
+    </tbody>
+</table>
+<br>
+Still to bat:<br>
+<span *ngFor="let batter of scorecard.stillToBat">{{batter}}, </span>

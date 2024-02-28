@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild, viewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpHandler, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Match } from './models/match';
 import { RecentBallsComponent } from './recent-balls/recent-balls.component';
-import { RecentBalls, Over, Ball } from './models/recent-balls';
 import { Observable, concat, concatMap, map } from 'rxjs';
 import { CurrentBattersComponent } from './current-batters/current-batters.component';
 import { CurrentBowlersComponent } from './current-bowlers/current-bowlers.component';
@@ -13,12 +12,11 @@ import { RefreshTimerComponent } from './refresh-timer/refresh-timer.component';
 import * as CryptoJS from 'crypto-js';
 import { TeamScoreComponent } from './team-score/team-score.component';
 import { TeamScore } from './models/team-score';
-import { CurrentBowlers } from './models/current-bowlers';
-import { CurrentBatters } from './models/current-batters';
-import { FallOfWickets } from './models/fall-of-wickets';
 import { FallOfWicketsComponent } from './fall-of-wickets/fall-of-wickets.component';
 import { InningsDetail } from './models/innings-detail';
 import { Fixtures } from './models/fixture';
+import { BattingScorecardComponent } from './batting-scorecard/batting-scorecard.component';
+import { BowlingScorecardComponent } from './bowling-scorecard/bowling-scorecard.component';
 
 @Component({
   selector: 'app-root',
@@ -32,6 +30,8 @@ import { Fixtures } from './models/fixture';
     CurrentBattersComponent,
     CurrentBowlersComponent,
     FallOfWicketsComponent,
+    BattingScorecardComponent,
+    BowlingScorecardComponent,
     RefreshTimerComponent,
     NgFor,
   ],
@@ -58,6 +58,9 @@ export class AppComponent {
   constructor(private http: HttpClient) { }
 
   ngAfterViewInit() {
+    this.innings1Detail.number = 1;
+    this.innings2Detail.number = 2;
+
     this.loadGame('396706');
     this.loadFixtures();
   }
@@ -85,6 +88,10 @@ export class AppComponent {
       concatMap(x => this.loadCurrentBowlers(2)),
       concatMap(x => this.loadFallOfWickets(1)),
       concatMap(x => this.loadFallOfWickets(2)),
+      concatMap(x => this.loadBattingScorecard(this.innings1Detail)),
+      concatMap(x => this.loadBattingScorecard(this.innings2Detail)),
+      concatMap(x => this.loadBowlingScorecard(this.innings1Detail)),
+      concatMap(x => this.loadBowlingScorecard(this.innings2Detail)),
     ).subscribe()
   }
 
@@ -184,9 +191,37 @@ export class AppComponent {
         })
       )
     }
-
   }
 
+  private loadBattingScorecard(innings: InningsDetail): Observable<any> {
+    let url: string = '';
+
+    if (innings.number == 1) {
+      url = `https://www.websports.co.za/api/live/fixture/scorecard/batting/${this.gameId}/${this.match.aTeamId}/1`;
+    } else {
+      url = `https://www.websports.co.za/api/live/fixture/scorecard/batting/${this.gameId}/${this.match.bTeamId}/1`;
+    }
+    return this.http.get<any>(url, {}).pipe(
+      map(scorecard => {
+        innings.battingScorecard.loadBattingScorcard(scorecard);
+      })
+    )
+  }
+
+  private loadBowlingScorecard(innings: InningsDetail): Observable<any> {
+    let url: string = '';
+
+    if (innings.number == 1) {
+      url = `https://www.websports.co.za/api/live/fixture/scorecard/bowling/${this.gameId}/${this.match.bTeamId}/1`;
+    } else {
+      url = `https://www.websports.co.za/api/live/fixture/scorecard/bowling/${this.gameId}/${this.match.aTeamId}/1`;
+    }
+    return this.http.get<any>(url, {}).pipe(
+      map(scorecard => {
+        innings.bowlingScorecard.loadBowlingScorcard(scorecard);
+      })
+    )
+  }
   public onRefreshTimer() {
     this.refreshGame();
   }
@@ -197,7 +232,7 @@ export class AppComponent {
     obj['signature'] = hash;
   }
 
-  private loadFixtures(){
+  private loadFixtures() {
     const url = `https://www.websports.co.za/api/summary/fixturesother/session?action=GET`;
 
     this.http.get<any>(url, {}).subscribe(

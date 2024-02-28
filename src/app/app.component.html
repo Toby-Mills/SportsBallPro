@@ -47,9 +47,19 @@
       <app-fall-of-wickets *ngIf="currentInnings==1" [fallOfWickets]="this.innings1Detail.fallOfWickets"></app-fall-of-wickets>
       <app-fall-of-wickets *ngIf="currentInnings==2" [fallOfWickets]="this.innings2Detail.fallOfWickets"></app-fall-of-wickets>
     </div>
+    <div class="small-box card">
+      <app-batting-scorecard *ngIf="currentInnings==1" [scorecard]="this.innings1Detail.battingScorecard"></app-batting-scorecard>
+          <app-batting-scorecard *ngIf="currentInnings==2" [scorecard]="this.innings2Detail.battingScorecard"></app-batting-scorecard>
+    </div>
+    <div class="small-box card">
+      <app-bowling-scorecard *ngIf="currentInnings==1" [scorecard]="this.innings1Detail.bowlingScorecard"></app-bowling-scorecard>
+          <app-bowling-scorecard *ngIf="currentInnings==2" [scorecard]="this.innings2Detail.bowlingScorecard"></app-bowling-scorecard>
+    </div>
   </ng-container>
 
   <ng-template #noMatch>
     <div class="no-match">Please select a Match to load</div>
   </ng-template>
   <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()"></app-refresh-timer>
+
+  <pre>{{this.innings1Detail.battingScorecard|json}}</pre>
