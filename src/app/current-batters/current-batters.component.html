@@ -1,6 +1,6 @@
 <table *ngIf="this.currentBatters.batters.length > 0">
     <thead>
-        <th><h3>Batting</h3></th>
+        <th></th>
         <th>R</th>
         <th>B</th>
         <th>4s</th>
@@ -8,7 +8,7 @@
         <th>SR</th>
     </thead>
     <tr *ngFor="let batter of this.currentBatters.batters" class="batter"
-        [ngClass]="{'on-strike': batter.currentPlayer=='OnStrike'}">
+        [ngClass]="{'highlighted': batter.currentPlayer=='OnStrike'}">
         <td class="name">{{batter.name}} <span nowrap="nowrap">{{batter.surname}}<span
                     *ngIf="batter.currentPlayer=='OnStrike'">*</span></span></td>
         <td>{{batter.runs}}</td>

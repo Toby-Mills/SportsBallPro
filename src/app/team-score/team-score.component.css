@@ -5,6 +5,7 @@
     
     .team-name {
         font-size: 1.6em;
+        max-width: 280px;
     }
     
     .team-logo {

@@ -10,18 +10,21 @@
     </thead>
     <tbody>
         <ng-container *ngFor="let batter of scorecard.batters">
-            <tr *ngIf="batter.howOutFull != 'dnb' && batter.howOutFull !=''" [ngClass]="{'not-out':batter.howOutFull=='n/o'}">
-            <td>{{batter.batterNumber}}</td>
-            <td>{{batter.firstname}} {{batter.surname}}</td>
-            <td class="how-out">{{batter.howOutFull}}</td>
-            <td>{{batter.runs}}</td>
-            <td>{{batter.balls}}</td>
-            <td>{{batter.fours}}</td>
-            <td>{{batter.sixes}}</td>
-        </tr>
+            <tr *ngIf="batter.howOutFull != 'dnb' && batter.howOutFull !=''"
+                [ngClass]="{'highlighted':batter.howOutFull=='n/o'}">
+                <td>{{batter.batterNumber}}</td>
+                <td>{{batter.firstname}} {{batter.surname}}</td>
+                <td class="how-out">{{batter.howOutFull}}</td>
+                <td>{{batter.runs}}</td>
+                <td>{{batter.balls}}</td>
+                <td>{{batter.fours}}</td>
+                <td>{{batter.sixes}}</td>
+            </tr>
         </ng-container>
     </tbody>
 </table>
 <br>
-Still to bat:<br>
-<span *ngFor="let batter of scorecard.stillToBat">{{batter}}, </span>
+<ng-container *ngIf="scorecard.stillToBat.length > 0">
+    <span class="still-to-bat">Still to bat:</span><br>
+    <span *ngFor="let batter of scorecard.stillToBat">{{batter}}, </span>
+</ng-container>

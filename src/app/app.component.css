@@ -35,6 +35,32 @@
 
 .result {
     font-size: 1.5em;
+    color: rgb(33, 122, 60);
+}
+.toss {
+    text-align: center;
+}
+
+.view-innings {
+    padding: 0.6em;
+    border-color:transparent;
+    background-color: transparent;
+    color: blue;
+}
+
+.view-innings:hover {
+    cursor: pointer;
+}
+
+.view-innings.selected {
+    color: black;
+    border: 1pt solid black;
+    background-color: white;
+    font-weight: bold;
+}
+
+.view-innings.selected:hover {
+    cursor: default;
 }
 
 .no-match {

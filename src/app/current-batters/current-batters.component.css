@@ -6,8 +6,3 @@
     font-weight: 700;
     text-align: left;
 }
-
-tr.on-strike {
-    background-color:rgb(165, 194, 223);
-    box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.5);
-}

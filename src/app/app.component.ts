@@ -50,6 +50,7 @@ export class AppComponent {
   teamAScore: TeamScore = new TeamScore;
   teamBScore: TeamScore = new TeamScore;
   currentInnings: number = 1;
+  viewingInnings: string = "1";
   innings1Detail: InningsDetail = new InningsDetail;
   innings2Detail: InningsDetail = new InningsDetail;
 
@@ -72,6 +73,8 @@ export class AppComponent {
 
   public loadGame(gameId: string) {
     this.gameId = gameId;
+    this.currentInnings = 1;
+    this.viewingInnings = "1";
     this.refreshGame();
     this.refreshTimer.setTimer(30000);
   }
@@ -92,7 +95,7 @@ export class AppComponent {
       concatMap(x => this.loadBattingScorecard(this.innings2Detail)),
       concatMap(x => this.loadBowlingScorecard(this.innings1Detail)),
       concatMap(x => this.loadBowlingScorecard(this.innings2Detail)),
-    ).subscribe()
+    ).subscribe(x => this.updateCurrentInnings())
   }
 
   private loadGameSummary(): Observable<any> {
@@ -238,6 +241,15 @@ export class AppComponent {
     this.http.get<any>(url, {}).subscribe(
       fixtures => this.fixtures.loadFixtures(fixtures)
     )
+  }
+
+  private updateCurrentInnings(){
+    if (this.innings2Detail.currentBatters.batters.length > 0){
+      if (this.currentInnings ==1 ){
+        this.currentInnings = 2;
+        this.viewingInnings = "2";
+      }
+    }
   }
 
 }

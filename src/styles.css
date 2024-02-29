@@ -19,6 +19,10 @@ body {
     }
 }
 
+h1 {
+    margin: 0;
+}
+
 .card {
     background-color: #fff;
     border-radius: 8px;
@@ -29,6 +33,11 @@ body {
 table {
     border: none;
     border-collapse: collapse;
+}
+
+tr.highlighted {
+    background-color: rgb(165, 194, 223);;
+    box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.5);
 }
 
 td, th {
