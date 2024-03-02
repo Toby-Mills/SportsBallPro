@@ -30,14 +30,29 @@ h1 {
     padding: 1em;
 }
 
+.card .card-header {
+    background-color: rgb(114, 140, 162);
+    margin:-0.9em;
+    margin-bottom: 1em;
+    padding: 0.6em;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
 table {
     border: none;
     border-collapse: collapse;
+    width: 100%;
 }
 
 tr.highlighted {
     background-color: rgb(165, 194, 223);;
-    box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.5);
+}
+
+tr.highlighted.secondary {
+    background-color: rgb(200, 216, 231);;
 }
 
 td, th {

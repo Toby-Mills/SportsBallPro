@@ -50,7 +50,7 @@ export class AppComponent {
   teamAScore: TeamScore = new TeamScore;
   teamBScore: TeamScore = new TeamScore;
   currentInnings: number = 1;
-  viewingInnings: string = "1";
+  viewingInnings: number = 1;
   innings1Detail: InningsDetail = new InningsDetail;
   innings2Detail: InningsDetail = new InningsDetail;
 
@@ -67,14 +67,13 @@ export class AppComponent {
   }
 
   onMatchSelect(event: any) {
-    console.log(event.target.value);
     this.loadGame(event.target.value);
   }
 
   public loadGame(gameId: string) {
     this.gameId = gameId;
     this.currentInnings = 1;
-    this.viewingInnings = "1";
+    this.viewingInnings = 1;
     this.refreshGame();
     this.refreshTimer.setTimer(30000);
   }
@@ -85,8 +84,6 @@ export class AppComponent {
       concatMap(x => this.loadGameTeamIDs()),
       concatMap(x => this.loadRecentOvers(1)),
       concatMap(x => this.loadRecentOvers(2)),
-      concatMap(x => this.loadCurrentBatters(1)),
-      concatMap(x => this.loadCurrentBatters(2)),
       concatMap(x => this.loadCurrentBowlers(1)),
       concatMap(x => this.loadCurrentBowlers(2)),
       concatMap(x => this.loadFallOfWickets(1)),
@@ -95,7 +92,11 @@ export class AppComponent {
       concatMap(x => this.loadBattingScorecard(this.innings2Detail)),
       concatMap(x => this.loadBowlingScorecard(this.innings1Detail)),
       concatMap(x => this.loadBowlingScorecard(this.innings2Detail)),
-    ).subscribe(x => this.updateCurrentInnings())
+      concatMap(x => this.loadCurrentBatters(1)),
+      concatMap(x => this.loadCurrentBatters(2)),
+    ).subscribe(x => {
+      this.updateCurrentInnings();
+    })
   }
 
   private loadGameSummary(): Observable<any> {
@@ -147,7 +148,10 @@ export class AppComponent {
     if (innings == 1) {
       let url: string = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.aTeamId}/1`;
       return this.http.get<any>(url, {}).pipe(
-        map(batting => this.innings1Detail.currentBatters.loadCurrentBatters(batting)
+        map(batting => {
+          this.innings1Detail.currentBatters.loadCurrentBatters(batting);
+          this.innings1Detail.battingScorecard.addOnStrike(batting);
+        }
         )
       )
     } else {
@@ -155,6 +159,7 @@ export class AppComponent {
       return this.http.get<any>(url, {}).pipe(
         map(batting => {
           this.innings2Detail.currentBatters.loadCurrentBatters(batting);
+          this.innings2Detail.battingScorecard.addOnStrike(batting);
         })
       )
     }
@@ -206,6 +211,7 @@ export class AppComponent {
     }
     return this.http.get<any>(url, {}).pipe(
       map(scorecard => {
+        console.log(scorecard);
         innings.battingScorecard.loadBattingScorcard(scorecard);
       })
     )
@@ -243,11 +249,11 @@ export class AppComponent {
     )
   }
 
-  private updateCurrentInnings(){
-    if (this.innings2Detail.currentBatters.batters.length > 0){
-      if (this.currentInnings ==1 ){
+  private updateCurrentInnings() {
+    if (this.innings2Detail.currentBatters.batters.length > 0) {
+      if (this.currentInnings == 1) {
         this.currentInnings = 2;
-        this.viewingInnings = "2";
+        this.viewingInnings = 2;
       }
     }
   }

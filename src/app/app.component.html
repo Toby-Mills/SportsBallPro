@@ -30,41 +30,43 @@
       {{match.decidedTo}}
     </div>
     <div class="box">
-      <input type="radio" name="innings" id="innings1" value="1"  [(ngModel)]="viewingInnings"><label for="innings1"> 1st Innings</label>
-      <input type="radio" name="innings" id="innings2" value="2" [(ngModel)]="viewingInnings"><label for="innings2"> 2nd Innings</label>
+      <input type="radio" name="innings" id="innings1" [value]="1"  [(ngModel)]="viewingInnings"><label for="innings1"> 1st Innings</label>
+      <input type="radio" name="innings" id="innings2" [value]="2" [(ngModel)]="viewingInnings"><label for="innings2"> 2nd Innings</label>
     </div>
     <div class="small-box card">
-      <app-current-batters *ngIf="viewingInnings=='1'"
-        [currentBatters]="this.innings1Detail.currentBatters"></app-current-batters>
-      <app-current-batters *ngIf="viewingInnings=='2'"
-        [currentBatters]="this.innings2Detail.currentBatters"></app-current-batters>
-    </div>
-    <div class="small-box card">
-      <app-current-bowlers *ngIf="viewingInnings == '1' && currentInnings == 1"
-        [currentBowlers]="this.innings1Detail.currentBowlers"></app-current-bowlers>
-      <app-current-bowlers *ngIf="viewingInnings == '2' && currentInnings == 2"
-        [currentBowlers]="this.innings2Detail.currentBowlers"></app-current-bowlers>
-    </div>
-    <div class="small-box card">
-      <app-recent-balls *ngIf="viewingInnings=='1'" [recentBalls]="this.innings1Detail.recentOvers"></app-recent-balls>
-      <app-recent-balls *ngIf="viewingInnings=='2'" [recentBalls]="this.innings2Detail.recentOvers"></app-recent-balls>
-    </div>
-    <div class="small-box card">
-      <app-batting-scorecard *ngIf="viewingInnings=='1'"
+      <app-batting-scorecard *ngIf="viewingInnings==1"
         [scorecard]="this.innings1Detail.battingScorecard"></app-batting-scorecard>
-      <app-batting-scorecard *ngIf="viewingInnings=='2'"
+      <app-batting-scorecard *ngIf="viewingInnings==2"
         [scorecard]="this.innings2Detail.battingScorecard"></app-batting-scorecard>
     </div>
+    <!--
     <div class="small-box card">
-      <app-bowling-scorecard *ngIf="viewingInnings=='1'"
+      <app-current-batters *ngIf="viewingInnings==1"
+        [currentBatters]="this.innings1Detail.currentBatters"></app-current-batters>
+      <app-current-batters *ngIf="viewingInnings==2"
+        [currentBatters]="this.innings2Detail.currentBatters"></app-current-batters>
+    </div>
+
+    <div class="small-box card">
+      <app-current-bowlers *ngIf="viewingInnings == 1 && currentInnings == 1"
+        [currentBowlers]="this.innings1Detail.currentBowlers"></app-current-bowlers>
+      <app-current-bowlers *ngIf="viewingInnings == 2 && currentInnings == 2"
+        [currentBowlers]="this.innings2Detail.currentBowlers"></app-current-bowlers>
+    </div>  -->
+    <div class="small-box card">
+      <app-recent-balls *ngIf="viewingInnings==1" [recentBalls]="this.innings1Detail.recentOvers"></app-recent-balls>
+      <app-recent-balls *ngIf="viewingInnings==2" [recentBalls]="this.innings2Detail.recentOvers"></app-recent-balls>
+    </div>
+    <div class="small-box card">
+      <app-bowling-scorecard *ngIf="viewingInnings==1"
         [scorecard]="this.innings1Detail.bowlingScorecard"></app-bowling-scorecard>
-      <app-bowling-scorecard *ngIf="viewingInnings=='2'"
+      <app-bowling-scorecard *ngIf="viewingInnings==2"
         [scorecard]="this.innings2Detail.bowlingScorecard"></app-bowling-scorecard>
     </div>
     <div class="small-box card">
-      <app-fall-of-wickets *ngIf="viewingInnings=='1'"
+      <app-fall-of-wickets *ngIf="viewingInnings==1"
         [fallOfWickets]="this.innings1Detail.fallOfWickets"></app-fall-of-wickets>
-      <app-fall-of-wickets *ngIf="viewingInnings=='2'"
+      <app-fall-of-wickets *ngIf="viewingInnings==2"
         [fallOfWickets]="this.innings2Detail.fallOfWickets"></app-fall-of-wickets>
     </div>
   </ng-container>

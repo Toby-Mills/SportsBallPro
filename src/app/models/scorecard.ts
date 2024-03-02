@@ -11,6 +11,7 @@ export class BattingScorecard {
                 this.stillToBat.push(`${batter.PlayerName} ${batter.PlayerSurname}`)
             } else {
                 let newBatter = new BattingScorecardEntry;
+                newBatter.id = batter.ServerPlayerID;
                 newBatter.firstname = batter.PlayerName;
                 newBatter.surname = batter.PlayerSurname;
                 newBatter.batterNumber = batter.BattingNr;
@@ -22,13 +23,33 @@ export class BattingScorecard {
                 newBatter.sixes = batter.Sixes || 0;
                 newBatter.howOut = batter.HowOut;
                 newBatter.howOutFull = batter.HowOutFull;
+                newBatter.batting = (newBatter.howOutFull == 'n/o');
+                if (newBatter.balls > 0) {
+                    newBatter.strikeRate = (newBatter.runs / newBatter.balls) * 100;
+                }
                 this.batters.push(newBatter)
             }
         }
     }
+
+    public addOnStrike(input: any) {
+        for (let batter of input.batsmen) {
+            let id = batter.ServerPlayerID;
+            if (id > 0) {
+                let foundBatter = this.batters.find(batter => batter.id == id)
+                if (foundBatter) {
+                    foundBatter.batting = true;
+                    foundBatter.onStrike = (batter.CurrentPlayer == 'OnStrike')
+                }
+            }
+
+        }
+    }
+
 }
 
 export class BattingScorecardEntry {
+    id: number = 0;
     firstname: string = '';
     surname: string = '';
     batterNumber: number = 0;
@@ -40,6 +61,9 @@ export class BattingScorecardEntry {
     sixes: number = 0;
     howOut: string = '';
     howOutFull: string = '';
+    strikeRate: number = 0;
+    batting: boolean = false;
+    onStrike: boolean = false;
 }
 
 export class BowlingScorecard {
