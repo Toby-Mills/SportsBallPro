@@ -1,3 +1,4 @@
+<div class="card-header">Recent Overs</div>
 <div *ngFor="let over of this.recentBalls.overs" class="over" [ngClass]="{'current':over.current}">
     <div class="over-number">{{over.number}}</div>
     <div *ngFor="let ball of over.balls" class="ball"
