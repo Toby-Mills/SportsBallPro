@@ -3,6 +3,7 @@
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
+    overflow-x: hidden;
 }
 
 .box {

@@ -16,4 +16,5 @@ export class Fixture {
     gameId:  string = '';
     game: string = '';
     date: string = '';
+    matchKey: string = '';
 }

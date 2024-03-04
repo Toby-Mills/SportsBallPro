@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Match } from '../models/match';
 import { RecentBallsComponent } from '../recent-balls/recent-balls.component';
-import { Observable, concat, concatMap, map } from 'rxjs';
+import { Observable, concatMap, map } from 'rxjs';
 import { CurrentBattersComponent } from '../current-batters/current-batters.component';
 import { CurrentBowlersComponent } from '../current-bowlers/current-bowlers.component';
 import { RefreshTimerComponent } from '../refresh-timer/refresh-timer.component';
@@ -14,9 +14,10 @@ import { TeamScoreComponent } from '../team-score/team-score.component';
 import { TeamScore } from '../models/team-score';
 import { FallOfWicketsComponent } from '../fall-of-wickets/fall-of-wickets.component';
 import { InningsDetail } from '../models/innings-detail';
-import { Fixtures } from '../models/fixture';
 import { BattingScorecardComponent } from '../batting-scorecard/batting-scorecard.component';
 import { BowlingScorecardComponent } from '../bowling-scorecard/bowling-scorecard.component';
+import { ActivatedRoute } from '@angular/router';
+import { MatchKeyService } from '../services/match-key.service';
 
 @Component({
   selector: 'app-home',
@@ -40,10 +41,10 @@ import { BowlingScorecardComponent } from '../bowling-scorecard/bowling-scorecar
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
+  private parameterGameKey = this.route.snapshot.paramMap.get('id');
   @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
   title = 'SportsBallPro';
-  fixtures: Fixtures = new Fixtures;
 
   gameId: string = '';
   match: Match = new Match();
@@ -56,14 +57,22 @@ export class HomeComponent {
 
   updateFound: boolean = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private matchKeys: MatchKeyService,
+    ) { }
 
   ngAfterViewInit() {
     this.innings1Detail.number = 1;
     this.innings2Detail.number = 2;
-
-    this.loadGame('396706');
-    this.loadFixtures();
+    this.parameterGameKey = this.route.snapshot.paramMap.get('id');
+    if(this.parameterGameKey != null){
+      let gameId = this.matchKeys.readKey(this.parameterGameKey);
+      this.loadGame(gameId);
+    } else {
+      this.loadGame('396706');
+    }
   }
 
   onMatchSelect(event: any) {
@@ -239,14 +248,6 @@ export class HomeComponent {
     const objString = JSON.stringify(obj);
     const hash = CryptoJS.SHA256(objString).toString(CryptoJS.enc.Hex);
     obj['signature'] = hash;
-  }
-
-  private loadFixtures() {
-    const url = `https://www.websports.co.za/api/summary/fixturesother/session?action=GET`;
-
-    this.http.get<any>(url, {}).subscribe(
-      fixtures => this.fixtures.loadFixtures(fixtures)
-    )
   }
 
   private updateCurrentInnings() {

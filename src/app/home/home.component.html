@@ -1,19 +1,4 @@
 <div class="container">
-    <div class="box">
-      <label for="urlInput">Game ID:</label>
-      <input type="text" id="urlInput" [(ngModel)]="gameId" placeholder="Enter Game ID"><button
-        (click)="loadGame(this.gameId)">Load Match</button>
-      <select (change)="onMatchSelect($event)">
-        <option></option>
-        <option value="395524">Wynberg BHS U14 A vs RONDEBOSCH U14 A</option>
-        <option value="P3E102Jun2022">Port B vs Eduplex</option>
-        <option value="395528">Wynberg BHS 1st XI vs Rondebosch BHS 1st XI</option>
-        <option value="382527">Protearif 1 vs Daggies 0/11</option>
-        <option value="U1U201Oct2023">UWC Ladies vs UCT Ladies</option>
-        <option *ngFor="let fixture of this.fixtures.fixtures" [value]="fixture.gameId">{{fixture.game}} -
-          {{fixture.date}}</option>
-      </select>
-    </div>
     <ng-container *ngIf="match.gameID; else noMatch">
       <div class="box fixture">
         <h1>{{this.match.game}}</h1>

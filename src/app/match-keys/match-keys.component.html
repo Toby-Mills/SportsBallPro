@@ -1,1 +1,32 @@
-<p>match-keys works!</p>
+<div class="box">
+    <label for="urlInput">Game ID:</label>
+    <input type="text" id="urlInput" placeholder="Enter Game ID" (change)="onGameIdChange($event)">
+    <select #selectGame (change)="this.createKey(selectGame.value)">
+      <option></option>
+      <option *ngFor="let fixture of this.fixtures.fixtures" [value]="fixture.gameId">{{fixture.game}} -
+        {{fixture.date}}</option>
+    </select>
+  </div>
+  <span>URL: </span><a href="{{this.url}}">{{this.url}}</a>
+
+  <table>
+    <thead>
+        <th>Match</th>
+        <th>Date</th>
+        <th>Key</th>
+    </thead>
+    <tbody>
+        <tr *ngFor="let fixture of this.fixtures.fixtures">
+            <td>
+                <a href="./match/{{fixture.matchKey}}">{{fixture.game}}</a>
+                
+            </td>
+            <td>
+                {{fixture.date}}
+            </td>
+            <td>
+                {{fixture.matchKey}}
+            </td>
+        </tr>
+    </tbody>
+  </table>
