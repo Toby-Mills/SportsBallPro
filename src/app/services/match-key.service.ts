@@ -11,7 +11,6 @@ export class MatchKeyService {
   generateKey(gameId: string): string {
 
     const hash = this.getHash(gameId);
-    console.log('hash', hash);
     return `${hash}${gameId}`;
   }
 

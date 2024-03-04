@@ -1,7 +1,13 @@
+.box {
+    border: 1px solid black;
+    padding: 0.2em;
+    margin: 0.5em;
+    background-color: aliceblue;
+}
 table {
-    margin: 2em;
+    margin: 1em;
 }
 
 th {
-    font-size: 1.5em;
+    font-size: 1.3em;
 }

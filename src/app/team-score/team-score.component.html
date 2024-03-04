@@ -1,7 +1,7 @@
 <div [ngClass]="{'a':teamNumber==1, 'b':teamNumber ==2}">
     <img class="team-logo" src="assets/logos/small_{{teamScore.logoName}}">
     <div class="score">
-        <div class="team-name">{{teamScore.teamName}}</div>
+        <div class="team-name"><span>{{teamScore.teamName}}</span></div>
         <div class="runs">{{teamScore.runs}} / {{teamScore.wickets}}</div>
     </div>
     <div class="detail">

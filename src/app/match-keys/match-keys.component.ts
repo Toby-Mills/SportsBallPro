@@ -1,16 +1,32 @@
 import { APP_BASE_HREF, CommonModule, NgFor } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
-import { Fixtures } from '../models/fixture';
+import { Component, Inject, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { Fixture, Fixtures } from '../models/fixture';
 import { HttpClient } from '@angular/common/http';
 import { MatchKeyService } from '../services/match-key.service'
+
+@Pipe({
+  name: 'sortFixtures',
+  standalone: true
+})
+export class SortFixtures implements PipeTransform {
+  transform(fixtures: Fixture[]): Fixture[] {
+
+    return fixtures.sort((a, b) => {
+      if (a.datePlayed < b.datePlayed) { return 1 }
+      else if (b.datePlayed < a.datePlayed) { return -1 }
+      else { return 0 }
+    })
+  }
+}
 
 @Component({
   selector: 'app-match-keys',
   standalone: true,
-  providers: [{ provide: APP_BASE_HREF, useValue: '/' }],
+  providers: [{ provide: APP_BASE_HREF, useValue: '/' }, SortFixtures],
   imports: [
     CommonModule,
     NgFor,
+    SortFixtures
   ],
   templateUrl: './match-keys.component.html',
   styleUrl: './match-keys.component.css'
@@ -28,7 +44,7 @@ export class MatchKeysComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadFixtures();
+    
   }
 
   public createKey(Id: string | null) {
@@ -44,13 +60,20 @@ export class MatchKeysComponent implements OnInit {
     }
   }
 
-  private loadFixtures() {
-    const url = `https://www.websports.co.za/api/summary/fixturesother/session?action=GET`;
+  public loadFixtures(search: string) {
+    let url = '';
+    let urlEncodedSearch = encodeURI(search);
 
+    if (search > '') {
+      url = `https://www.websports.co.za/api/fixture/teamname/${urlEncodedSearch}`
+    } else {
+      url = `https://www.websports.co.za/api/summary/fixturesother/session?action=GET`;
+    }
     this.http.get<any>(url, {}).subscribe(
       fixtures => {
+        this.fixtures = new Fixtures;
         this.fixtures.loadFixtures(fixtures);
-        for (let fixture of this.fixtures.fixtures){
+        for (let fixture of this.fixtures.fixtures) {
           fixture.matchKey = this.matchKey.generateKey(fixture.gameId)
         }
       }
