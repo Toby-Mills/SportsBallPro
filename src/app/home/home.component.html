@@ -1,30 +1,32 @@
 <div class="container">
     <ng-container *ngIf="match.gameID; else noMatch">
-      <div class="box fixture">
-        <h1>{{this.match.game}}</h1>
-        <div class="result">{{match.result}}</div>
-        <div *ngIf="match.RunsRequired !='NotOn'" class="runRequired">{{match.RunsRequired}}</div>
-      </div>
-      <div class="small-box card ">
-        <app-team-score [teamScore]="this.teamAScore" [teamNumber]="1"></app-team-score>
-      </div>
-      <div class="small-box card">
-        <app-team-score [teamScore]="this.teamBScore" [teamNumber]="2"></app-team-score>
-      </div>
-      <div *ngIf="match.tossWonByTeam" class="box toss">{{match.tossWonByTeam}} won the toss and decided to
-        {{match.decidedTo}}
-      </div>
-      <div class="box">
-        <input type="radio" name="innings" id="innings1" [value]="1"  [(ngModel)]="viewingInnings"><label for="innings1"> 1st Innings</label>
-        <input type="radio" name="innings" id="innings2" [value]="2" [(ngModel)]="viewingInnings"><label for="innings2"> 2nd Innings</label>
-      </div>
-      <div class="small-box card">
-        <app-batting-scorecard *ngIf="viewingInnings==1"
-          [scorecard]="this.innings1Detail.battingScorecard"></app-batting-scorecard>
-        <app-batting-scorecard *ngIf="viewingInnings==2"
-          [scorecard]="this.innings2Detail.battingScorecard"></app-batting-scorecard>
-      </div>
-      <!--
+        <div class="box fixture">
+            <h1>{{this.match.game}}</h1>
+            <div class="result">{{match.result}}</div>
+            <div *ngIf="match.RunsRequired !='NotOn'" class="runRequired">{{match.RunsRequired}}</div>
+        </div>
+        <div class="small-box card ">
+            <app-team-score [teamScore]="this.teamAScore" [teamNumber]="1"></app-team-score>
+        </div>
+        <div class="small-box card">
+            <app-team-score [teamScore]="this.teamBScore" [teamNumber]="2"></app-team-score>
+        </div>
+        <div *ngIf="match.tossWonByTeam" class="box toss">{{match.tossWonByTeam}} won the toss and decided to
+            {{match.decidedTo}}
+        </div>
+        <div class="box">
+            <input type="radio" name="innings" id="innings1" [value]="1" [(ngModel)]="viewingInnings"><label
+                for="innings1"> 1st Innings</label>
+            <input type="radio" name="innings" id="innings2" [value]="2" [(ngModel)]="viewingInnings"><label
+                for="innings2"> 2nd Innings</label>
+        </div>
+        <div class="small-box card">
+            <app-batting-scorecard *ngIf="viewingInnings==1"
+                [scorecard]="this.innings1Detail.battingScorecard"></app-batting-scorecard>
+            <app-batting-scorecard *ngIf="viewingInnings==2"
+                [scorecard]="this.innings2Detail.battingScorecard"></app-batting-scorecard>
+        </div>
+        <!--
       <div class="small-box card">
         <app-current-batters *ngIf="viewingInnings==1"
           [currentBatters]="this.innings1Detail.currentBatters"></app-current-batters>
@@ -38,26 +40,31 @@
         <app-current-bowlers *ngIf="viewingInnings == 2 && currentInnings == 2"
           [currentBowlers]="this.innings2Detail.currentBowlers"></app-current-bowlers>
       </div>  -->
-      <div class="small-box card">
-        <app-recent-balls *ngIf="viewingInnings==1" [recentBalls]="this.innings1Detail.recentOvers"></app-recent-balls>
-        <app-recent-balls *ngIf="viewingInnings==2" [recentBalls]="this.innings2Detail.recentOvers"></app-recent-balls>
-      </div>
-      <div class="small-box card">
-        <app-bowling-scorecard *ngIf="viewingInnings==1"
-          [scorecard]="this.innings1Detail.bowlingScorecard"></app-bowling-scorecard>
-        <app-bowling-scorecard *ngIf="viewingInnings==2"
-          [scorecard]="this.innings2Detail.bowlingScorecard"></app-bowling-scorecard>
-      </div>
-      <div class="small-box card">
-        <app-fall-of-wickets *ngIf="viewingInnings==1"
-          [fallOfWickets]="this.innings1Detail.fallOfWickets"></app-fall-of-wickets>
-        <app-fall-of-wickets *ngIf="viewingInnings==2"
-          [fallOfWickets]="this.innings2Detail.fallOfWickets"></app-fall-of-wickets>
-      </div>
+        <div class="small-box card">
+            <app-recent-balls *ngIf="viewingInnings==1"
+                [recentBalls]="this.innings1Detail.recentOvers"></app-recent-balls>
+            <app-recent-balls *ngIf="viewingInnings==2"
+                [recentBalls]="this.innings2Detail.recentOvers"></app-recent-balls>
+        </div>
+        <div class="small-box card">
+            <app-bowling-scorecard *ngIf="viewingInnings==1"
+                [scorecard]="this.innings1Detail.bowlingScorecard"></app-bowling-scorecard>
+            <app-bowling-scorecard *ngIf="viewingInnings==2"
+                [scorecard]="this.innings2Detail.bowlingScorecard"></app-bowling-scorecard>
+        </div>
+        <div class="small-box card">
+            <app-fall-of-wickets *ngIf="viewingInnings==1"
+                [fallOfWickets]="this.innings1Detail.fallOfWickets"></app-fall-of-wickets>
+            <app-fall-of-wickets *ngIf="viewingInnings==2"
+                [fallOfWickets]="this.innings2Detail.fallOfWickets"></app-fall-of-wickets>
+        </div>
     </ng-container>
-  
+
     <ng-template #noMatch>
-      <div class="no-match">Please select a Match to load</div>
+        <div class="no-match">Please select a Match to load</div>
     </ng-template>
     <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()"></app-refresh-timer>
-   
+</div>
+<div class="logo">
+    <img src="../../assets/logos/SportsBallPro.png">
+</div>
