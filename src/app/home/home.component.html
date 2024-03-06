@@ -14,7 +14,7 @@
         <div *ngIf="match.tossWonByTeam" class="box toss">{{match.tossWonByTeam}} won the toss and decided to
             {{match.decidedTo}}
         </div>
-        <div class="box">
+        <div class="box view-innings">
             <input type="radio" name="innings" id="innings1" [value]="1" [(ngModel)]="viewingInnings"><label
                 for="innings1"> 1st Innings</label>
             <input type="radio" name="innings" id="innings2" [value]="2" [(ngModel)]="viewingInnings"><label

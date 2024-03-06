@@ -22,6 +22,7 @@
     .container {
         max-width: 400px;
     }
+
     .small-box {
         flex-basis: 100%;
     }
@@ -37,17 +38,15 @@
 
 .result {
     font-size: 1.5em;
-    color: rgb(33, 122, 60);
+    color: rgb(2, 49, 16);
 }
+
 .toss {
     text-align: center;
 }
 
 .view-innings {
-    padding: 0.6em;
-    border-color:transparent;
-    background-color: transparent;
-    color: blue;
+    padding-left: 2.5em;
 }
 
 .view-innings:hover {
