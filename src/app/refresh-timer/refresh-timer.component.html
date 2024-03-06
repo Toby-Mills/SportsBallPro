@@ -1,8 +1,8 @@
 <div class="wrapper">
     <div id="pieChartIcon" (click)="triggerTimer()">
-        <svg width="100" height="30">
-            <circle id="backgroundCircle" cx="15" cy="15" r="5" fill="#ddd" />
-            <circle id="progressCircle" cx="15" cy="15" r="10" fill="transparent" [attr.stroke]="strokeColor"
+        <svg width="30" height="30">
+            <circle id="backgroundCircle" cx="15" cy="15" r="5" fill="transparent" />
+            <circle id="progressCircle" cx="15" cy="15" r="10" fill="transparent" [attr.stroke]="this.strokeCurrentColor"
                 stroke-width="10" [attr.stroke-dasharray]="dashOffset" />
         </svg>
     </div>

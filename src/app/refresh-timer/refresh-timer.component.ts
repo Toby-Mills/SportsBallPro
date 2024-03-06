@@ -18,7 +18,8 @@ export class RefreshTimerComponent implements OnDestroy {
   timeToNextTrigger: number = 0;
   percentage: number = 0;
   dashOffset: string = '';
-  strokeColor: string = 'rgb(165, 194, 223)'; // Default stroke color
+  strokeStartColor: string = '#88BEB2';
+  strokeCurrentColor: string = '';
 
   ngOnInit(): void {
     this.screenUpdateTimer = setInterval(() => {
@@ -41,7 +42,7 @@ export class RefreshTimerComponent implements OnDestroy {
     this.timeToNextTrigger = interval;
   }
 
-  stopTimer(): void {
+  stopTimer (): void {
     clearInterval(this.timer)
   }
 
@@ -55,6 +56,8 @@ export class RefreshTimerComponent implements OnDestroy {
     const circumference = 2 * Math.PI * 10;
     const dashOffset = circumference * (this.percentage / 100);
     this.dashOffset = `${dashOffset}, ${circumference}`;
+
+    this.strokeCurrentColor = this.strokeStartColor + Math.round(((100 - (this.percentage/1.3))*2.55)).toString(16).toUpperCase();
   }
 
 }
