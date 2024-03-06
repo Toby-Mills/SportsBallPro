@@ -1,26 +1,29 @@
-<div class="card">
-    <div class="card-header" for="urlInput">Generate URL from Game ID</div>
-    <input type="text" id="urlInput" placeholder="Game ID" (change)="onGameIdChange($event)"> <span> URL: </span><a href="{{this.url}}">{{this.url}}</a>
-</div>
-<br>
-<div class="card">
-    <div class="card-header">Search by Team Name</div>
+<div class="container">
+    <div class="card">
+        <div class="card-header" for="urlInput">Generate URL from Game ID</div>
+        <input type="text" id="urlInput" placeholder="Game ID" (change)="onGameIdChange($event)"> <span> URL: </span><a
+            href="{{this.url}}">{{this.url}}</a>
+    </div>
+    <br>
+    <div class="card">
+        <div class="card-header">Search by Team Name</div>
         <input #TeamName type="text" placeholder="Team Name"><button
-        (click)="this.loadFixtures(TeamName.value)">Search</button>
-    <table>
-        <thead>
-            <th>Match</th>
-            <th>Date</th>
-        </thead>
-        <tbody>
-            <tr *ngFor="let fixture of this.fixtures.fixtures|sortFixtures">
-                <td>
-                    <a href="./match/{{fixture.matchKey}}">{{fixture.game}}</a>
-                </td>
-                <td>
-                    {{fixture.datePlayed|date: 'longDate'}}
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            (click)="this.loadFixtures(TeamName.value)">Search</button>
+        <table>
+            <thead>
+                <th>Match</th>
+                <th>Date</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let fixture of this.fixtures.fixtures|sortFixtures">
+                    <td>
+                        <a href="./match/{{fixture.matchKey}}">{{fixture.game}}</a>
+                    </td>
+                    <td>
+                        {{fixture.datePlayed|date: 'longDate'}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

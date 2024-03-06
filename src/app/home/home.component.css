@@ -69,15 +69,3 @@
     text-align: center;
     padding: 10px;
 }
-
-.logo {
-    box-sizing: border-box;
-    width: 100%;
-    text-align: center;
-    background-color: #A8DED2;
-}
-
-.logo img {
-    width: 100%;
-    max-width: 550px;
-}

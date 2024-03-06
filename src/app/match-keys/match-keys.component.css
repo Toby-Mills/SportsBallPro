@@ -1,9 +1,7 @@
-.box {
-    border: 1px solid black;
-    padding: 0.2em;
-    margin: 0.5em;
-    background-color: aliceblue;
+.container {
+    margin: 1em;
 }
+
 table {
     margin: 1em;
 }

@@ -1,0 +1,22 @@
+#content {
+    min-height: calc(100vh - 110px);
+}
+
+/* Apply different font sizes at different screen widths */
+@media screen and (max-width: 768px) {
+    #content {
+        min-height: calc(100vh - 70px);
+    }
+}
+
+.logo {
+    box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+    background-color: #A8DED2;
+}
+
+.logo img {
+    width: 100%;
+    max-width: 550px;
+}
