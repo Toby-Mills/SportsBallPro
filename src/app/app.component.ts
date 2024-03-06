@@ -211,7 +211,6 @@ export class AppComponent {
     }
     return this.http.get<any>(url, {}).pipe(
       map(scorecard => {
-        console.log(scorecard);
         innings.battingScorecard.loadBattingScorcard(scorecard);
       })
     )

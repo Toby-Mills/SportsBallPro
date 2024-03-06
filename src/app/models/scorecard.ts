@@ -5,7 +5,6 @@ export class BattingScorecard {
     public loadBattingScorcard(input: any) {
         this.batters = [];
         this.stillToBat = [];
-        console.log(input);
         for (let batter of input.scorecard) {
             if (batter.HowOutFull == '' || batter.HowOutFull == 'dnb') {
                 this.stillToBat.push(`${batter.PlayerName} ${batter.PlayerSurname}`)
@@ -20,7 +19,6 @@ export class BattingScorecard {
                 newBatter.balls = batter.BatBalls || 0;
                 newBatter.fielder = batter.Fielder;
                 newBatter.fours = batter.BatFours || 0;
-                console.log(batter.Fours);
                 newBatter.sixes = batter.BatSixes || 0;
                 newBatter.howOut = batter.HowOut;
                 newBatter.howOutFull = batter.HowOutFull;
