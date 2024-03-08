@@ -7,7 +7,7 @@
     <br>
     <div class="card">
         <div class="card-header">Search by Team Name</div>
-        <input #TeamName type="text" placeholder="Team Name"><button
+        <input #TeamName type="text" placeholder="Team Name" (keypress)="onKeyPress($event, TeamName.value)"><button
             (click)="this.loadFixtures(TeamName.value)">Search</button>
         <table>
             <thead>

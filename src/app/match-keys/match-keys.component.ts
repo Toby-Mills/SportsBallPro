@@ -85,4 +85,10 @@ export class MatchKeysComponent implements OnInit {
     this.createKey(target.value);
   }
 
+  public onKeyPress(event: KeyboardEvent, search: string) { 
+    if (event.key === 'Enter') {
+      this.loadFixtures(search);
+    }
+  }
+
 }

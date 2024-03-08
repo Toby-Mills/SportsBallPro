@@ -70,13 +70,7 @@ export class HomeComponent {
     if(this.parameterGameKey != null){
       let gameId = this.matchKeys.readKey(this.parameterGameKey);
       this.loadGame(gameId);
-    } else {
-      this.loadGame('396706');
     }
-  }
-
-  onMatchSelect(event: any) {
-    this.loadGame(event.target.value);
   }
 
   public loadGame(gameId: string) {
@@ -112,6 +106,7 @@ export class HomeComponent {
     const url: string = `https://www.websports.co.za/api/live/getfixture/${this.gameId}/1`;
     return this.http.get<any>(url, {}).pipe(
       map(result => {
+        console.log(result);
         if (result.fixtures.length > 0) {
           let updatedMatch = result.fixtures[0];
           this.match.loadMatch(updatedMatch);
