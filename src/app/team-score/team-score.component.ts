@@ -12,4 +12,16 @@ import { CommonModule, NgClass } from '@angular/common';
 export class TeamScoreComponent {
 @Input() teamScore: TeamScore = new TeamScore;
 @Input() teamNumber: number = 0;
+public logoUrl: string = '';
+
+ngOnChanges(){
+  this.logoUrl = `assets/logos/small_${this.teamScore.logoName}`; // Dynamically generate the image URL
+}
+
+public onImageError(){
+  if (this.teamNumber === 1) {
+    this.logoUrl = 'assets/logos/small_Team_A.png'; // Default image for team 1
+  } else {
+    this.logoUrl = 'assets/logos/small_Team_B.png'; // Default image for other teams
+  }}
 }
