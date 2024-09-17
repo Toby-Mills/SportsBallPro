@@ -106,7 +106,6 @@ export class HomeComponent {
     const url: string = `https://www.websports.co.za/api/live/getfixture/${this.gameId}/1`;
     return this.http.get<any>(url, {}).pipe(
       map(result => {
-        console.log(result);
         if (result.fixtures.length > 0) {
           let updatedMatch = result.fixtures[0];
           this.match.loadMatch(updatedMatch);
@@ -174,7 +173,6 @@ export class HomeComponent {
       const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
       return this.http.get<any>(url, {}).pipe(
         map(bowling => {
-          console.log(bowling);
           this.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
         })
       )

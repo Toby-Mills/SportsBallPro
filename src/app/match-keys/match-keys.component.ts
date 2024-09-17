@@ -48,7 +48,6 @@ export class MatchKeysComponent implements OnInit {
   }
 
   public createKey(Id: string | null) {
-    console.log(Id);
     if (Id) {
       this.gameId = Id;;
       this.key = this.matchKey.generateKey(this.gameId);

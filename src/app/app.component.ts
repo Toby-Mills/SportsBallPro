@@ -75,7 +75,9 @@ export class AppComponent {
     this.currentInnings = 1;
     this.viewingInnings = 1;
     this.refreshGame();
-    this.refreshTimer.setTimer(30000);
+    if (this.refreshTimer) {
+      this.refreshTimer.setTimer(30000);
+    }
   }
 
   public refreshGame() {
