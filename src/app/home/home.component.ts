@@ -174,6 +174,7 @@ export class HomeComponent {
       const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
       return this.http.get<any>(url, {}).pipe(
         map(bowling => {
+          console.log(bowling);
           this.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
         })
       )

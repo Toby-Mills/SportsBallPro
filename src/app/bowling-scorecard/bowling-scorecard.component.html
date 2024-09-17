@@ -7,6 +7,9 @@
         <th>M</th>
         <th>R</th>
         <th>W</th>
+        <th>NB</th>
+        <th>WB</th>
+        <th>Ec</th>
     </thead>
     <tbody>
         <ng-container *ngFor="let bowler of scorecard.bowlers">
@@ -17,9 +20,9 @@
             <td>{{bowler.maidens}}</td>
             <td>{{bowler.runs}}</td>
             <td>{{bowler.wickets}}</td>
-
-            
-            
+            <td>{{bowler.noBalls}}</td>
+            <td>{{bowler.wides}}</td>
+            <td>{{bowler.economy | number:'1.1-1'}}</td>
         </tr>
         </ng-container>
     </tbody>

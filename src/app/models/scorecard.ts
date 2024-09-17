@@ -82,7 +82,11 @@ export class BowlingScorecard {
             newBowler.wickets = bowler.Wickets;
             newBowler.noBalls = bowler.NoBalls;
             newBowler.wides = bowler.Wides;
+            newBowler.extras = newBowler.wides + newBowler.noBalls;
             newBowler.totalBalls = bowler.TotalBowlerBalls;
+            if (newBowler.totalBalls > 0){
+                newBowler.economy = (newBowler.runs / (newBowler.overs))
+            }
             this.bowlers.push(newBowler)
         }
     }
@@ -94,9 +98,11 @@ export class BowlingScorecardEntry {
     bowlerNumber: number = 0;
     overs: number = 0;
     maidens: number = 0;
-    runs: string = '';
+    runs: number = 0;
     wickets: number = 0;
     noBalls: number = 0;
     wides: number = 0;
+    extras: number = 0;
     totalBalls: number = 0;
+    economy: number = 0;
 }

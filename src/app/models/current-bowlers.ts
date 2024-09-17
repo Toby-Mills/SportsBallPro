@@ -14,11 +14,14 @@ export class CurrentBowlers {
             bowler.maidensBowled = inputBowler.maidensBowled || 0;
             bowler.runsAgainst = inputBowler.RunsAgainst || 0;
             bowler.wickets = inputBowler.Wickets || 0;
+            bowler.wides = inputBowler.Wides || 0;
+            bowler.noBalls = inputBowler.NoBalls || 0;
             if (bowler.totalBowlerBalls > 0) {
                 bowler.bowlingEconomyRate = (bowler.runsAgainst / bowler.totalBowlerBalls) * 6;
             } else {
                 bowler.bowlingEconomyRate = 0;
             }
+            bowler.extras = bowler.noBalls + bowler.wides;
             this.bowlers.push(bowler);
         }
     }
@@ -33,5 +36,8 @@ export class Bowler {
     maidensBowled: number = 0;
     runsAgainst: number = 0;
     wickets: number = 0;
+    wides: number = 0;
+    noBalls: number = 0;
     bowlingEconomyRate: number = 0;
+    extras: number = 0;
 }
