@@ -15,13 +15,14 @@ export class TeamScoreComponent {
 public logoUrl: string = '';
 
 ngOnChanges(){
-  this.logoUrl = `assets/logos/small_${this.teamScore.logoName}`; // Dynamically generate the image URL
+  this.logoUrl = `https://www.websports.co.za/images/logos/small_${this.teamScore.logoName}`; // Dynamically generate the image URL
 }
+
 
 public onImageError(){
   if (this.teamNumber === 1) {
     this.logoUrl = 'assets/logos/small_Team_A.png'; // Default image for team 1
   } else {
-    this.logoUrl = 'assets/logos/small_Team_B.png'; // Default image for other teams
+    this.logoUrl = 'assets/logos/small_Team_B.png'; // Default image for team 2
   }}
 }
