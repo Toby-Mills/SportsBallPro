@@ -1,23 +1,26 @@
 <div class="header">
-    <img src="https://www.websports.co.za/images/logos/small_wynberg.png" alt="Logo" class="logo">
-    <h1>Wynberg BHS Cricket Matches</h1>
-</div><div class="container">
+	<img src="https://www.websports.co.za/images/logos/small_wynberg.png" alt="Logo" class="logo">
+	<h1>Wynberg BHS Cricket Matches</h1>
+</div>
+<div class="container">
+	<div class="searching"><span *ngIf="!fixtures || fixtures.fixtures.length == 0">searching for fixtures...</span>
+	</div>
 	<div class="card day" *ngFor="let group of fixtures.fixtures | groupFixtures:'date'">
 		<h2>{{ group.date | date: 'fullDate' }}</h2>
-        <table>
-            <tbody>
-                <tr *ngFor="let fixture of group.fixtures | sortFixturesByTeam:this.club">
-                    <td>
-						{{fixture | homeTeam:this.club}}
-                    </td>
+		<table>
+			<tbody>
+				<tr *ngFor="let fixture of group.fixtures | sortFixturesByTeam:this.club">
 					<td>
-						VS
+						{{fixture | homeTeam:this.club}}
+					</td>
+					<td>
+						vs
 					</td>
 					<td>
 						<a href="./match/{{fixture.matchKey}}">{{fixture | opponentTeam:this.club}}</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>

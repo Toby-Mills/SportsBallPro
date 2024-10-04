@@ -5,6 +5,10 @@
 	padding: 1em;
 }
 
+.searching {
+	text-align: center;
+}
+
 .logo {
     max-width: 80px;
     height: auto;
@@ -12,7 +16,6 @@
 
 .header h1 {
     font-size: 2em;
-    white-space: nowrap;
     overflow-wrap: break-word;
 }
 
