@@ -9,9 +9,9 @@
     </thead>
     <tbody>
         <tr *ngFor="let fow of this.fallOfWickets.wickets">
-            <td>{{fow.teamWickets}}</td>
+            <td class="number">{{fow.teamWickets}}</td>
             <td>{{fow.firstName}} {{fow.surname}}</td>
-            <td>{{fow.teamRuns}}</td>
+            <td class="centered-number"><span>{{fow.teamRuns}}</span></td>
         </tr>
     </tbody>
 </table>

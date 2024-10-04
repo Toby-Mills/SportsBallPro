@@ -1,0 +1,16 @@
+th {
+	text-align: center;
+}
+
+.wicket {
+    border-radius: 50%;
+    padding: 2px 4px 10px 4px; /* Adjust padding to control the size of the circle */
+    display: inline-block;
+    text-align: center;
+    width: 10px; /* Ensures a circle shape */
+	height: 8px;
+}
+
+.wicket.non-zero {
+    background-color: rgb(250, 105, 105);
+}

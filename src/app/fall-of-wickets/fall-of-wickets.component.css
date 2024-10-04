@@ -1,0 +1,9 @@
+td.centered-number {
+	display: grid;
+	place-items: center;
+	text-align: right;
+	width: 50%;
+}
+
+td.centered-number span {
+justify-self: end;}

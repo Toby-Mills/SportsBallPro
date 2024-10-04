@@ -17,14 +17,14 @@
         <ng-container *ngFor="let batter of scorecard.batters | visible:this.allBatters">
             <tr *ngIf="batter.howOutFull != 'dnb' && batter.howOutFull !=''"
                 [ngClass]="{'highlighted':batter.batting, 'secondary':!batter.onStrike}">
-                <td>{{batter.batterNumber}}</td>
+                <td class="number">{{batter.batterNumber}}</td>
                 <td>{{batter.firstname}} {{batter.surname}}<span *ngIf="batter.onStrike"> *</span></td>
                 <td class="how-out">{{batter.howOutFull}}</td>
-                <td>{{batter.runs}}</td>
-                <td>{{batter.balls}}</td>
-                <td>{{batter.fours}}</td>
-                <td>{{batter.sixes}}</td>
-                <td>{{batter.strikeRate|number:'1.0-0'}}</td>
+                <td class="number">{{batter.runs}}</td>
+                <td class="number">{{batter.balls}}</td>
+                <td class="number">{{batter.fours}}</td>
+                <td class="number">{{batter.sixes}}</td>
+                <td class="number">{{batter.strikeRate|number:'1.0-0'}}</td>
             </tr>
         </ng-container>
     </tbody>
