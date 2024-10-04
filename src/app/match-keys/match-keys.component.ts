@@ -1,32 +1,19 @@
 import { APP_BASE_HREF, CommonModule, NgFor } from '@angular/common';
-import { Component, Inject, OnInit, Pipe, PipeTransform } from '@angular/core';
-import { Fixture, Fixtures } from '../models/fixture';
+import { Component, Inject, OnInit } from '@angular/core';
+import { Fixtures } from '../models/fixture';
 import { HttpClient } from '@angular/common/http';
 import { MatchKeyService } from '../services/match-key.service'
+import { SortFixturesPipe } from '../pipes/sort-fixtures.pipe';
 
-@Pipe({
-  name: 'sortFixtures',
-  standalone: true
-})
-export class SortFixtures implements PipeTransform {
-  transform(fixtures: Fixture[]): Fixture[] {
-
-    return fixtures.sort((a, b) => {
-      if (a.datePlayed < b.datePlayed) { return 1 }
-      else if (b.datePlayed < a.datePlayed) { return -1 }
-      else { return 0 }
-    })
-  }
-}
 
 @Component({
   selector: 'app-match-keys',
   standalone: true,
-  providers: [{ provide: APP_BASE_HREF, useValue: '/' }, SortFixtures],
+  providers: [{ provide: APP_BASE_HREF, useValue: '/' }],
   imports: [
     CommonModule,
     NgFor,
-    SortFixtures
+    SortFixturesPipe
   ],
   templateUrl: './match-keys.component.html',
   styleUrl: './match-keys.component.css'
