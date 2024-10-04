@@ -1,21 +1,21 @@
 <table *ngIf="this.currentBatters.batters.length > 0">
     <thead>
         <th></th>
-        <th>R</th>
-        <th>B</th>
-        <th>4s</th>
-        <th>6s</th>
-        <th>SR</th>
+        <th class="number">R</th>
+        <th class="number">B</th>
+        <th class="number">4s</th>
+        <th class="number">6s</th>
+        <th class="number">SR</th>
     </thead>
     <tr *ngFor="let batter of this.currentBatters.batters" class="batter"
         [ngClass]="{'highlighted': batter.currentPlayer=='OnStrike'}">
         <td class="name">{{batter.name}} <span nowrap="nowrap">{{batter.surname}}<span
                     *ngIf="batter.currentPlayer=='OnStrike'">*</span></span></td>
-        <td>{{batter.runs}}</td>
-        <td>{{batter.balls}}</td>
-        <td>{{batter.fours}}</td>
-        <td>{{batter.sixes}}</td>
-        <td>{{batter.strikeRate|number:'1.0-0'}}</td>
+        <td class="number">{{batter.runs}}</td>
+        <td class="number">{{batter.balls}}</td>
+        <td class="number">{{batter.fours}}</td>
+        <td class="number">{{batter.sixes}}</td>
+        <td class="number">{{batter.strikeRate|number:'1.0-0'}}</td>
     </tr>
 </table>
 <!--<pre>{{this.currentBatters|json}}</pre>-->

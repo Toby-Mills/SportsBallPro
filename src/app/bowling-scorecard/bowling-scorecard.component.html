@@ -3,27 +3,28 @@
     <thead>
         <th></th>
         <th>Bowler</th>
-        <th>O</th>
-        <th>M</th>
-        <th>R</th>
-        <th>W</th>
-        <th>NB</th>
-        <th>WB</th>
-        <th>Ec</th>
+        <th class="number">O</th>
+        <th class="number">M</th>
+        <th class="number">R</th>
+        <th class="number">W</th>
+        <th class="number">NB</th>
+        <th class="number">WB</th>
+        <th class="number">Ec</th>
     </thead>
     <tbody>
         <ng-container *ngFor="let bowler of scorecard.bowlers">
             <tr *ngIf="bowler.bowlerNumber > 0">
-            <td class="number">{{bowler.bowlerNumber}}</td>
-            <td>{{bowler.firstname}} {{bowler.surname}}</td>
-            <td class="number">{{bowler.overs}}</td>
-            <td class="number">{{bowler.maidens}}</td>
-            <td class="number">{{bowler.runs}}</td>
-            <td class="number"><span class="wicket" [ngClass]="{'non-zero':bowler.wickets > 0}">{{bowler.wickets}}</span></td>
-            <td class="number">{{bowler.noBalls}}</td>
-            <td class="number">{{bowler.wides}}</td>
-            <td class="number">{{bowler.economy | number:'1.1-1'}}</td>
-        </tr>
+                <td class="number">{{bowler.bowlerNumber}}</td>
+                <td>{{bowler.firstname}} {{bowler.surname}}</td>
+                <td class="number">{{bowler.overs}}</td>
+                <td class="number">{{bowler.maidens}}</td>
+                <td class="number">{{bowler.runs}}</td>
+                <td class="number"><span class="wicket"
+                        [ngClass]="{'non-zero':bowler.wickets > 0}">{{bowler.wickets}}</span></td>
+                <td class="number">{{bowler.noBalls}}</td>
+                <td class="number">{{bowler.wides}}</td>
+                <td class="number">{{bowler.economy | number:'1.1-1'}}</td>
+            </tr>
         </ng-container>
     </tbody>
 </table>

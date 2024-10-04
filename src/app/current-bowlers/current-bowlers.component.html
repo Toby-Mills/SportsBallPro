@@ -1,20 +1,20 @@
 <table *ngIf="this.currentBowlers.bowlers.length > 0">
     <thead>
         <th></th>
-        <th>O</th>
-        <th>M</th>
-        <th>R</th>
-        <th>W</th>
-        <th>E</th>
+        <th class="number">O</th>
+        <th class="number">M</th>
+        <th class="number">R</th>
+        <th class="number">W</th>
+        <th class="number">E</th>
     </thead>
     <tr *ngFor="let bowler of this.currentBowlers.bowlers" class="bowler"
         [ngClass]="{'highlighted': bowler.currentPlayer=='BowlOn'}">
         <td class="name">{{bowler.playerName}} <span nowrap="nowrap">{{bowler.playerSurname}}<span
                     *ngIf="bowler.currentPlayer=='BowlOn'">*</span></span></td>
-        <td>{{bowler.oversBowled}}</td>
-        <td>{{bowler.maidensBowled}}</td>
-        <td>{{bowler.runsAgainst}}</td>
-        <td>{{bowler.wickets}}</td>
-        <td>{{bowler.bowlingEconomyRate | number:'1.1-1'}}</td>
+        <td class="number">{{bowler.oversBowled}}</td>
+        <td class="number">{{bowler.maidensBowled}}</td>
+        <td class="number">{{bowler.runsAgainst}}</td>
+        <td class="number">{{bowler.wickets}}</td>
+        <td class="number">{{bowler.bowlingEconomyRate | number:'1.1-1'}}</td>
     </tr>
 </table>

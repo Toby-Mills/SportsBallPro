@@ -71,6 +71,6 @@ table tr:nth-child(even) {
     background-color: #f0f0f0; /* Very light grey */
 }
 
-td.number {
+th.number, td.number {
     text-align: right;
 }
