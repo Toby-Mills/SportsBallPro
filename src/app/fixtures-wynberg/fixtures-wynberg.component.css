@@ -1,0 +1,33 @@
+.header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+	padding: 1em;
+}
+
+.logo {
+    max-width: 80px;
+    height: auto;
+}
+
+.header h1 {
+    font-size: 2em;
+    white-space: nowrap;
+    overflow-wrap: break-word;
+}
+
+.container {
+    margin: 1em;
+}
+
+.day {
+	margin: 1em;
+}
+
+table {
+    margin: 1em;
+}
+
+th {
+    font-size: 1.3em;
+}
