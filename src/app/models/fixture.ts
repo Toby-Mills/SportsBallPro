@@ -8,6 +8,7 @@ export class Fixtures {
             newFixture.game = fixture.game;
             newFixture.date = fixture.fixtureDate;
             newFixture.datePlayed = fixture.datePlayed;
+            newFixture.loadAdditionalAttributes();
             this.fixtures.push(newFixture);
         }
     }
@@ -19,4 +20,12 @@ export class Fixture {
     date: string = '';
     datePlayed: Date = new Date();
     matchKey: string = '';
+    teamAName: string = '';
+    teamBName: string = '';
+
+    public loadAdditionalAttributes(){
+        const teams = this.game.split(' vs ');
+        this.teamAName = teams[0];
+        this.teamBName = teams[1];
+    }
 }
