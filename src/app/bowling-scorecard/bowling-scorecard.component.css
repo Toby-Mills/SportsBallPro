@@ -10,3 +10,12 @@
 .wicket.non-zero {
     background-color: rgb(250, 105, 105);
 }
+
+.strike-bowler {
+    background-color: red;
+}
+
+
+.nonStrike-bowler {
+    background-color: blue;
+}

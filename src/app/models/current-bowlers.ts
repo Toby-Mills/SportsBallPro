@@ -6,9 +6,11 @@ export class CurrentBowlers {
 
         for (let inputBowler of input.bowlers) {
             let bowler = new Bowler;
+            bowler.serverPlayerID = inputBowler.ServerPlayerID;
             bowler.currentPlayer = inputBowler.CurrentPlayer;
             bowler.playerName = inputBowler.PlayerName;
             bowler.playerSurname = inputBowler.PlayerSurname;
+            bowler.onStrike = inputBowler
             bowler.oversBowled = inputBowler.OversBowled || 0;
             bowler.totalBowlerBalls = inputBowler.TotalBowlerBalls || 0;
             bowler.maidensBowled = inputBowler.maidensBowled || 0;
@@ -28,6 +30,7 @@ export class CurrentBowlers {
 }
 
 export class Bowler {
+    serverPlayerID: number = 0;
     currentPlayer: string = '';
     playerName: string = '';
     playerSurname: string = '';
@@ -40,4 +43,5 @@ export class Bowler {
     noBalls: number = 0;
     bowlingEconomyRate: number = 0;
     extras: number = 0;
+    onStrike: boolean = false;
 }

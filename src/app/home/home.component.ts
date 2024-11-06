@@ -61,13 +61,13 @@ export class HomeComponent {
     private http: HttpClient,
     private route: ActivatedRoute,
     private matchKeys: MatchKeyService,
-    ) { }
+  ) { }
 
   ngAfterViewInit() {
     this.innings1Detail.number = 1;
     this.innings2Detail.number = 2;
     this.parameterGameKey = this.route.snapshot.paramMap.get('id');
-    if(this.parameterGameKey != null){
+    if (this.parameterGameKey != null) {
       let gameId = this.matchKeys.readKey(this.parameterGameKey);
       this.loadGame(gameId);
     }
@@ -87,8 +87,6 @@ export class HomeComponent {
       concatMap(x => this.loadGameTeamIDs()),
       concatMap(x => this.loadRecentOvers(1)),
       concatMap(x => this.loadRecentOvers(2)),
-      concatMap(x => this.loadCurrentBowlers(1)),
-      concatMap(x => this.loadCurrentBowlers(2)),
       concatMap(x => this.loadFallOfWickets(1)),
       concatMap(x => this.loadFallOfWickets(2)),
       concatMap(x => this.loadBattingScorecard(this.innings1Detail)),
@@ -97,6 +95,8 @@ export class HomeComponent {
       concatMap(x => this.loadBowlingScorecard(this.innings2Detail)),
       concatMap(x => this.loadCurrentBatters(1)),
       concatMap(x => this.loadCurrentBatters(2)),
+      concatMap(x => this.loadCurrentBowlers(1)),
+      concatMap(x => this.loadCurrentBowlers(2)),
     ).subscribe(x => {
       this.updateCurrentInnings();
     })
@@ -168,23 +168,6 @@ export class HomeComponent {
     }
   }
 
-  private loadCurrentBowlers(innings: number): Observable<any> {
-    if (innings == 1) {
-      const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
-      return this.http.get<any>(url, {}).pipe(
-        map(bowling => {
-          this.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
-        })
-      )
-    } else {
-      const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
-      return this.http.get<any>(url, {}).pipe(
-        map(bowling => {
-          this.innings2Detail.currentBowlers.loadCurrentBowlers(bowling);
-        })
-      )
-    }
-  }
 
   private loadFallOfWickets(innings: number): Observable<any> {
     if (innings == 1) {
@@ -233,6 +216,23 @@ export class HomeComponent {
       })
     )
   }
+
+  private loadCurrentBowlers(innings: number): Observable<any> {
+    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
+    return this.http.get<any>(url, {}).pipe(
+      map(bowling => {
+        if (innings == 1) {
+          this.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
+          this.innings1Detail.bowlingScorecard.addCurrentBowlers(this.innings1Detail.currentBowlers);
+        }
+        else {
+          this.innings2Detail.currentBowlers.loadCurrentBowlers(bowling);
+          this.innings2Detail.bowlingScorecard.addCurrentBowlers(this.innings2Detail.currentBowlers);
+        }
+      })
+    )
+  }
+
   public onRefreshTimer() {
     this.refreshGame();
   }

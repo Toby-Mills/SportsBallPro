@@ -1,3 +1,5 @@
+import { CurrentBowlers } from "./current-bowlers";
+
 export class BattingScorecard {
     batters: BattingScorecardEntry[] = [];
     stillToBat: String[] = [];
@@ -73,6 +75,7 @@ export class BowlingScorecard {
 
         for (let bowler of input.scorecard) {
             let newBowler = new BowlingScorecardEntry;
+            newBowler.serverPlayerID = bowler.ServerPlayerID;
             newBowler.firstname = bowler.PlayerName;
             newBowler.surname = bowler.PlayerSurname;
             newBowler.bowlerNumber = bowler.BowlNr;
@@ -84,15 +87,35 @@ export class BowlingScorecard {
             newBowler.wides = bowler.Wides;
             newBowler.extras = newBowler.wides + newBowler.noBalls;
             newBowler.totalBalls = bowler.TotalBowlerBalls;
-            if (newBowler.totalBalls > 0){
-                newBowler.economy = (newBowler.runs / (newBowler.overs))
+            if (newBowler.totalBalls > 0) {
+                newBowler.economy = (newBowler.runs / (newBowler.totalBalls)) * 6;
             }
             this.bowlers.push(newBowler)
+        }
+    }
+
+
+    public addCurrentBowlers(input: CurrentBowlers) {
+        //update the Bowling Scorecard to reflect who the current bowlers are
+
+        //Strike Bowler
+        let strikeBowlerInput = input.bowlers.find(a => a.currentPlayer == 'BowlOn');
+        let strikeBowler = this.bowlers.find(a => a.serverPlayerID === strikeBowlerInput?.serverPlayerID);
+        if (strikeBowler) {
+            strikeBowler.strikeBowler = true;
+        }
+
+        //Non-Strike Bowler
+        let nonStrikeBowlerInput = input.bowlers.find(a => a.currentPlayer == 'NotOn');
+        let nonStrikeBowler = this.bowlers.find(a => a.serverPlayerID === nonStrikeBowlerInput?.serverPlayerID);
+        if (nonStrikeBowler) {
+            nonStrikeBowler.nonStrikeBowler = true;
         }
     }
 }
 
 export class BowlingScorecardEntry {
+    serverPlayerID: number = 0;
     firstname: string = '';
     surname: string = '';
     bowlerNumber: number = 0;
@@ -105,4 +128,6 @@ export class BowlingScorecardEntry {
     extras: number = 0;
     totalBalls: number = 0;
     economy: number = 0;
+    strikeBowler: boolean = false;
+    nonStrikeBowler: boolean = false;
 }
