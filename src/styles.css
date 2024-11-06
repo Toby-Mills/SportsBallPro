@@ -67,10 +67,6 @@ td, th {
     padding: 0.4em;
 }
 
-table tr:nth-child(even) {
-    background-color: #f0f0f0; /* Very light grey */
-}
-
 th.number, td.number {
     text-align: right;
 }
