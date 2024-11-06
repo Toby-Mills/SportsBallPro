@@ -5,6 +5,7 @@ export class Over {
 }
 
 export class Ball {
+    eventID: number = 0;
     number: number = 0;
     description: string = '';
     old: boolean = false;
@@ -17,7 +18,6 @@ export class RecentBalls {
 
     public loadRecentOvers(input: any): void {
         let updateFound: boolean = false;
-
         this.overs = [];
 
         if (input.ballcountdown.length > 0) {
@@ -32,6 +32,7 @@ export class RecentBalls {
                 }
 
                 let ball = new Ball;
+                ball.eventID = inputBall.eventID;
                 ball.number = ballNumber;
                 ball.description = inputBall.BallDescription;
                 over.balls.push(ball);
@@ -42,7 +43,7 @@ export class RecentBalls {
 
             //sort the balls in each over
             for (let over of this.overs) {
-                over.balls = over.balls.sort((a, b) => { if (a.number > b.number) { return 1 } else { return -1 } })
+                over.balls = over.balls.sort((a, b) => { if (a.eventID > b.eventID) { return 1 } else { return -1 } })
             }
 
             //mark the current over
