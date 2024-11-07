@@ -22,10 +22,12 @@ export class Fixture {
     matchKey: string = '';
     teamAName: string = '';
     teamBName: string = '';
+    description: string = '';
 
     public loadAdditionalAttributes(){
         const teams = this.game.split(' vs ');
         this.teamAName = teams[0];
         this.teamBName = teams[1];
     }
+    
 }

@@ -9,17 +9,20 @@
 		<h2>{{ group.date | date: 'fullDate' }}</h2>
 		<table>
 			<tbody>
-				<tr *ngFor="let fixture of group.fixtures | sortFixturesByTeam:this.club">
-					<td>
-						{{fixture | homeTeam:this.club}}
+				<ng-container *ngFor="let fixture of group.fixtures | sortFixturesByTeam:this.club">
+				<tr>
+					<td colspan="2">
+						<a href="./match/{{fixture.matchKey}}">{{fixture | homeTeam:this.club}}</a>
 					</td>
 					<td>
 						vs
 					</td>
 					<td>
-						<a href="./match/{{fixture.matchKey}}">{{fixture | opponentTeam:this.club}}</a>
+						{{fixture | opponentTeam:this.club}}
 					</td>
 				</tr>
+				<tr *ngIf="fixture.description !=''"><td width="2em;"></td><td colspan="4" class="fixture-description">{{fixture.description}}</td></tr>
+			</ng-container>
 			</tbody>
 		</table>
 	</div>
