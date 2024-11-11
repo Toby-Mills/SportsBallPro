@@ -4,12 +4,11 @@ import { Fixtures } from '../models/fixture';
 import { HttpClient } from '@angular/common/http';
 import { MatchKeyService } from '../services/match-key.service'
 import { SortFixturesPipe } from '../pipes/sort-fixtures.pipe';
-
+import { environment } from '../../../src/environments/environment';
 
 @Component({
   selector: 'app-match-keys',
   standalone: true,
-  providers: [{ provide: APP_BASE_HREF, useValue: '/' }],
   imports: [
     CommonModule,
     NgFor,
@@ -26,7 +25,6 @@ export class MatchKeysComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    @Inject(APP_BASE_HREF) private baseHref: string,
     private matchKey: MatchKeyService,
   ) { }
 
@@ -38,7 +36,9 @@ export class MatchKeysComponent implements OnInit {
     if (Id) {
       this.gameId = Id;;
       this.key = this.matchKey.generateKey(this.gameId);
-      this.url = `${this.baseHref}match/${this.key}`;
+      console.log('baseHref', `${environment.baseHref}`);
+      //this.url = `${this.baseHref}match/${this.key}`;
+      this.url = `${environment.baseHref}/match/${this.key}`
     } else {
       this.gameId = '';
       this.key = '';

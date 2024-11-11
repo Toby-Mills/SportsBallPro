@@ -32,6 +32,12 @@
           "configurations": {
             "production": {
               "baseHref": "https://toby-mills.github.io/SportsBallPro/",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
