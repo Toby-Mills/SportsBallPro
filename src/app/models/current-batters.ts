@@ -1,7 +1,9 @@
+import { Batsmen } from "./web-sports";
+
 export class CurrentBatters {
     batters: Batter[] = [];
 
-    public loadCurrentBatters(input: any): void {
+    public loadCurrentBatters(input: Batsmen): void {
         this.batters =[];
 
         for (let inputBatter of input.batsmen) {

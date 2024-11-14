@@ -1,3 +1,5 @@
+import { BallCountdown } from "./web-sports";
+
 export class Over {
     number: number = 0;
     current: boolean = false;
@@ -16,7 +18,7 @@ export class Ball {
 export class RecentBalls {
     overs: Over[] = [];
 
-    public loadRecentOvers(input: any): void {
+    public loadRecentOvers(input: BallCountdown): void {
         let updateFound: boolean = false;
         this.overs = [];
 

@@ -1,3 +1,5 @@
+import {Fixture} from '../models/web-sports';
+
 export class Match {
     LastUpdate: string = ''
     gameID: string = '';
@@ -7,8 +9,8 @@ export class Match {
     venueDescription: string = '';
     tossWonByTeam: string = '';
     decidedTo: string = '';
-    aTeamId: number = 0;
-    bTeamId: number = 0;
+    aTeamId: string = '';
+    bTeamId: string = '';
     aTeamName: string = '';
     bTeamName: string = '';
     aLogoName: string = '';
@@ -21,7 +23,7 @@ export class Match {
     result: string = '';
     signature: string = '';
 
-    public loadMatch(input:any):void {
+    public loadMatch(input:Fixture):void {
         this.gameID = input.gameID;
         this.game = input.game
         this.fixtureDate = input.fistureDate
@@ -40,15 +42,9 @@ export class Match {
         this.result = input.result;
     }
 
-    public loadAdditionalData(input: any): void {
-        if (input.fixtures.length > 0) {
-            this.aTeamId = input.fixtures[0].aTeamID;
-            this.bTeamId = input.fixtures[0].bTeamID;
-            this.inningsId = input.fixtures[0].InningsID;
-        } else {
-            this.aTeamId = 0;
-            this.bTeamId = 0;
-            this.inningsId = 0;
-        }
+    public loadAdditionalData(input: Fixture): void {
+            this.aTeamId = input.aTeamID;
+            this.bTeamId = input.bTeamID;
+            this.inningsId = input.InningsID;
     }
 }

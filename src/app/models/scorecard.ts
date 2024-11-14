@@ -1,10 +1,11 @@
 import { CurrentBowlers } from "./current-bowlers";
+import { Batsmen,  BattingScorecard as WebSportsBattingScorecard, BowlingScorecard as WebSportsBowlingScorecard  } from "./web-sports";
 
 export class BattingScorecard {
     batters: BattingScorecardEntry[] = [];
     stillToBat: String[] = [];
 
-    public loadBattingScorcard(input: any) {
+    public loadBattingScorcard(input: WebSportsBattingScorecard) {
         this.batters = [];
         this.stillToBat = [];
         for (let batter of input.scorecard) {
@@ -33,10 +34,10 @@ export class BattingScorecard {
         }
     }
 
-    public addOnStrike(input: any) {
+    public addOnStrike(input: Batsmen) {
         for (let batter of input.batsmen) {
             let id = batter.ServerPlayerID;
-            if (id > 0) {
+            if (id != '') {
                 let foundBatter = this.batters.find(batter => batter.id == id)
                 if (foundBatter) {
                     foundBatter.batting = true;
@@ -46,11 +47,10 @@ export class BattingScorecard {
 
         }
     }
-
 }
 
 export class BattingScorecardEntry {
-    id: number = 0;
+    id: string = '';
     firstname: string = '';
     surname: string = '';
     batterNumber: number = 0;
@@ -70,23 +70,23 @@ export class BattingScorecardEntry {
 export class BowlingScorecard {
     bowlers: BowlingScorecardEntry[] = [];
 
-    public loadBowlingScorcard(input: any) {
+    public loadBowlingScorcard(input: WebSportsBowlingScorecard) {
         this.bowlers = [];
 
-        for (let bowler of input.scorecard) {
+        for (let inputBowler of input.scorecard) {
             let newBowler = new BowlingScorecardEntry;
-            newBowler.serverPlayerID = bowler.ServerPlayerID;
-            newBowler.firstname = bowler.PlayerName;
-            newBowler.surname = bowler.PlayerSurname;
-            newBowler.bowlerNumber = bowler.BowlNr;
-            newBowler.overs = bowler.OversBowled;
-            newBowler.maidens = bowler.MaidensBowled;
-            newBowler.runs = bowler.RunsAgainst;
-            newBowler.wickets = bowler.Wickets;
-            newBowler.noBalls = bowler.NoBalls;
-            newBowler.wides = bowler.Wides;
+            newBowler.serverPlayerID = inputBowler.ServerPlayerID;
+            newBowler.firstname = inputBowler.PlayerName;
+            newBowler.surname = inputBowler.PlayerSurname;
+            newBowler.bowlerNumber = inputBowler.BowlNr;
+            newBowler.overs = inputBowler.OversBowled;
+            newBowler.maidens = inputBowler.MaidensBowled;
+            newBowler.runs = inputBowler.RunsAgainst;
+            newBowler.wickets = inputBowler.Wickets;
+            newBowler.noBalls = inputBowler.NoBalls;
+            newBowler.wides = inputBowler.Wides;
             newBowler.extras = newBowler.wides + newBowler.noBalls;
-            newBowler.totalBalls = bowler.TotalBowlerBalls;
+            newBowler.totalBalls = inputBowler.TotalBowlerBalls;
             if (newBowler.totalBalls > 0) {
                 newBowler.economy = (newBowler.runs / (newBowler.totalBalls)) * 6;
             }
@@ -115,7 +115,7 @@ export class BowlingScorecard {
 }
 
 export class BowlingScorecardEntry {
-    serverPlayerID: number = 0;
+    serverPlayerID: string = '';
     firstname: string = '';
     surname: string = '';
     bowlerNumber: number = 0;

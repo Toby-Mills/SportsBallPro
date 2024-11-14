@@ -18,23 +18,20 @@ import { BattingScorecardComponent } from '../batting-scorecard/batting-scorecar
 import { BowlingScorecardComponent } from '../bowling-scorecard/bowling-scorecard.component';
 import { ActivatedRoute } from '@angular/router';
 import { MatchKeyService } from '../services/match-key.service';
+import { WebSportsAPIService } from '../services/web-sports-api.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
-    RouterOutlet,
     FormsModule,
     TeamScoreComponent,
     RecentBallsComponent,
-    CurrentBattersComponent,
-    CurrentBowlersComponent,
     FallOfWicketsComponent,
     BattingScorecardComponent,
     BowlingScorecardComponent,
     RefreshTimerComponent,
-    NgFor,
   ],
   providers: [HttpClient,],
   templateUrl: './home.component.html',
@@ -59,6 +56,7 @@ export class HomeComponent {
 
   constructor(
     private http: HttpClient,
+    private webSportsApi: WebSportsAPIService,
     private route: ActivatedRoute,
     private matchKeys: MatchKeyService,
   ) { }
@@ -103,45 +101,44 @@ export class HomeComponent {
   }
 
   private loadGameSummary(): Observable<any> {
-    const url: string = `https://www.websports.co.za/api/live/getfixture/${this.gameId}/1`;
-    return this.http.get<any>(url, {}).pipe(
-      map(result => {
-        if (result.fixtures.length > 0) {
-          let updatedMatch = result.fixtures[0];
-          this.match.loadMatch(updatedMatch);
-          this.teamAScore.load(updatedMatch, 1);
-          this.teamBScore.load(updatedMatch, 2);
-        } else {
-          this.match = new Match;
-          this.teamAScore = new TeamScore;
-          this.teamBScore = new TeamScore;
-        }
-      })
-    )
+    return this.webSportsApi.getFixtures(this.gameId)
+      .pipe(
+        map(result => {
+          if (result.fixtures.length > 0) {
+            let updatedMatch = result.fixtures[0];
+            this.match.loadMatch(updatedMatch);
+            this.teamAScore.load(updatedMatch, 1);
+            this.teamBScore.load(updatedMatch, 2);
+          } else {
+            this.match = new Match;
+            this.teamAScore = new TeamScore;
+            this.teamBScore = new TeamScore;
+          }
+        })
+      )
   }
 
   private loadGameTeamIDs(): Observable<any> {
-    const url: string = `https://www.websports.co.za/api/live/getfixturebysport/${this.gameId}/sport/1`;
-    return this.http.get<any>(url, {}).pipe(
-      map(matches => {
-        this.match.loadAdditionalData(matches);
-      })
-    )
+    return this.webSportsApi.getFixtureBySport(this.gameId)
+      .pipe(
+        map(matches => {
+          if (matches.fixtures.length > 0){
+          this.match.loadAdditionalData(matches.fixtures[0]);}
+        })
+      )
   }
 
   private loadRecentOvers(innings: number): Observable<any> {
-    let url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.aTeamId}/1`;
     if (innings == 1) {
-      return this.http.get<any>(url, {}).pipe(
-        map(balls => {
-          this.innings1Detail.recentOvers.loadRecentOvers(balls);
+      return this.webSportsApi.getBallCountdown(this.gameId, this.match.aTeamId, 1).pipe(
+        map(ballCountdown => {
+          this.innings1Detail.recentOvers.loadRecentOvers(ballCountdown);
         })
       )
     } else {
-      url = `https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.match.bTeamId}/2`;
-      return this.http.get<any>(url, {}).pipe(
-        map(balls => {
-          this.innings2Detail.recentOvers.loadRecentOvers(balls)
+      return this.webSportsApi.getBallCountdown(this.gameId, this.match.bTeamId, 2).pipe(
+        map(ballCountdown => {
+          this.innings2Detail.recentOvers.loadRecentOvers(ballCountdown)
         })
       )
     }
@@ -149,37 +146,33 @@ export class HomeComponent {
 
   private loadCurrentBatters(innings: number): Observable<any> {
     if (innings == 1) {
-      let url: string = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.aTeamId}/1`;
-      return this.http.get<any>(url, {}).pipe(
-        map(batting => {
-          this.innings1Detail.currentBatters.loadCurrentBatters(batting);
-          this.innings1Detail.battingScorecard.addOnStrike(batting);
+      return this.webSportsApi.getBatsmen(this.gameId, this.match.aTeamId).pipe(
+        map(batsmen => {
+          this.innings1Detail.currentBatters.loadCurrentBatters(batsmen);
+          this.innings1Detail.battingScorecard.addOnStrike(batsmen);
         }
         )
       )
     } else {
-      let url = `https://www.websports.co.za/api/live/fixture/batsmen/${this.gameId}/${this.match.bTeamId}/1`;
-      return this.http.get<any>(url, {}).pipe(
-        map(batting => {
-          this.innings2Detail.currentBatters.loadCurrentBatters(batting);
-          this.innings2Detail.battingScorecard.addOnStrike(batting);
-        })
+      return this.webSportsApi.getBatsmen(this.gameId, this.match.bTeamId).pipe(
+        map(batsmen => {
+          this.innings2Detail.currentBatters.loadCurrentBatters(batsmen);
+          this.innings2Detail.battingScorecard.addOnStrike(batsmen);
+        }
+        )
       )
     }
   }
 
-
   private loadFallOfWickets(innings: number): Observable<any> {
     if (innings == 1) {
-      const url = `https://www.websports.co.za/api/live/fixture/scorecard/fownew/${this.gameId}/${this.match.aTeamId}/1`;
-      return this.http.get<any>(url, {}).pipe(
+      return this.webSportsApi.getFallOfWickets(this.gameId, this.match.aTeamId).pipe(
         map(fallOfWickets => {
           this.innings1Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
         })
       )
     } else {
-      const url = `https://www.websports.co.za/api/live/fixture/scorecard/fownew/${this.gameId}/${this.match.bTeamId}/1`;
-      return this.http.get<any>(url, {}).pipe(
+      return this.webSportsApi.getFallOfWickets(this.gameId, this.match.bTeamId).pipe(
         map(fallOfWickets => {
           this.innings2Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
         })
@@ -191,35 +184,38 @@ export class HomeComponent {
     let url: string = '';
 
     if (innings.number == 1) {
-      url = `https://www.websports.co.za/api/live/fixture/scorecard/batting/${this.gameId}/${this.match.aTeamId}/1`;
+      return this.webSportsApi.getBattingScorecard(this.gameId, this.match.aTeamId).pipe(
+        map(scorecard => {
+          innings.battingScorecard.loadBattingScorcard(scorecard);
+        })
+      )
     } else {
-      url = `https://www.websports.co.za/api/live/fixture/scorecard/batting/${this.gameId}/${this.match.bTeamId}/1`;
+      return this.webSportsApi.getBattingScorecard(this.gameId, this.match.bTeamId).pipe(
+        map(scorecard => {
+          innings.battingScorecard.loadBattingScorcard(scorecard);
+        })
+      )
     }
-    return this.http.get<any>(url, {}).pipe(
-      map(scorecard => {
-        innings.battingScorecard.loadBattingScorcard(scorecard);
-      })
-    )
   }
 
   private loadBowlingScorecard(innings: InningsDetail): Observable<any> {
-    let url: string = '';
-
     if (innings.number == 1) {
-      url = `https://www.websports.co.za/api/live/fixture/scorecard/bowling/${this.gameId}/${this.match.bTeamId}/1`;
+      return this.webSportsApi.getBowlingScorecard(this.gameId, this.match.bTeamId).pipe(
+        map(scorecard => {
+          innings.bowlingScorecard.loadBowlingScorcard(scorecard);
+        })
+      )
     } else {
-      url = `https://www.websports.co.za/api/live/fixture/scorecard/bowling/${this.gameId}/${this.match.aTeamId}/1`;
+      return this.webSportsApi.getBowlingScorecard(this.gameId, this.match.aTeamId).pipe(
+        map(scorecard => {
+          innings.bowlingScorecard.loadBowlingScorcard(scorecard);
+        })
+      )
     }
-    return this.http.get<any>(url, {}).pipe(
-      map(scorecard => {
-        innings.bowlingScorecard.loadBowlingScorcard(scorecard);
-      })
-    )
   }
 
   private loadCurrentBowlers(innings: number): Observable<any> {
-    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${this.gameId}/1`;
-    return this.http.get<any>(url, {}).pipe(
+    return this.webSportsApi.getCurrentBowlers(this.gameId).pipe(
       map(bowling => {
         if (innings == 1) {
           this.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
@@ -237,12 +233,6 @@ export class HomeComponent {
     this.refreshGame();
   }
 
-  addSignature(obj: any): void {
-    const objString = JSON.stringify(obj);
-    const hash = CryptoJS.SHA256(objString).toString(CryptoJS.enc.Hex);
-    obj['signature'] = hash;
-  }
-
   private updateCurrentInnings() {
     if (this.innings2Detail.currentBatters.batters.length > 0) {
       if (this.currentInnings == 1) {
@@ -253,24 +243,3 @@ export class HomeComponent {
   }
 
 }
-
-
-
-//https://www.websports.co.za/api/live/getfixturebysport/${this.gameId}/sport/1 //Short Summary
-//https://www.websports.co.za/api/live/getfixture/${this.gameId}/1 //Full Summary
-
-//https://www.websports.co.za/api/live/fixture/scorecard/bowling/${this.gameId}/${this.teamId}/1 // bowling
-
-//https://www.websports.co.za/api/live/fixture/ballcountdown/${this.gameId}/${this.teamId}/${this.inningsNo}; //last 4 overs
-//https://www.websports.co.za/api/live/fixture/ballcountdown/396020/221/1  //last 4 overs
-
-//url: string = 'https://www.websports.co.za/api/live/fixture/scorecard/batting/396020/221/1';//Afies batting
-//https://www.websports.co.za/api/live/fixture/scorecard/batting/396020/32/1  //Wynberg batting
-
-//https://www.websports.co.za/api/live/fixture/batsmen/U1U201Oct2023/2/1?_=1708436367288 //current batsmen
-
-//https://www.websports.co.za/api/live/fixture/scorecard/fownew/396020/221/1  //Afies FOW
-//https://www.websports.co.za/api/live/fixture/scorecard/fownew/396020/32/1  //Wynberg FOW
-
-//https://www.websports.co.za/api/live/fixture/scorecard/extras/396020/221/1 //Extras
-//https://www.websports.co.za/api/live/fixture/scorecard/extras/396020/32/1  //Extras

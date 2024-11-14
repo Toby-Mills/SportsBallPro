@@ -1,7 +1,9 @@
+import { Bowlers } from "./web-sports";
+
 export class CurrentBowlers {
     bowlers: Bowler[] = [];
 
-    public loadCurrentBowlers(input: any): void {
+    public loadCurrentBowlers(input: Bowlers): void {
         this.bowlers = [];
 
         for (let inputBowler of input.bowlers) {
@@ -10,7 +12,7 @@ export class CurrentBowlers {
             bowler.currentPlayer = inputBowler.CurrentPlayer;
             bowler.playerName = inputBowler.PlayerName;
             bowler.playerSurname = inputBowler.PlayerSurname;
-            bowler.onStrike = inputBowler
+            bowler.onStrike = inputBowler.Bowler
             bowler.oversBowled = inputBowler.OversBowled || 0;
             bowler.totalBowlerBalls = inputBowler.TotalBowlerBalls || 0;
             bowler.maidensBowled = inputBowler.maidensBowled || 0;
@@ -30,7 +32,7 @@ export class CurrentBowlers {
 }
 
 export class Bowler {
-    serverPlayerID: number = 0;
+    serverPlayerID: string = '';
     currentPlayer: string = '';
     playerName: string = '';
     playerSurname: string = '';
