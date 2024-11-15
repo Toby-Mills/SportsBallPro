@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BallCountdown, Batsmen, BattingScorecard, Bowlers, BowlingScorecard, FallOfWickets, Fixtures } from '../models/web-sports'
+import { BallCountdown, Batsmen, BattingScorecard, Bowlers, BowlingScorecard, FallOfWickets, Fixtures, RunComparison } from '../models/web-sports'
 
 @Injectable({
   providedIn: 'root'
@@ -50,4 +50,8 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
+  public getRunComparison(gameId:string): Observable<RunComparison> {
+    const url = `https://www.websports.co.za/api/live/fixture/runcomparison/${gameId}`
+    return this.http.get<any>(url, {})
+  }
 }

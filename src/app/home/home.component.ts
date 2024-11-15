@@ -19,6 +19,7 @@ import { BowlingScorecardComponent } from '../bowling-scorecard/bowling-scorecar
 import { ActivatedRoute } from '@angular/router';
 import { MatchKeyService } from '../services/match-key.service';
 import { WebSportsAPIService } from '../services/web-sports-api.service';
+import { RunComparison } from '../models/run-comparison';
 
 @Component({
   selector: 'app-home',
@@ -51,7 +52,7 @@ export class HomeComponent {
   viewingInnings: number = 1;
   innings1Detail: InningsDetail = new InningsDetail;
   innings2Detail: InningsDetail = new InningsDetail;
-
+  runComparison: RunComparison = new RunComparison;
   updateFound: boolean = false;
 
   constructor(
@@ -95,6 +96,7 @@ export class HomeComponent {
       concatMap(x => this.loadCurrentBatters(2)),
       concatMap(x => this.loadCurrentBowlers(1)),
       concatMap(x => this.loadCurrentBowlers(2)),
+      concatMap(x => this.loadRunComparison()),
     ).subscribe(x => {
       this.updateCurrentInnings();
     })
@@ -225,6 +227,14 @@ export class HomeComponent {
           this.innings2Detail.currentBowlers.loadCurrentBowlers(bowling);
           this.innings2Detail.bowlingScorecard.addCurrentBowlers(this.innings2Detail.currentBowlers);
         }
+      })
+    )
+  }
+
+  private loadRunComparison(): Observable<any> {
+    return this.webSportsApi.getRunComparison(this.gameId).pipe(
+      map(inputRunComparison => {
+        this.runComparison.loadRunComparison(inputRunComparison)
       })
     )
   }

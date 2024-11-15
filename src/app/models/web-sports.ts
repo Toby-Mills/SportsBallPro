@@ -115,3 +115,23 @@ export class Bowler {
 	Wides: number = 0
 	NoBalls: number = 0
 }
+
+export class RunComparison {
+	comparison: Array<RunComparisonOver> = []
+}
+
+export class RunComparisonOver {
+	gameID: string = ''
+	aRuns: number = 0
+	aWickets: number = 0
+	aOvers: number = 0
+	bRuns: number = 0
+	bWickets: number = 0
+	bOvers: number = 0
+	team: string = ''
+	totalOvers: number = 0
+	over:number = 0
+	runsInOver: number = 0
+	teamTotalRuns: number = 0
+	totalWicketsInOver: number = 0
+}
