@@ -22,7 +22,7 @@ export class RunComparisonComponent implements OnChanges {
     if (changes['runComparison']) {
       this.chartData = this.runComparison.createChartData();
       
-      this.lineChartOptions.scales.y.max = this.chartData.maxRuns + 20
+      this.lineChartOptions.scales.y.max = (Math.floor((this.chartData.maxRuns + 20)/20))*20
     }
   }
   //public lineChartData = {
