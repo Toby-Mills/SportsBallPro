@@ -17,6 +17,7 @@ import { InningsDetail } from './models/innings-detail';
 import { Fixtures } from './models/fixture';
 import { BattingScorecardComponent } from './batting-scorecard/batting-scorecard.component';
 import { BowlingScorecardComponent } from './bowling-scorecard/bowling-scorecard.component';
+import { RunComparisonComponent } from './run-comparison/run-comparison.component';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +34,7 @@ import { BowlingScorecardComponent } from './bowling-scorecard/bowling-scorecard
     BattingScorecardComponent,
     BowlingScorecardComponent,
     RefreshTimerComponent,
+    RunComparisonComponent,
     NgFor,
   ],
   providers: [HttpClient,],

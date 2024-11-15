@@ -1,15 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Match } from '../models/match';
 import { RecentBallsComponent } from '../recent-balls/recent-balls.component';
 import { Observable, concatMap, map } from 'rxjs';
-import { CurrentBattersComponent } from '../current-batters/current-batters.component';
-import { CurrentBowlersComponent } from '../current-bowlers/current-bowlers.component';
 import { RefreshTimerComponent } from '../refresh-timer/refresh-timer.component';
-import * as CryptoJS from 'crypto-js';
 import { TeamScoreComponent } from '../team-score/team-score.component';
 import { TeamScore } from '../models/team-score';
 import { FallOfWicketsComponent } from '../fall-of-wickets/fall-of-wickets.component';
@@ -19,7 +15,8 @@ import { BowlingScorecardComponent } from '../bowling-scorecard/bowling-scorecar
 import { ActivatedRoute } from '@angular/router';
 import { MatchKeyService } from '../services/match-key.service';
 import { WebSportsAPIService } from '../services/web-sports-api.service';
-import { RunComparison } from '../models/run-comparison';
+import { RunComparison, RunComparisonFactory } from '../models/run-comparison';
+import { RunComparisonComponent } from "../run-comparison/run-comparison.component";
 
 @Component({
   selector: 'app-home',
@@ -33,7 +30,8 @@ import { RunComparison } from '../models/run-comparison';
     BattingScorecardComponent,
     BowlingScorecardComponent,
     RefreshTimerComponent,
-  ],
+    RunComparisonComponent
+],
   providers: [HttpClient,],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
@@ -234,7 +232,8 @@ export class HomeComponent {
   private loadRunComparison(): Observable<any> {
     return this.webSportsApi.getRunComparison(this.gameId).pipe(
       map(inputRunComparison => {
-        this.runComparison.loadRunComparison(inputRunComparison)
+        let runComparisonFactory = new RunComparisonFactory()
+        this.runComparison = runComparisonFactory.loadRunComparison(inputRunComparison)
       })
     )
   }

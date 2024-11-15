@@ -26,20 +26,6 @@
             <app-batting-scorecard *ngIf="viewingInnings==2"
                 [scorecard]="this.innings2Detail.battingScorecard"></app-batting-scorecard>
         </div>
-        <!--
-      <div class="small-box card">
-        <app-current-batters *ngIf="viewingInnings==1"
-          [currentBatters]="this.innings1Detail.currentBatters"></app-current-batters>
-        <app-current-batters *ngIf="viewingInnings==2"
-          [currentBatters]="this.innings2Detail.currentBatters"></app-current-batters>
-      </div>
-  
-      <div class="small-box card">
-        <app-current-bowlers *ngIf="viewingInnings == 1 && currentInnings == 1"
-          [currentBowlers]="this.innings1Detail.currentBowlers"></app-current-bowlers>
-        <app-current-bowlers *ngIf="viewingInnings == 2 && currentInnings == 2"
-          [currentBowlers]="this.innings2Detail.currentBowlers"></app-current-bowlers>
-      </div>  -->
         <div class="small-box card">
             <app-recent-balls *ngIf="viewingInnings==1"
                 [recentBalls]="this.innings1Detail.recentOvers"></app-recent-balls>
@@ -58,6 +44,7 @@
             <app-fall-of-wickets *ngIf="viewingInnings==2"
                 [fallOfWickets]="this.innings2Detail.fallOfWickets"></app-fall-of-wickets>
         </div>
+        <div class="box card run-comparison"><app-run-comparison [runComparison]="this.runComparison"></app-run-comparison></div>
     </ng-container>
 
     <ng-template #noMatch>
