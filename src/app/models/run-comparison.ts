@@ -1,3 +1,4 @@
+import TypedRegistry from 'chart.js/dist/core/core.typedRegistry';
 import { RunComparison as WebSportsRunComparison } from '../models/web-sports';
 
 export class RunComparisonFactory {
@@ -33,31 +34,33 @@ export class RunComparison {
 
 	public createChartData(): RunComparisonChartData {
 		let chartData = new RunComparisonChartData();
-		let datasets: Array<ChartDataset> = [];
+		let lineDatasets: Array<ChartDataset> = [];
 
 		for (let over of this.comparison) {
 			let teamName = over.teamName;
 
 			// Find or create the dataset for the team
-			let dataset = datasets.find(ds => ds.label === teamName);
-			if (!dataset) {
-				dataset = new ChartDataset
-				dataset = {
-					label: teamName,
-					data: [], // Initialize an empty array for the runs data
-					tension: 0.1				};
-				datasets.push(dataset);
+			let lineDataset = lineDatasets.find(ds => ds.label === teamName);
+			if (!lineDataset) {
+				lineDataset = new ChartDataset
+				lineDataset.type = 'line'
+				lineDataset.label= teamName;
+				lineDataset.data.push(0);
+				lineDatasets.push(lineDataset);
 			}
 
-			// Populate the specific over's data (over.overNumber is zero-based index)
-			dataset.data[over.overNumber - 1] = over.cumulativeRuns;
+			// Populate the specific over's data
+			lineDataset.data[over.overNumber] = over.cumulativeRuns;
 
 			if (over.overNumber > chartData.maxOvers){chartData.maxOvers = over.overNumber}
 			if (over.cumulativeRuns > chartData.maxRuns){chartData.maxRuns = over.cumulativeRuns}
 
 		}
-		chartData.labels = Array.from({ length: chartData.maxOvers }, (_, i) => (i + 1).toString());
-		chartData.datasets = datasets;
+
+		// Generate an array of numbers from 0 to the max number of overs (for the x axis)
+		chartData.labels = Array.from({ length: chartData.maxOvers }, (_, index) => (index).toString());
+
+		chartData.datasets = lineDatasets;
 
 		return chartData;
 	}
@@ -81,9 +84,10 @@ export class RunComparisonChartData {
 }
 
 export class ChartDataset {
+	type: 'radar' | 'line' | 'bar' | 'scatter' | undefined
 	label: string = ''
 	data: Array<number> = []
-	tension?: number = 0
-	fill?: boolean = false
-	
+	tension: number = 0.1
+	fill: boolean = false
+
 }
