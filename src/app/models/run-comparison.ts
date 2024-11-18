@@ -58,7 +58,7 @@ export class RunComparison {
 		}
 
 		// Generate an array of numbers from 0 to the max number of overs (for the x axis)
-		chartData.labels = Array.from({ length: chartData.maxOvers }, (_, index) => (index).toString());
+		chartData.labels = Array.from({ length: chartData.maxOvers + 1 }, (_, index) => (index).toString());
 
 		chartData.datasets = lineDatasets;
 
