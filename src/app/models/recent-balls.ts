@@ -22,7 +22,7 @@ export class RecentBalls {
         let updateFound: boolean = false;
         this.overs = [];
 
-        if (input.ballcountdown.length > 0) {
+        if (input.ballcountdown) {
             for (let inputBall of input.ballcountdown) {
                 let overNumber = Number(inputBall.Over.split('.')[0]) + 1;
                 let ballNumber = Number(inputBall.Over.split('.')[1]);

@@ -1,5 +1,5 @@
 import { CurrentBowlers } from "./current-bowlers";
-import { Batsmen,  BattingScorecard as WebSportsBattingScorecard, BowlingScorecard as WebSportsBowlingScorecard  } from "./web-sports";
+import { Batsmen, BattingScorecard as WebSportsBattingScorecard, BowlingScorecard as WebSportsBowlingScorecard } from "./web-sports";
 
 export class BattingScorecard {
     batters: BattingScorecardEntry[] = [];
@@ -8,43 +8,47 @@ export class BattingScorecard {
     public loadBattingScorcard(input: WebSportsBattingScorecard) {
         this.batters = [];
         this.stillToBat = [];
-        for (let batter of input.scorecard) {
-            if (batter.HowOutFull == '' || batter.HowOutFull == 'dnb') {
-                this.stillToBat.push(`${batter.PlayerName} ${batter.PlayerSurname}`)
-            } else {
-                let newBatter = new BattingScorecardEntry;
-                newBatter.id = batter.ServerPlayerID;
-                newBatter.firstname = batter.PlayerName;
-                newBatter.surname = batter.PlayerSurname;
-                newBatter.batterNumber = batter.BattingNr;
-                newBatter.wicketTaker = batter.WicketTaker;
-                newBatter.runs = batter.BatRuns || 0;
-                newBatter.balls = batter.BatBalls || 0;
-                newBatter.fielder = batter.Fielder;
-                newBatter.fours = batter.BatFours || 0;
-                newBatter.sixes = batter.BatSixes || 0;
-                newBatter.howOut = batter.HowOut;
-                newBatter.howOutFull = batter.HowOutFull;
-                newBatter.batting = (newBatter.howOutFull == 'n/o');
-                if (newBatter.balls > 0) {
-                    newBatter.strikeRate = (newBatter.runs / newBatter.balls) * 100;
+        if (input.scorecard) {
+            for (let batter of input.scorecard) {
+                if (batter.HowOutFull == '' || batter.HowOutFull == 'dnb') {
+                    this.stillToBat.push(`${batter.PlayerName} ${batter.PlayerSurname}`)
+                } else {
+                    let newBatter = new BattingScorecardEntry;
+                    newBatter.id = batter.ServerPlayerID;
+                    newBatter.firstname = batter.PlayerName;
+                    newBatter.surname = batter.PlayerSurname;
+                    newBatter.batterNumber = batter.BattingNr;
+                    newBatter.wicketTaker = batter.WicketTaker;
+                    newBatter.runs = batter.BatRuns || 0;
+                    newBatter.balls = batter.BatBalls || 0;
+                    newBatter.fielder = batter.Fielder;
+                    newBatter.fours = batter.BatFours || 0;
+                    newBatter.sixes = batter.BatSixes || 0;
+                    newBatter.howOut = batter.HowOut;
+                    newBatter.howOutFull = batter.HowOutFull;
+                    newBatter.batting = (newBatter.howOutFull == 'n/o');
+                    if (newBatter.balls > 0) {
+                        newBatter.strikeRate = (newBatter.runs / newBatter.balls) * 100;
+                    }
+                    this.batters.push(newBatter)
                 }
-                this.batters.push(newBatter)
             }
         }
     }
 
     public addOnStrike(input: Batsmen) {
-        for (let batter of input.batsmen) {
-            let id = batter.ServerPlayerID;
-            if (id != '') {
-                let foundBatter = this.batters.find(batter => batter.id == id)
-                if (foundBatter) {
-                    foundBatter.batting = true;
-                    foundBatter.onStrike = (batter.CurrentPlayer == 'OnStrike')
+        if (input.batsmen) {
+            for (let batter of input.batsmen) {
+                let id = batter.ServerPlayerID;
+                if (id != '') {
+                    let foundBatter = this.batters.find(batter => batter.id == id)
+                    if (foundBatter) {
+                        foundBatter.batting = true;
+                        foundBatter.onStrike = (batter.CurrentPlayer == 'OnStrike')
+                    }
                 }
-            }
 
+            }
         }
     }
 }
@@ -73,24 +77,26 @@ export class BowlingScorecard {
     public loadBowlingScorcard(input: WebSportsBowlingScorecard) {
         this.bowlers = [];
 
-        for (let inputBowler of input.scorecard) {
-            let newBowler = new BowlingScorecardEntry;
-            newBowler.serverPlayerID = inputBowler.ServerPlayerID;
-            newBowler.firstname = inputBowler.PlayerName;
-            newBowler.surname = inputBowler.PlayerSurname;
-            newBowler.bowlerNumber = inputBowler.BowlNr;
-            newBowler.overs = inputBowler.OversBowled;
-            newBowler.maidens = inputBowler.MaidensBowled;
-            newBowler.runs = inputBowler.RunsAgainst;
-            newBowler.wickets = inputBowler.Wickets;
-            newBowler.noBalls = inputBowler.NoBalls;
-            newBowler.wides = inputBowler.Wides;
-            newBowler.extras = newBowler.wides + newBowler.noBalls;
-            newBowler.totalBalls = inputBowler.TotalBowlerBalls;
-            if (newBowler.totalBalls > 0) {
-                newBowler.economy = (newBowler.runs / (newBowler.totalBalls)) * 6;
+        if (input.scorecard) {
+            for (let inputBowler of input.scorecard) {
+                let newBowler = new BowlingScorecardEntry;
+                newBowler.serverPlayerID = inputBowler.ServerPlayerID;
+                newBowler.firstname = inputBowler.PlayerName;
+                newBowler.surname = inputBowler.PlayerSurname;
+                newBowler.bowlerNumber = inputBowler.BowlNr;
+                newBowler.overs = inputBowler.OversBowled;
+                newBowler.maidens = inputBowler.MaidensBowled;
+                newBowler.runs = inputBowler.RunsAgainst;
+                newBowler.wickets = inputBowler.Wickets;
+                newBowler.noBalls = inputBowler.NoBalls;
+                newBowler.wides = inputBowler.Wides;
+                newBowler.extras = newBowler.wides + newBowler.noBalls;
+                newBowler.totalBalls = inputBowler.TotalBowlerBalls;
+                if (newBowler.totalBalls > 0) {
+                    newBowler.economy = (newBowler.runs / (newBowler.totalBalls)) * 6;
+                }
+                this.bowlers.push(newBowler)
             }
-            this.bowlers.push(newBowler)
         }
     }
 

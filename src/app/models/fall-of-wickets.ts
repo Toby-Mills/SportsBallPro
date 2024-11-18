@@ -1,19 +1,21 @@
-import { FallOfWickets  as WebSportsFallOfWickets} from "./web-sports";
+import { FallOfWickets as WebSportsFallOfWickets } from "./web-sports";
 export class FallOfWickets {
 
     wickets: FallOfWicket[] = [];
 
-    public loadFallOfWickets(update:WebSportsFallOfWickets){
+    public loadFallOfWickets(update: WebSportsFallOfWickets) {
         this.wickets = [];
-        for (let fow of update.fow){
-            let NewFallOfWicket = new FallOfWicket();
-            NewFallOfWicket.gameId = fow.GameID;
-            NewFallOfWicket.eventId = fow.EventID;
-            NewFallOfWicket.firstName = fow.PlayerName;
-            NewFallOfWicket.surname = fow.PlayerSurname;
-            NewFallOfWicket.teamRuns = fow.TeamTotalRuns || 0;
-            NewFallOfWicket.teamWickets = fow.TeamTotalWickets || 0;
-            this.wickets.push(NewFallOfWicket);
+        if (update.fow) {
+            for (let fow of update.fow) {
+                let NewFallOfWicket = new FallOfWicket();
+                NewFallOfWicket.gameId = fow.GameID;
+                NewFallOfWicket.eventId = fow.EventID;
+                NewFallOfWicket.firstName = fow.PlayerName;
+                NewFallOfWicket.surname = fow.PlayerSurname;
+                NewFallOfWicket.teamRuns = fow.TeamTotalRuns || 0;
+                NewFallOfWicket.teamWickets = fow.TeamTotalWickets || 0;
+                this.wickets.push(NewFallOfWicket);
+            }
         }
     }
 }
