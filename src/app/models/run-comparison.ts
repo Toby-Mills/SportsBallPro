@@ -1,5 +1,6 @@
 import TypedRegistry from 'chart.js/dist/core/core.typedRegistry';
 import { RunComparison as WebSportsRunComparison } from '../models/web-sports';
+import { Color } from 'chart.js';
 
 export class RunComparisonFactory {
 	public loadRunComparison(input: WebSportsRunComparison) {
@@ -18,49 +19,66 @@ export class RunComparisonFactory {
 
 			newRunComparison.comparison.push(newOver);
 		}
-
 		return newRunComparison;
 	}
 }
 
-  //      data: [6, 16, 21, 25, 32, 39, 45, 52, 54, 57, 70],
-  //      label: 'Team A',
-  //      fill: true,
-  //      tension: 0.4,
-  //      borderColor: 'rgba(192, 100, 100, 1)',
-  //      backgroundColor: 'rgba(192, 100, 100, 0)',
 export class RunComparison {
 	comparison: Array<RunComparisonOver> = []
 
 	public createChartData(): RunComparisonChartData {
 		let chartData = new RunComparisonChartData();
 		let lineDatasets: Array<ChartDataset> = [];
+		let pointDatasets: Array<ChartDataset> = [];
 
 		for (let over of this.comparison) {
 			let teamName = over.teamName;
 
-			// Find or create the dataset for the team
+			//set the team names (to allow for consistent colors in legend)
+			if (chartData.teamAName == '') {
+				chartData.teamAName = teamName
+			} else if (chartData.teamAName != teamName && chartData.teamBName == '') {
+				chartData.teamBName = teamName
+			}
+
+			// Find or create the runs dataset for the team
 			let lineDataset = lineDatasets.find(ds => ds.label === teamName);
 			if (!lineDataset) {
 				lineDataset = new ChartDataset
 				lineDataset.type = 'line'
-				lineDataset.label= teamName;
+				lineDataset.label = teamName;
+				lineDataset.elements = { point: { radius: 0 } }; // Hide point elements
 				lineDataset.data.push(0);
 				lineDatasets.push(lineDataset);
 			}
-
-			// Populate the specific over's data
+			// Populate the specific over's runs data
 			lineDataset.data[over.overNumber] = over.cumulativeRuns;
 
-			if (over.overNumber > chartData.maxOvers){chartData.maxOvers = over.overNumber}
-			if (over.cumulativeRuns > chartData.maxRuns){chartData.maxRuns = over.cumulativeRuns}
-
+			// Find or create the wickets dataset for the team
+			let pointDataset = pointDatasets.find(ds => ds.label === `wickets: ${teamName}`);
+			if (!pointDataset) {
+				pointDataset = new ChartDataset
+				pointDataset.type = 'scatter'
+				pointDataset.label = `wickets: ${teamName}`;
+				pointDataset.showLegend = false;
+				pointDataset.data.push({x:'-1', y:-1}) //fake data point to make wicket numbers match array index
+				pointDatasets.push(pointDataset);
+			}
+			// Populate the specific over's wickets data
+			if (over.wicketsInOver > 0) {
+				for (let wicket = 0; wicket < over.wicketsInOver; wicket++) {
+					pointDataset.data.push({ x: over.overNumber.toString(), y: over.cumulativeRuns + (wicket * 3) }); // use the runs to ensure the plots is on the runs line
+				}
+			}
+			if (over.overNumber > chartData.maxOvers) { chartData.maxOvers = over.overNumber }
+			if (over.cumulativeRuns > chartData.maxRuns) { chartData.maxRuns = over.cumulativeRuns }
 		}
 
 		// Generate an array of numbers from 0 to the max number of overs (for the x axis)
 		chartData.labels = Array.from({ length: chartData.maxOvers + 1 }, (_, index) => (index).toString());
 
-		chartData.datasets = lineDatasets;
+		chartData.datasets.push(...lineDatasets);
+		chartData.datasets.push(...pointDatasets);
 
 		return chartData;
 	}
@@ -77,6 +95,8 @@ export class RunComparisonOver {
 }
 
 export class RunComparisonChartData {
+	teamAName: string = ''
+	teamBName: string = ''
 	datasets: Array<ChartDataset> = []
 	labels: Array<string> = []
 	maxOvers: number = 0
@@ -85,9 +105,13 @@ export class RunComparisonChartData {
 
 export class ChartDataset {
 	type: 'radar' | 'line' | 'bar' | 'scatter' | undefined
-	label: string = ''
-	data: Array<number> = []
+	label: string | undefined = ''
+	data: Array<number | { x: string, y: number }> = []
 	tension: number = 0.1
 	fill: boolean = false
-
+	showLegend: boolean = true
+	elements = {}
+	borderColor?: Color
+	pointBackgroundColor?: Color
+	borderWidth: number = 1
 }
