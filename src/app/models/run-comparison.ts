@@ -71,7 +71,10 @@ export class RunComparison {
 				}
 			}
 			if (over.overNumber > chartData.maxOvers) { chartData.maxOvers = over.overNumber }
-			if (over.cumulativeRuns > chartData.maxRuns) { chartData.maxRuns = over.cumulativeRuns }
+			if (over.cumulativeRuns > chartData.maxRuns) { 
+				chartData.maxRuns = over.cumulativeRuns;
+				if(over.teamName == chartData.teamAName){chartData.maxRunsTeam = 'A'}else{chartData.maxRunsTeam = 'B'};
+			 }
 		}
 
 		// Generate an array of numbers from 0 to the max number of overs (for the x axis)
@@ -101,6 +104,7 @@ export class RunComparisonChartData {
 	labels: Array<string> = []
 	maxOvers: number = 0
 	maxRuns: number = 0
+	maxRunsTeam: 'A' | 'B' = 'A'
 }
 
 export class ChartDataset {

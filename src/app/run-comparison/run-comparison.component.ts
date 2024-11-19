@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
-import { RunComparison, RunComparisonChartData } from '../models/run-comparison';
+import { ChartDataset, RunComparison, RunComparisonChartData } from '../models/run-comparison';
 import { Color } from 'chart.js';
 
 @Component({
@@ -25,13 +25,13 @@ export class RunComparisonComponent implements OnChanges {
     if (changes['runComparison']) {
       this.chartData = this.runComparison.createChartData();
 
-      this.lineChartOptions.scales.y.max = (Math.floor((this.chartData.maxRuns + 20) / 20)) * 20
+      this.lineChartOptions.scales.y.max = (Math.floor((this.chartData.maxRuns + 10) / 10)) * 10
       this.lineChartOptions.scales.x.max = this.chartData.maxOvers + 10;
       if (this.chartData.labels.length % 2 === 0) {
         this.chartData.labels.push((this.chartData.maxOvers + 1).toString());
       }
-      for (let dataset of this.chartData.datasets){
-        if (dataset.label?.includes(this.chartData.teamAName)){
+      for (let dataset of this.chartData.datasets) {
+        if (dataset.label?.includes(this.chartData.teamAName)) {
           dataset.borderColor = this.teamAColour;
           dataset.pointBackgroundColor = this.teamAColour;
           dataset.borderWidth = 2;
@@ -43,6 +43,15 @@ export class RunComparisonComponent implements OnChanges {
           dataset.fill = true;
         }
       }
+      let maxRunsDataset = new ChartDataset()
+      maxRunsDataset.label = 'target';
+      maxRunsDataset.data.push({ x: '0', y: this.chartData.maxRuns });
+      maxRunsDataset.data.push({ x: this.chartData.maxOvers.toString(), y: this.chartData.maxRuns });
+      maxRunsDataset.borderColor = 'grey';
+      if (this.chartData.maxRunsTeam == 'A') { maxRunsDataset.borderColor = this.teamAColour }
+      else { maxRunsDataset.borderColor = this.teamBColour }
+      maxRunsDataset.elements = { point: { radius: 0 }, line: { borderDash: [4, 6] } }; // Hide point elements
+      this.chartData.datasets.push(maxRunsDataset);
     }
   }
 
@@ -58,7 +67,7 @@ export class RunComparisonComponent implements OnChanges {
       legend: {
         display: true,
         position: 'bottom' as const,
-        labels: { filter: (legendItem: { text: string }) => (!legendItem.text.startsWith('wicket')) } // do not show any legend entry for the 'wickets' scatterplot
+        labels: { filter: (legendItem: { text: string }) => (!(legendItem.text.includes('wicket') || legendItem.text.includes('target'))) } // do not show any legend entry for the 'wickets' scatterplot
       }
     },
     scales: {
