@@ -135,3 +135,30 @@ export class RunComparisonOver {
 	teamTotalRuns: number = 0
 	totalWicketsInOver: number = 0
 }
+
+export class WagonWheel {
+	wagonwheel: Array<WagonWheelEvent> = []
+}
+
+export class WagonWheelEvent {
+	GameID: string = ''
+	EventID: number = 0
+	EventRuns: number = 0
+	RunX: number = 0
+	RunY: number = 0
+}
+
+export class BattingLineup {
+	team:Array<Player> = []
+}
+
+export class BowlingLineup {
+	team:Array<Player> = []
+}
+
+export class Player {
+	PlayerID: number = 0
+	Number: number = 0
+	PlayerName: string = ''
+	PlayerSurname: string = ''
+}

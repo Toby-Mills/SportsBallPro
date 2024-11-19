@@ -17,6 +17,8 @@ import { MatchKeyService } from '../services/match-key.service';
 import { WebSportsAPIService } from '../services/web-sports-api.service';
 import { RunComparison, RunComparisonFactory } from '../models/run-comparison';
 import { RunComparisonComponent } from "../run-comparison/run-comparison.component";
+import { BattingLineup, WagonWheel } from '../models/web-sports';
+import { WagonWheelComponent } from "../wagon-wheel/wagon-wheel.component";
 
 @Component({
   selector: 'app-home',
@@ -30,7 +32,8 @@ import { RunComparisonComponent } from "../run-comparison/run-comparison.compone
     BattingScorecardComponent,
     BowlingScorecardComponent,
     RefreshTimerComponent,
-    RunComparisonComponent
+    RunComparisonComponent,
+    WagonWheelComponent
 ],
   providers: [HttpClient,],
   templateUrl: './home.component.html',
@@ -51,6 +54,7 @@ export class HomeComponent {
   innings1Detail: InningsDetail = new InningsDetail;
   innings2Detail: InningsDetail = new InningsDetail;
   runComparison: RunComparison = new RunComparison;
+  wagonWheel:WagonWheel = new WagonWheel;
   updateFound: boolean = false;
 
   constructor(
@@ -82,6 +86,8 @@ export class HomeComponent {
     this.updateFound = false;
     this.loadGameSummary().pipe(
       concatMap(x => this.loadGameTeamIDs()),
+      concatMap(x => this.loadBattingLineup(this.match.aTeamId)),
+      concatMap(x => this.loadBattingLineup(this.match.bTeamId)),
       concatMap(x => this.loadRecentOvers(1)),
       concatMap(x => this.loadRecentOvers(2)),
       concatMap(x => this.loadFallOfWickets(1)),
@@ -95,6 +101,7 @@ export class HomeComponent {
       concatMap(x => this.loadCurrentBowlers(1)),
       concatMap(x => this.loadCurrentBowlers(2)),
       concatMap(x => this.loadRunComparison()),
+      concatMap(x => this.loadWagonWheel())
     ).subscribe(x => {
       this.updateCurrentInnings();
     })
@@ -123,9 +130,17 @@ export class HomeComponent {
       .pipe(
         map(matches => {
           if (matches.fixtures.length > 0){
-          this.match.loadAdditionalData(matches.fixtures[0]);}
+          this.match.loadFixtureData(matches.fixtures[0]);}
         })
       )
+  }
+
+  private loadBattingLineup(teamId:string): Observable<any> {
+    return this.webSportsApi.getBattingLineup(this.gameId, teamId).pipe(
+      map(battingLineup => {
+        this.match.loadBattingLineup(battingLineup, teamId);
+      })
+    )
   }
 
   private loadRecentOvers(innings: number): Observable<any> {
@@ -238,6 +253,12 @@ export class HomeComponent {
     )
   }
 
+  private loadWagonWheel():Observable<WagonWheel> {
+    return this.webSportsApi.getWagonWheel(this.gameId, this.match.aTeamId).pipe(
+      map(inputWagonWheel => this.wagonWheel = inputWagonWheel)
+    );
+  }
+  
   public onRefreshTimer() {
     this.refreshGame();
   }

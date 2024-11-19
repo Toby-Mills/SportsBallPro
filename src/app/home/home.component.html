@@ -44,9 +44,9 @@
             <app-fall-of-wickets *ngIf="viewingInnings==2"
                 [fallOfWickets]="this.innings2Detail.fallOfWickets"></app-fall-of-wickets>
         </div>
-        <div class="box card run-comparison"><app-run-comparison [runComparison]="this.runComparison"></app-run-comparison></div>
+        <div class="small-box card run-comparison"><app-run-comparison [runComparison]="this.runComparison"></app-run-comparison></div>
+        <div class="small-box card"><app-wagon-wheel [wagonWheelData]="this.wagonWheel"></app-wagon-wheel></div>
     </ng-container>
-
     <ng-template #noMatch>
         <div class="no-match">Please select a Match to load</div>
     </ng-template>

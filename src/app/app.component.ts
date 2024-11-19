@@ -115,7 +115,7 @@ export class AppComponent {
     const url: string = `https://www.websports.co.za/api/live/getfixturebysport/${this.gameId}/sport/1`;
     return this.http.get<any>(url, {}).pipe(
       map(matches => {
-        this.match.loadAdditionalData(matches);
+        this.match.loadFixtureData(matches);
       })
     )
   }

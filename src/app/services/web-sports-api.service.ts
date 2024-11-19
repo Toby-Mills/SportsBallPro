@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BallCountdown, Batsmen, BattingScorecard, Bowlers, BowlingScorecard, FallOfWickets, Fixtures, RunComparison } from '../models/web-sports'
+import { BallCountdown, Batsmen, BattingLineup, BattingScorecard, Bowlers, BowlingLineup, BowlingScorecard, FallOfWickets, Fixtures, RunComparison, WagonWheel } from '../models/web-sports'
 
 @Injectable({
   providedIn: 'root'
@@ -50,8 +50,24 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
-  public getRunComparison(gameId:string): Observable<RunComparison> {
+  public getRunComparison(gameId: string): Observable<RunComparison> {
     const url = `https://www.websports.co.za/api/live/fixture/runcomparison/${gameId}`
     return this.http.get<any>(url, {})
+  }
+
+  public getWagonWheel(gameId: string, teamId: string, playerId?: string): Observable<WagonWheel> {
+    if (playerId == undefined) { playerId = '0' }
+    const url = `https://www.websports.co.za/api/live/fixture/wagonwheellines/${gameId}/1/${teamId}/${playerId}/batting`;
+    return this.http.get<any>(url, {});
+  }
+
+  public getBattingLineup(gameId: string, teamId: string): Observable<BattingLineup> {
+    const url = `https://www.websports.co.za/api/live/fixture/team/${gameId}/${teamId}/1/batting`;
+    return this.http.get<any>(url, {});
+  }
+
+  public getBowlingLineup(gameId: string, teamId: string): Observable<BowlingLineup> {
+    const url = `https://www.websports.co.za/api/live/fixture/team/${gameId}/${teamId}/1/bowling`;
+    return this.http.get<any>(url, {});
   }
 }
