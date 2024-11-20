@@ -20,6 +20,15 @@ export class Fixture {
 	BreaksInPlay: string = ''
 	result: string = ''
 	InningsID: number = 0
+	aRuns: number = 0
+	aWickets: number = 0
+	aOvers: number = 0
+	aExtras: number = 0
+	bRuns: number = 0
+	bWickets: number = 0
+	bOvers: number = 0
+	bExtras: number = 0
+	
 }
 
 export class BallCountdown {

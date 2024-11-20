@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Fixture } from '../models/fixture';
+import { FixtureSummary } from '../models/fixture-summary';
 
 @Pipe({
   name: 'sortFixturesByTeam',
@@ -7,7 +7,7 @@ import { Fixture } from '../models/fixture';
 })
 export class SortFixturesByTeamPipe implements PipeTransform {
 
-  transform(fixtures: Fixture[], club: string): Fixture[] {
+  transform(fixtures: FixtureSummary[], club: string): FixtureSummary[] {
 
     return fixtures.sort((a, b) => {
       let fixtures = [a, b];

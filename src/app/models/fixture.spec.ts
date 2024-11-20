@@ -1,7 +1,7 @@
-import { Fixture } from './fixture';
+import { FixtureSummary } from './fixture-summary';
 
 describe('Fixture', () => {
   it('should create an instance', () => {
-    expect(new Fixture()).toBeTruthy();
+    expect(new FixtureSummary()).toBeTruthy();
   });
 });

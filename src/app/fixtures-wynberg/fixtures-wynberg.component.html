@@ -3,9 +3,9 @@
 	<h1>Wynberg BHS Cricket Matches</h1>
 </div>
 <div class="container">
-	<div class="searching"><span *ngIf="!fixtures || fixtures.fixtures.length == 0">searching for fixtures...</span>
+	<div class="searching"><span *ngIf="!fixtures || fixtures.fixtureSummaries.length == 0">searching for fixtures...</span>
 	</div>
-	<div class="card day" *ngFor="let group of fixtures.fixtures | groupFixtures:'date'">
+	<div class="card day" *ngFor="let group of fixtures.fixtureSummaries | groupFixtures:'date'">
 		<h2>{{ group.date | date: 'fullDate' }}</h2>
 		<table>
 			<tbody>

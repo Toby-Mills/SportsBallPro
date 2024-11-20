@@ -1,8 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { WagonWheel } from '../models/web-sports';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Player, PlayerLineup } from '../models/match';
+import { MatchService } from '../services/match.service';
 
 @Component({
   selector: 'app-wagon-wheel',
@@ -11,16 +10,19 @@ import { Player, PlayerLineup } from '../models/match';
   templateUrl: './wagon-wheel.component.html',
   styleUrl: './wagon-wheel.component.css'
 })
-export class WagonWheelComponent implements OnChanges {
-  @Input() wagonWheelData: WagonWheel = new WagonWheel();
+export class WagonWheelComponent {
+  public wagonWheelData: WagonWheel = new WagonWheel();
   public svgContent: SafeHtml = '';
 
-  constructor(private sanitizer: DomSanitizer) { }
+  constructor(private sanitizer: DomSanitizer, private matchService: MatchService) { }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['wagonWheelData']) {
-      this.svgContent = this.sanitizer.bypassSecurityTrustHtml(this.generateCricketFieldSvg(3));
-    }
+  ngOnInit(){
+    this.matchService.wagonWheelUpdated.subscribe(
+      wagonWheel => {
+        this.wagonWheelData = wagonWheel;
+        this.svgContent = this.sanitizer.bypassSecurityTrustHtml(this.generateCricketFieldSvg(3));
+      }
+    )
   }
 
   generateCricketFieldSvg(scale: number): string {

@@ -1,18 +1,18 @@
 <div class="container">
-    <ng-container *ngIf="match.gameID; else noMatch">
+    <ng-container *ngIf="fixture.gameId; else noMatch">
         <div class="box fixture">
-            <h1>{{this.match.game}}</h1>
-            <div class="result">{{match.result}}</div>
-            <div *ngIf="match.RunsRequired !='NotOn'" class="runRequired">{{match.RunsRequired}}</div>
+            <h1>{{this.fixture.game}}</h1>
+            <div class="result">{{status.result}}</div>
+            <div *ngIf="status.runsRequired !='NotOn'" class="runRequired">{{status.runsRequired}}</div>
         </div>
         <div class="small-box card ">
-            <app-team-score [teamScore]="this.teamAScore" [teamNumber]="1"></app-team-score>
+            <app-team-score [teamNumber]="1"></app-team-score>
         </div>
         <div class="small-box card">
-            <app-team-score [teamScore]="this.teamBScore" [teamNumber]="2"></app-team-score>
+            <app-team-score [teamNumber]="2"></app-team-score>
         </div>
-        <div *ngIf="match.tossWonByTeam" class="box toss">{{match.tossWonByTeam}} won the toss and decided to
-            {{match.decidedTo}}
+        <div *ngIf="status.tossWonByTeam" class="box toss">{{status.tossWonByTeam}} won the toss and decided to
+            {{status.decidedTo}}
         </div>
         <div class="box view-innings">
             <input type="radio" name="innings" id="innings1" [value]="1" [(ngModel)]="viewingInnings"><label
@@ -21,31 +21,24 @@
                 for="innings2"> 2nd Innings</label>
         </div>
         <div class="small-box card">
-            <app-batting-scorecard *ngIf="viewingInnings==1"
-                [scorecard]="this.innings1Detail.battingScorecard"></app-batting-scorecard>
-            <app-batting-scorecard *ngIf="viewingInnings==2"
-                [scorecard]="this.innings2Detail.battingScorecard"></app-batting-scorecard>
+            <app-batting-scorecard *ngIf="viewingInnings==1" [teamNumber]="1"></app-batting-scorecard>
+            <app-batting-scorecard *ngIf="viewingInnings==2" [teamNumber]="2"></app-batting-scorecard>
         </div>
         <div class="small-box card">
-            <app-recent-balls *ngIf="viewingInnings==1"
-                [recentBalls]="this.innings1Detail.recentOvers"></app-recent-balls>
-            <app-recent-balls *ngIf="viewingInnings==2"
-                [recentBalls]="this.innings2Detail.recentOvers"></app-recent-balls>
+            <app-recent-balls *ngIf="viewingInnings==1" [inningsNumber]="1"></app-recent-balls>
+            <app-recent-balls *ngIf="viewingInnings==2" [inningsNumber]="2"></app-recent-balls>
         </div>
         <div class="small-box card">
-            <app-bowling-scorecard *ngIf="viewingInnings==1"
-                [scorecard]="this.innings1Detail.bowlingScorecard"></app-bowling-scorecard>
-            <app-bowling-scorecard *ngIf="viewingInnings==2"
-                [scorecard]="this.innings2Detail.bowlingScorecard"></app-bowling-scorecard>
+            <app-bowling-scorecard *ngIf="viewingInnings==1" [teamNumber]="2"></app-bowling-scorecard>
+            <app-bowling-scorecard *ngIf="viewingInnings==2" [teamNumber]="1"></app-bowling-scorecard>
         </div>
         <div class="small-box card">
-            <app-fall-of-wickets *ngIf="viewingInnings==1"
-                [fallOfWickets]="this.innings1Detail.fallOfWickets"></app-fall-of-wickets>
-            <app-fall-of-wickets *ngIf="viewingInnings==2"
-                [fallOfWickets]="this.innings2Detail.fallOfWickets"></app-fall-of-wickets>
+            <app-fall-of-wickets *ngIf="viewingInnings==1" [innings]="1"></app-fall-of-wickets>
+            <app-fall-of-wickets *ngIf="viewingInnings==2" [innings]="2"></app-fall-of-wickets>
         </div>
-        <div class="small-box card run-comparison"><app-run-comparison [runComparison]="this.runComparison"></app-run-comparison></div>
-        <div class="small-box card"><app-wagon-wheel [wagonWheelData]="this.wagonWheel"></app-wagon-wheel></div>
+        <div class="small-box card run-comparison">
+            <app-run-comparison></app-run-comparison></div>
+        <div class="small-box card"><app-wagon-wheel></app-wagon-wheel></div>
     </ng-container>
     <ng-template #noMatch>
         <div class="no-match">Please select a Match to load</div>

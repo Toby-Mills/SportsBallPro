@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Fixture } from '../models/fixture';
+import { FixtureSummary } from '../models/fixture-summary';
 
 @Pipe({
   name: 'sortFixtures',
@@ -7,7 +7,7 @@ import { Fixture } from '../models/fixture';
 })
 export class SortFixturesPipe implements PipeTransform {
 
-  transform(fixtures: Fixture[]): Fixture[] {
+  transform(fixtures: FixtureSummary[]): FixtureSummary[] {
 
     return fixtures.sort((a, b) => new Date(b.datePlayed).getTime() - new Date (a.datePlayed).getTime())
   }

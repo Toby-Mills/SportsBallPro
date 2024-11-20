@@ -1,4 +1,7 @@
+import { Fixture } from "./web-sports";
+
 export class TeamScore {
+    teamNumber: 0 | 1 | 2 = 0
     teamName: string = '';
     logoName: string = '';
     runs: number = 0;
@@ -7,9 +10,9 @@ export class TeamScore {
     extras: number = 0;
     runRate: number = 0;
 
-    load(input:any, teamNumber:number){
+    load(input:Fixture){
 
-        if(teamNumber == 1){
+        if(this.teamNumber == 1){
             this.teamName = input.aTeam;
             this.logoName = input.aLogoName;
             this.runs = input.aRuns;
@@ -18,7 +21,7 @@ export class TeamScore {
             this.extras = input.aExtras;
         }
 
-        if(teamNumber == 2){
+        if(this.teamNumber == 2){
             this.teamName = input.bTeam;
             this.logoName = input.bLogoName;
             this.runs = input.bRuns;

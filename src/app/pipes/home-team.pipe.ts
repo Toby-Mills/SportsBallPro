@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Fixture } from '../models/fixture';
+import { FixtureSummary } from '../models/fixture-summary';
 
 @Pipe({
   name: 'homeTeam',
@@ -7,7 +7,7 @@ import { Fixture } from '../models/fixture';
 })
 export class HomeTeamPipe implements PipeTransform {
 
-  transform(fixture: Fixture, club: string): string {
+  transform(fixture: FixtureSummary, club: string): string {
     if (!fixture || !club) {
       return ''; // Handle missing input gracefully
     }

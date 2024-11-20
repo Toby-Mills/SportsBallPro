@@ -1,7 +1,7 @@
 import { CommonModule, NgFor } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Fixtures } from '../models/fixture';
+import { FixtureSummaries } from '../models/fixture-summary';
 import { MatchKeyService } from '../services/match-key.service';
 import { SortFixturesPipe } from '../pipes/sort-fixtures.pipe';
 import { HomeTeamPipe } from '../pipes/home-team.pipe';
@@ -27,7 +27,7 @@ import { concatMap, from, map, take } from 'rxjs';
 })
 export class FixturesWynbergComponent implements OnInit {
   public club: string = 'Wynberg BHS';
-  public fixtures: Fixtures = new Fixtures;
+  public fixtures: FixtureSummaries = new FixtureSummaries;
 
   public constructor(
     private http: HttpClient,
@@ -44,15 +44,15 @@ export class FixturesWynbergComponent implements OnInit {
 
     this.http.get<any>(url, {}).subscribe(
       fixtures => {
-        this.fixtures = new Fixtures;
+        this.fixtures = new FixtureSummaries;
         this.fixtures.loadFixtures(fixtures);
-        this.fixtures.fixtures = this.fixtures.fixtures.sort((a, b) => {
+        this.fixtures.fixtureSummaries = this.fixtures.fixtureSummaries.sort((a, b) => {
           return new Date(b.datePlayed).getTime() - new Date(a.datePlayed).getTime();
         })
-        for (let fixture of this.fixtures.fixtures) {
+        for (let fixture of this.fixtures.fixtureSummaries) {
           fixture.matchKey = this.matchKey.generateKey(fixture.gameId)
         }
-        from(this.fixtures.fixtures).pipe(
+        from(this.fixtures.fixtureSummaries).pipe(
           take(100),
           concatMap(fixture => {
             const fixtureUrl = `https://www.websports.co.za/api/live/getfixture/${fixture.gameId}/1`;

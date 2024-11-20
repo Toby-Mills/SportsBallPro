@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Fixture } from '../models/fixture';
+import { FixtureSummary } from '../models/fixture-summary';
 
 @Pipe({
   name: 'groupFixtures',

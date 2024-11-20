@@ -1,6 +1,6 @@
 import { APP_BASE_HREF, CommonModule, NgFor } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
-import { Fixtures } from '../models/fixture';
+import { FixtureSummaries } from '../models/fixture-summary';
 import { HttpClient } from '@angular/common/http';
 import { MatchKeyService } from '../services/match-key.service'
 import { SortFixturesPipe } from '../pipes/sort-fixtures.pipe';
@@ -21,7 +21,7 @@ export class MatchKeysComponent implements OnInit {
   public gameId: string = '';
   public key: string = '';
   public url: string = '';
-  public fixtures: Fixtures = new Fixtures;
+  public fixtureSummaries: FixtureSummaries = new FixtureSummaries;
 
   constructor(
     private http: HttpClient,
@@ -57,9 +57,9 @@ export class MatchKeysComponent implements OnInit {
     }
     this.http.get<any>(url, {}).subscribe(
       fixtures => {
-        this.fixtures = new Fixtures;
-        this.fixtures.loadFixtures(fixtures);
-        for (let fixture of this.fixtures.fixtures) {
+        this.fixtureSummaries = new FixtureSummaries;
+        this.fixtureSummaries.loadFixtures(fixtures);
+        for (let fixture of this.fixtureSummaries.fixtureSummaries) {
           fixture.matchKey = this.matchKey.generateKey(fixture.gameId)
         }
       }

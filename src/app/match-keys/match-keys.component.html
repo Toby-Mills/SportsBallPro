@@ -15,12 +15,12 @@
                 <th>Date</th>
             </thead>
             <tbody>
-                <tr *ngFor="let fixture of this.fixtures.fixtures|sortFixtures">
+                <tr *ngFor="let fixtureSummary of this.fixtureSummaries.fixtureSummaries|sortFixtures">
                     <td>
-                        <a href="./match/{{fixture.matchKey}}">{{fixture.game}}</a>
+                        <a href="./match/{{fixtureSummary.matchKey}}">{{fixtureSummary.game}}</a>
                     </td>
                     <td>
-                        {{fixture.datePlayed|date: 'longDate'}}
+                        {{fixtureSummary.datePlayed|date: 'longDate'}}
                     </td>
                 </tr>
             </tbody>

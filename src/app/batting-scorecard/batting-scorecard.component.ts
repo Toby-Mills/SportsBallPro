@@ -2,6 +2,7 @@ import { Component, Input, Pipe, PipeTransform } from '@angular/core';
 import { BattingScorecard, BattingScorecardEntry } from '../models/scorecard';
 import { CommonModule, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatchService } from '../services/match.service';
 
 
 @Pipe({
@@ -37,6 +38,26 @@ export class VisibleBatter implements PipeTransform {
   styleUrl: './batting-scorecard.component.css'
 })
 export class BattingScorecardComponent {
-  @Input() scorecard = new BattingScorecard;
+  @Input()teamNumber: 1 | 2 = 1;
+  public scorecard: BattingScorecard = new BattingScorecard;
   public allBatters: boolean = false;
+
+  constructor(public matchService: MatchService){}
+
+  ngOnInit(){
+    if (this.teamNumber == 1){
+      this.matchService.teamAbattingScorecardUpdated.subscribe(
+        scorecard => {
+          this.scorecard = scorecard;
+        }
+      )
+    }
+    if (this.teamNumber == 2){
+      this.matchService.teamBbattingScorecardUpdated.subscribe(
+        scorecard => {
+          this.scorecard = scorecard;
+        }
+      )
+    }
+  }
 }

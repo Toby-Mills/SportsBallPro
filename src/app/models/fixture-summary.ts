@@ -1,20 +1,20 @@
-export class Fixtures {
-    fixtures: Fixture[]= [];
+export class FixtureSummaries {
+    fixtureSummaries: FixtureSummary[]= [];
 
     public loadFixtures(input: any){
         for (let fixture of input.fixtures){
-            let newFixture = new Fixture;
+            let newFixture = new FixtureSummary;
             newFixture.gameId = fixture.gameID;
             newFixture.game = fixture.game;
             newFixture.date = fixture.fixtureDate;
             newFixture.datePlayed = fixture.datePlayed;
             newFixture.loadAdditionalAttributes();
-            this.fixtures.push(newFixture);
+            this.fixtureSummaries.push(newFixture);
         }
     }
 }
 
-export class Fixture {
+export class FixtureSummary {
     gameId:  string = '';
     game: string = '';
     date: string = '';
