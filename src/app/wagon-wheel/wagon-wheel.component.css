@@ -1,8 +1,15 @@
-#player-change {
-	font-size: 0.7em;
+.player-change {
+	font-size: 0.9em;
 	padding: 0px;
 	padding-left: 2px;
 	padding-right: 2px;
+	margin: 4px;
+	min-width: 50px;
+}
+
+#selected-player-name {
+	font-size: 1.4em;
+	font-weight: bold;
 }
 
 .player-name:hover {
@@ -10,13 +17,14 @@
 	text-decoration: underline;
 }
 
-#player-selector:hover{
+#player-selector:hover {
 	cursor: pointer;
 }
 
-#playerSelectorDialog{
-	min-height:40vh;
+#playerSelectorDialog {
+	min-height: 40vh;
 }
+
 .lineup-heading {
 	font-weight: bold;
 }

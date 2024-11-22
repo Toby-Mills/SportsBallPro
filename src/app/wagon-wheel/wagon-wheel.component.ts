@@ -23,6 +23,7 @@ export class WagonWheelComponent {
   public teamBBattingLineup: PlayerLineup = new PlayerLineup();
   public teamABowlingLineup: PlayerLineup = new PlayerLineup();
   public teamBBowlingLineup: PlayerLineup = new PlayerLineup();
+  public playerNumber: number = 0;
   public playerName: string = '';
 
   public svgContent: SafeHtml = '';
@@ -44,8 +45,8 @@ export class WagonWheelComponent {
       fixture => {
         this.teamAId = fixture.teamAId;
         this.teamAName = fixture.teamAName;
-        if (this.playerSelectorTeamId == '') { 
-          this.playerSelectorTeamId = this.teamAId ;
+        if (this.playerSelectorTeamId == '') {
+          this.playerSelectorTeamId = this.teamAId;
           this.playerSelectorTeamName = this.teamAName;
         };
         this.teamBId = fixture.teamBId;
@@ -56,14 +57,13 @@ export class WagonWheelComponent {
       wagonWheel => {
         this.wagonWheelData = wagonWheel;
         let player = undefined;
-        if (this.teamAId == wagonWheel.teamId) {
-          player = this.teamABattingLineup.lineup.find(player => player.playerId == wagonWheel.playerId)
-        }
-        else {
-          player = this.teamBBattingLineup.lineup.find(player => player.playerId == wagonWheel.playerId)
-        }
+        if (wagonWheel.type == 'batting' && wagonWheel.teamId == this.teamAId) { player = this.teamABattingLineup.lineup.find(player => player.playerId == wagonWheel.playerId) }
+        else if(wagonWheel.type == 'batting' && wagonWheel.teamId == this.teamBId){ player = this.teamBBattingLineup.lineup.find(player => player.playerId == wagonWheel.playerId) }
+        else if(wagonWheel.type == 'bowling' && wagonWheel.teamId == this.teamAId){ player = this.teamABowlingLineup.lineup.find(player => player.playerId == wagonWheel.playerId) }
+        else if(wagonWheel.type == 'bowling' && wagonWheel.teamId == this.teamBId){ player = this.teamBBowlingLineup.lineup.find(player => player.playerId == wagonWheel.playerId) }
         if (player) {
-          this.playerName = player.firstName + ' ' + player.surname
+          this.playerName = player.firstName + ' ' + player.surname;
+          this.playerNumber = player.number;
         } else {
           this.playerName = 'choose a player...'
         }
@@ -140,7 +140,8 @@ export class WagonWheelComponent {
   }
 
   private drawField(fieldRadius: number, fieldDiameter: number): string {
-    return `  <circle cx="${fieldDiameter / 2}" cy="${fieldDiameter / 2}" r="${fieldRadius}" fill="#98FB98" stroke="#60CB60" stroke-width="1" />\n`;
+    return `  <circle cx="${fieldDiameter / 2}" cy="${fieldDiameter / 2}" r="${fieldRadius}" fill="#cafcca" stroke="#60CB60" stroke-width="1" />\n`;
+
   }
 
   private drawPitch(batterPosition: { x: number; y: number }, pitchDimensions: { width: number; length: number }, fieldRadius: number): string {
@@ -237,15 +238,38 @@ export class WagonWheelComponent {
 
   public onPlayerSelectorTeamClick() {
     if (this.playerSelectorTeamId == this.teamAId) { this.playerSelectorTeamId = this.teamBId } else { this.playerSelectorTeamId = this.teamAId }
-    if (this.playerSelectorTeamId == this.teamAId){this.playerSelectorTeamName = this.teamAName} else {this.playerSelectorTeamName = this.teamBName};
+    if (this.playerSelectorTeamId == this.teamAId) { this.playerSelectorTeamName = this.teamAName } else { this.playerSelectorTeamName = this.teamBName };
     this.loadPlayerSelectorLineup();
   }
 
-  private loadPlayerSelectorLineup(){
-    if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'batting'){this.playerSelectorLineup = this.teamABattingLineup};
-    if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'batting'){this.playerSelectorLineup = this.teamBBattingLineup};
-    if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'bowling'){this.playerSelectorLineup = this.teamABowlingLineup};
-    if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'bowling'){this.playerSelectorLineup = this.teamBBowlingLineup};
+  private loadPlayerSelectorLineup() {
+    if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'batting') { this.playerSelectorLineup = this.teamABattingLineup };
+    if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'batting') { this.playerSelectorLineup = this.teamBBattingLineup };
+    if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'bowling') { this.playerSelectorLineup = this.teamABowlingLineup };
+    if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'bowling') { this.playerSelectorLineup = this.teamBBowlingLineup };
   }
 
+  public onNextPlayerClick() {
+    let index = this.playerSelectorLineup.lineup.findIndex(player => player.playerId == this.wagonWheelData.playerId);
+
+    if ((index || 0) < this.playerSelectorLineup.lineup.length - 1) {
+      index++;
+    } else { index = 0 }
+
+    let newPlayerId = this.playerSelectorLineup.lineup[index].playerId;
+
+    this.onPlayerClick(newPlayerId);
+  }
+  
+  public onPreviousPlayerClick() {
+    let index = this.playerSelectorLineup.lineup.findIndex(player => player.playerId == this.wagonWheelData.playerId);
+
+    if ((index || 0) > 0) {
+      index--;
+    } else { index = this.playerSelectorLineup.lineup.length -1}
+
+    let newPlayerId = this.playerSelectorLineup.lineup[index].playerId;
+
+    this.onPlayerClick(newPlayerId);
+  }
 }

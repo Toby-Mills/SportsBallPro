@@ -1,14 +1,25 @@
 <div class="card-header">
 	<span>Wagon Wheel</span>
-	<span id="player-name" *ngIf="wagonWheelData.playerId != 0">: {{playerName}} ({{wagonWheelData.type}})</span>
 </div>
+<div style="text-align: center;margin-left:-80px;"><button class="player-change" *ngIf="wagonWheelData.playerId > 0"
+		(click)="onPreviousPlayerClick()">previous</button>
+	<button class="player-change" (click)="showPlayerSelector = true">select player</button>
+	<button class="player-change" *ngIf="wagonWheelData.playerId > 0" (click)="onNextPlayerClick()">next</button>
+</div>
+
+<div [innerHTML]="svgContent"></div>
+<div style="text-align: center;margin-left:-80px;"><span id="selected-player-name" *ngIf="wagonWheelData.playerId != 0">{{playerNumber}}. {{playerName}}
+		({{wagonWheelData.type}})</span></div>
+
+<!-- Player Selector Dialog -->
 <app-modal-dialog [isVisible]="showPlayerSelector" title="Choose a player" (close)="onClosePlayerSelector()">
 	<div id="playerSelectorDialog">
 		<div class="lineup-heading"><button class="playerSelectorToggle"
 				(click)="onPlayerSelectorTypeClick()">{{playerSelectorType}}</button>
-				<button class="playerSelectorToggle"
-				(click)="onPlayerSelectorTeamClick()">{{playerSelectorTeamName}}</button></div>
-				<span *ngIf="playerSelectorLineup.lineup.length == 0">no lineup yet...</span>
+			<button class="playerSelectorToggle"
+				(click)="onPlayerSelectorTeamClick()">{{playerSelectorTeamName}}</button>
+		</div>
+		<span *ngIf="playerSelectorLineup.lineup.length == 0">no lineup yet...</span>
 		<table>
 			<tr *ngFor="let player of this.playerSelectorLineup.lineup">
 				<td>{{player.number}}.</td>
@@ -20,7 +31,4 @@
 	<div modal-footer>
 		<button (click)="showPlayerSelector = false">Close</button>
 	</div>
-
 </app-modal-dialog>
-<button id="player-change" (click)="showPlayerSelector = true">select player</button>
-<div [innerHTML]="svgContent"></div>
