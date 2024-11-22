@@ -27,8 +27,8 @@ export class RunComparisonComponent {
       runComparison => {
         this.chartData = runComparison.createChartData();
 
-        this.lineChartOptions.scales.y.max = (Math.floor((this.chartData.maxRuns + 10) / 10)) * 10
-        this.lineChartOptions.scales.x.max = this.chartData.maxOvers + 10;
+        this.chartOptions.scales.y.max = (Math.floor((this.chartData.maxRuns + 10) / 10)) * 10
+        this.chartOptions.scales.x.max = this.chartData.maxOvers + 10;
         if (this.chartData.labels.length % 2 === 0) {
           this.chartData.labels.push((this.chartData.maxOvers + 1).toString());
         }
@@ -58,8 +58,9 @@ export class RunComparisonComponent {
     )
   }
 
-  public lineChartOptions = {
+  public chartOptions = {
     responsive: true,
+    animation: {duration: 0},
     maintainAspectRatio: false,
   
     plugins: {

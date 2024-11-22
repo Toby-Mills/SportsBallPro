@@ -1,0 +1,35 @@
+#player-change {
+	font-size: 0.7em;
+	padding: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.player-name:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+#player-selector:hover{
+	cursor: pointer;
+}
+
+#playerSelectorDialog{
+	min-height:40vh;
+}
+.lineup-heading {
+	font-weight: bold;
+}
+
+.playerSelectorToggle {
+	background-color: lightgrey;
+	padding: 0.5em;
+	margin: 0.5em;
+	border-width: 1pt;
+	border-radius: 6px;
+}
+
+.playerSelectorToggle:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}

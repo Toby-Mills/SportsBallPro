@@ -1,1 +1,26 @@
+<div class="card-header">
+	<span>Wagon Wheel</span>
+	<span id="player-name" *ngIf="wagonWheelData.playerId != 0">: {{playerName}} ({{wagonWheelData.type}})</span>
+</div>
+<app-modal-dialog [isVisible]="showPlayerSelector" title="Choose a player" (close)="onClosePlayerSelector()">
+	<div id="playerSelectorDialog">
+		<div class="lineup-heading"><button class="playerSelectorToggle"
+				(click)="onPlayerSelectorTypeClick()">{{playerSelectorType}}</button>
+				<button class="playerSelectorToggle"
+				(click)="onPlayerSelectorTeamClick()">{{playerSelectorTeamName}}</button></div>
+				<span *ngIf="playerSelectorLineup.lineup.length == 0">no lineup yet...</span>
+		<table>
+			<tr *ngFor="let player of this.playerSelectorLineup.lineup">
+				<td>{{player.number}}.</td>
+				<td><span class="player-name" (click)="onPlayerClick(player.playerId)">{{player.firstName}}
+						{{player.surname}}</span></td>
+			</tr>
+		</table>
+	</div>
+	<div modal-footer>
+		<button (click)="showPlayerSelector = false">Close</button>
+	</div>
+
+</app-modal-dialog>
+<button id="player-change" (click)="showPlayerSelector = true">select player</button>
 <div [innerHTML]="svgContent"></div>

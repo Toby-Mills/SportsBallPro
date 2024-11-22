@@ -55,9 +55,8 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
-  public getWagonWheel(gameId: string, teamId: string, playerId?: string): Observable<WagonWheel> {
-    if (playerId == undefined) { playerId = '0' }
-    const url = `https://www.websports.co.za/api/live/fixture/wagonwheellines/${gameId}/1/${teamId}/${playerId}/batting`;
+  public getWagonWheel(gameId: string, teamId: string, playerId: string, type:'batting' | 'bowling'): Observable<WagonWheel> {
+    const url = `https://www.websports.co.za/api/live/fixture/wagonwheellines/${gameId}/1/${teamId}/${playerId}/${type}`;
     return this.http.get<any>(url, {});
   }
 

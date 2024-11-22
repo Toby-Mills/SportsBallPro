@@ -50,11 +50,16 @@ export class RecentBalls {
 
             //mark the current over
             let currentOver = this.overs[0];
-            currentOver.current = true;
+            if (currentOver) {
+                currentOver.current = true;
+                //mark the current ball
+                let currentBall = currentOver.balls[currentOver.balls.length - 1]
+                if (currentBall) {
+                    currentBall.current = true;
+                }
+            }
 
-            //mark the current ball
-            let currentBall = currentOver.balls[currentOver.balls.length - 1]
-            currentBall.current = true;
+
 
             //add any missing balls at beginning of each over
             for (let over of this.overs) {

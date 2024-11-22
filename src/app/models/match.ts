@@ -1,16 +1,20 @@
-import { Fixture as WebsportsFixture, BattingScorecard, BattingLineup, WagonWheel } from '../models/web-sports';
+import { Fixture as WebsportsFixture, BattingScorecard, BattingLineup } from '../models/web-sports';
+
 import { InningsDetail } from './innings-detail';
 import { RunComparison } from './run-comparison';
 import { } from './scorecard';
 import { TeamScore } from './team-score';
+import { WagonWheel } from './wagon-wheel';
 
 export class Match {
     fixture: Fixture = new Fixture;
     status: Status = new Status;
     teamAScore: TeamScore = new TeamScore;
     teamBScore: TeamScore = new TeamScore;
-    teamABatterLineup: PlayerLineup = new PlayerLineup;
-    teamBBatterLineup: PlayerLineup = new PlayerLineup;
+    teamABattingLineup: PlayerLineup = new PlayerLineup;
+    teamBBattingLineup: PlayerLineup = new PlayerLineup;
+    teamABowlingLineup: PlayerLineup = new PlayerLineup;
+    teamBBowlingLineup: PlayerLineup = new PlayerLineup;
 
     signature: string = '';
     innings1Detail: InningsDetail = new InningsDetail;
@@ -49,13 +53,15 @@ export class Match {
         this.fixture.teamBId = input.bTeamID;
     }
 
-    public loadBattingLineup(input: BattingLineup, teamId: string): void {
-        let batters: Array<Player> = [];
+    public loadLineup(type: 'batting'|'bowling', teamNumber: 1|2, input: BattingLineup): void {
+        let lineup: Array<Player> = [];
 
-        if (teamId == this.fixture.teamAId) { batters = this.teamABatterLineup.lineup }
-        else { batters = this.teamBBatterLineup.lineup }
+        if (type == 'batting' && teamNumber == 1) { lineup = this.teamABattingLineup.lineup }
+        if (type == 'batting' && teamNumber == 2) { lineup = this.teamBBattingLineup.lineup }
+        if (type == 'bowling' && teamNumber == 1) { lineup = this.teamABowlingLineup.lineup }
+        if (type == 'bowling' && teamNumber == 2) { lineup = this.teamBBowlingLineup.lineup }
 
-        while (batters.length > 0) { batters.pop() }
+        while (lineup.length > 0) { lineup.pop() }
 
         for (let inputPlayer of input.team) {
             let player = new Player();
@@ -63,7 +69,7 @@ export class Match {
             player.surname = inputPlayer.PlayerSurname;
             player.number = inputPlayer.Number;
             player.playerId = inputPlayer.PlayerID
-            batters.push(player);
+            lineup.push(player);
         }
     }
 }

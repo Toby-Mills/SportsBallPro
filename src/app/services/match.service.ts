@@ -1,14 +1,14 @@
-import { EventEmitter, Injectable, Output } from '@angular/core';
-import { Fixture, Match, Status } from '../models/match';
+import { Injectable } from '@angular/core';
+import { Fixture, Match, PlayerLineup, Status } from '../models/match';
 import { WebSportsAPIService } from './web-sports-api.service';
-import { BehaviorSubject, concatMap, map, Observable } from 'rxjs';
+import { BehaviorSubject, concatMap, map, Observable, of } from 'rxjs';
 import { TeamScore } from '../models/team-score';
 import { InningsDetail } from '../models/innings-detail';
 import { RunComparison, RunComparisonFactory } from '../models/run-comparison';
-import { WagonWheel } from '../models/web-sports';
 import { BattingScorecard, BowlingScorecard } from '../models/scorecard';
 import { RecentBalls } from '../models/recent-balls';
 import { FallOfWickets } from '../models/fall-of-wickets';
+import { WagonWheel } from '../models/wagon-wheel';
 
 @Injectable({
   providedIn: 'root'
@@ -28,10 +28,17 @@ export class MatchService {
   innings2FallOfWicketsUpdated: BehaviorSubject<FallOfWickets> = new BehaviorSubject<FallOfWickets>(new FallOfWickets);
   runComparisonUpdated: BehaviorSubject<RunComparison> = new BehaviorSubject<RunComparison>(new RunComparison);
   wagonWheelUpdated: BehaviorSubject<WagonWheel> = new BehaviorSubject<WagonWheel>(new WagonWheel);
-  inningsChange: BehaviorSubject<1 | 2> = new BehaviorSubject<1|2>(1);
+  teamABattingLineupUpdated: BehaviorSubject<PlayerLineup> = new BehaviorSubject<PlayerLineup>(new PlayerLineup);
+  teamBBattingLineupUpdated: BehaviorSubject<PlayerLineup> = new BehaviorSubject<PlayerLineup>(new PlayerLineup);
+  teamABowlingLineupUpdated: BehaviorSubject<PlayerLineup> = new BehaviorSubject<PlayerLineup>(new PlayerLineup);
+  teamBBowlingLineupUpdated: BehaviorSubject<PlayerLineup> = new BehaviorSubject<PlayerLineup>(new PlayerLineup);
+  inningsChange: BehaviorSubject<1 | 2> = new BehaviorSubject<1 | 2>(1);
 
   private gameId: string = '';
   private match: Match = new Match();
+  private wagonWheelTeamId: string = '';
+  private wagonWheelPlayerId: number = 0;
+  private wagonWheelType: 'batting' | 'bowling' = 'batting'
 
   constructor(public webSportsApi: WebSportsAPIService) { }
 
@@ -43,8 +50,10 @@ export class MatchService {
   public reloadMatchData() {
     this.loadFixture().pipe(
       concatMap(x => this.loadGameTeamIDs()),
-      concatMap(x => this.loadBattingLineup(this.match.fixture.teamAId)),
-      concatMap(x => this.loadBattingLineup(this.match.fixture.teamBId)),
+      concatMap(x => this.loadLineup('batting', 1)),
+      concatMap(x => this.loadLineup('batting', 2)),
+      concatMap(x => this.loadLineup('bowling', 1)),
+      concatMap(x => this.loadLineup('bowling', 2)),
       concatMap(x => this.loadRecentOvers(1)),
       concatMap(x => this.loadRecentOvers(2)),
       concatMap(x => this.loadFallOfWickets(1)),
@@ -58,7 +67,7 @@ export class MatchService {
       concatMap(x => this.loadCurrentBowlers(1)),
       concatMap(x => this.loadCurrentBowlers(2)),
       concatMap(x => this.loadRunComparison()),
-      concatMap(x => this.loadWagonWheel())
+      concatMap(x => this.loadWagonWheel(this.wagonWheelTeamId, this.wagonWheelPlayerId, this.wagonWheelType))
     ).subscribe()
   }
 
@@ -78,7 +87,7 @@ export class MatchService {
             this.match.teamBScore.load(updatedMatch);
             this.teamBScoreUpdated.next(this.match.teamBScore);
           }
-          
+
           if (this.match.innings2Detail.currentBatters.batters.length > 0) {
             if (this.match.status.currentInnings == 1) {
               this.match.status.currentInnings = 2;
@@ -102,12 +111,42 @@ export class MatchService {
       )
   }
 
-  private loadBattingLineup(teamId: string): Observable<any> {
-    return this.webSportsApi.getBattingLineup(this.gameId, teamId).pipe(
-      map(battingLineup => {
-        this.match.loadBattingLineup(battingLineup, teamId);
-      })
-    )
+  private loadLineup(type: 'batting' | 'bowling', teamNumber: 1 | 2): Observable<any> {
+
+    if (type == 'batting' && teamNumber == 1) {
+      return this.webSportsApi.getBattingLineup(this.gameId, this.match.fixture.teamAId).pipe(
+        map(lineup => {
+          this.match.loadLineup('batting', 1, lineup);
+          console.log();
+          this.teamABattingLineupUpdated.next(this.match.teamABattingLineup);
+        })
+      )
+    }
+    if (type == 'batting' && teamNumber == 2) {
+      return this.webSportsApi.getBattingLineup(this.gameId, this.match.fixture.teamBId).pipe(
+        map(lineup => {
+          this.match.loadLineup('batting', 2, lineup);
+          this.teamBBattingLineupUpdated.next(this.match.teamBBattingLineup);
+        })
+      )
+    }
+    if (type == 'bowling' && teamNumber == 1) {
+      return this.webSportsApi.getBowlingLineup(this.gameId, this.match.fixture.teamAId).pipe(
+        map(lineup => {
+          this.match.loadLineup('bowling', 1, lineup);
+          this.teamABowlingLineupUpdated.next(this.match.teamABowlingLineup);
+        })
+      )
+    }
+    if (type == 'bowling' && teamNumber == 2) {
+      return this.webSportsApi.getBowlingLineup(this.gameId, this.match.fixture.teamBId).pipe(
+        map(lineup => {
+          this.match.loadLineup('bowling', 2, lineup)
+          this.teamBBowlingLineupUpdated.next(this.match.teamBBowlingLineup);
+        })
+      )
+    }
+    return of('');
   }
 
   private loadRecentOvers(innings: number): Observable<any> {
@@ -230,12 +269,23 @@ export class MatchService {
     )
   }
 
-  private loadWagonWheel(): Observable<any> {
-    return this.webSportsApi.getWagonWheel(this.gameId, this.match.fixture.teamAId).pipe(
-      map(inputWagonWheel => {
-        this.match.wagonWheel = inputWagonWheel;
-        this.wagonWheelUpdated.next(this.match.wagonWheel);
-      })
-    );
+  public setWagonWheelPlayer(teamId: string, playerId: number, type: 'batting' | 'bowling') {
+    this.wagonWheelTeamId = teamId;
+    this.wagonWheelPlayerId = playerId;
+    this.wagonWheelType = type;
+    this.loadWagonWheel(teamId, playerId, type).subscribe();
+  }
+
+  private loadWagonWheel(teamId: string, playerId: number, type: 'batting' | 'bowling'): Observable<any> {
+    if (this.wagonWheelPlayerId > 0) {
+      return this.webSportsApi.getWagonWheel(this.gameId, teamId, playerId.toString(), type).pipe(
+        map(inputWagonWheel => {
+          this.match.wagonWheel.loadWagonWheel(teamId, playerId, type, inputWagonWheel);
+          this.wagonWheelUpdated.next(this.match.wagonWheel);
+        })
+      )
+    } else {
+      return of(true);
+    }
   }
 }

@@ -1,0 +1,56 @@
+/* modal-dialog.component.css */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+  }
+  
+  .modal-container {
+	background: #fff;
+	border-radius: 8px;
+	width: 90%;
+	max-width: 500px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+  }
+  
+  .modal-header {
+	padding: 0.1rem;
+	padding-left: 1rem;
+	background: rgb(114, 140, 162);
+	color: #fff;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+  }
+  
+  .close-button {
+	background: none;
+	border: none;
+	font-size: 1.5rem;
+	color: #fff;
+	cursor: pointer;
+  }
+  
+  .modal-body {
+	padding: 1rem;
+  }
+  
+  .modal-footer {
+	padding: 0.5rem;
+	background: #f1f1f1;
+	text-align: right;
+  }
+  
+  #title {
+	font-size: 1.2rem;
+	font-weight: bold;
+  }
