@@ -1,0 +1,20 @@
+.toaster {
+	position: fixed;
+	top: 20px; /* Moved slightly down from the top */
+	left: 50%;
+	transform: translateX(-50%);
+	background-color: #f44336; /* Red background for error */
+	color: white;
+	padding: 16px;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	z-index: 1000;
+	font-size: 16px;
+	opacity: 1;
+	transition: opacity 0.5s ease-in-out; /* Fade-out effect */
+  }
+  
+  .toaster.ng-hide {
+	opacity: 0; /* Ensure smooth hiding animation */
+  }
+  

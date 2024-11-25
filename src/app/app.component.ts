@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ToasterComponent } from './toaster/toaster.component';
 
 
 @Component({
@@ -12,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
     CommonModule,
     RouterOutlet,
     FormsModule,
+    ToasterComponent
   ],
   providers: [HttpClient,],
   templateUrl: './app.component.html',

@@ -35,7 +35,7 @@ import { MatchService } from '../services/match.service';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  private parameterGameKey = this.route.snapshot.paramMap.get('id');
+  public parameterGameKey = this.route.snapshot.paramMap.get('id');
   @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
   title = 'SportsBallPro';

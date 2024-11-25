@@ -10,6 +10,7 @@ import { RecentBalls } from '../models/recent-balls';
 import { FallOfWickets } from '../models/fall-of-wickets';
 import { WagonWheel } from '../models/wagon-wheel';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ToasterMessageService } from './toaster-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,7 @@ export class MatchService {
   private wagonWheelPlayerId: number = 0;
   private wagonWheelType: 'batting' | 'bowling' = 'batting'
 
-  constructor(public webSportsApi: WebSportsAPIService) { }
+  constructor(public webSportsApi: WebSportsAPIService, private toasterMessage: ToasterMessageService) { }
 
   public loadMatch(gameId: string) {
     this.gameId = gameId;
@@ -109,6 +110,7 @@ export class MatchService {
     } else {
       message = (`Error ${error.status}: ${error.statusText || 'Unknown error'}: ${error.message}`);
     }
+    this.toasterMessage.showMessage(message);
     return throwError(() => new Error(message));
   }
 

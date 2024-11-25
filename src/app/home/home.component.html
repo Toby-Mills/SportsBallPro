@@ -41,7 +41,8 @@
         <div class="small-box card"><app-wagon-wheel></app-wagon-wheel></div>
     </ng-container>
     <ng-template #noMatch>
-        <div class="no-match">Please select a Match to load</div>
+        <div *ngIf="this.parameterGameKey == ''" class="no-match">Please select a Match to load</div>
+        <div *ngIf="this.parameterGameKey != ''" class="no-match">Loading match data...</div>
     </ng-template>
     <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()"></app-refresh-timer>
 </div>
