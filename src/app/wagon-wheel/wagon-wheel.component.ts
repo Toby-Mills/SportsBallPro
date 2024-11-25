@@ -5,6 +5,7 @@ import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { CommonModule } from '@angular/common';
 import { PlayerLineup } from '../models/match';
 import { WagonWheel } from '../models/wagon-wheel';
+import { WebSportsAPIService } from '../services/web-sports-api.service';
 
 @Component({
   selector: 'app-wagon-wheel',
@@ -15,9 +16,11 @@ import { WagonWheel } from '../models/wagon-wheel';
 })
 export class WagonWheelComponent {
   public teamAId: string = '';
-  public teamAName: string = ''
+  public teamAName: string = '';
+  public teamALogoName: string = '';
   public teamBId: string = '';
-  public teamBName: string = ''
+  public teamBName: string = '';
+  public teamBLogoName: string = '';
   public wagonWheelData: WagonWheel = new WagonWheel();
   public teamABattingLineup: PlayerLineup = new PlayerLineup();
   public teamBBattingLineup: PlayerLineup = new PlayerLineup();
@@ -31,6 +34,7 @@ export class WagonWheelComponent {
   public showPlayerSelector = false;
   public playerSelectorTeamId = '';
   public playerSelectorTeamName = '';
+  public playerSelectorTeamLogoUrl = ''
   public playerSelectorType: 'batting' | 'bowling' = 'batting';
   public playerSelectorLineup: PlayerLineup = new PlayerLineup();
 
@@ -38,19 +42,24 @@ export class WagonWheelComponent {
     this.showPlayerSelector = false;
   }
 
-  constructor(private sanitizer: DomSanitizer, private matchService: MatchService) { }
+  constructor(private sanitizer: DomSanitizer, private matchService: MatchService, private webSportsAPI: WebSportsAPIService) { }
 
   ngOnInit() {
     this.matchService.fixtureUpdated.subscribe(
       fixture => {
         this.teamAId = fixture.teamAId;
         this.teamAName = fixture.teamAName;
+        this.teamALogoName = fixture.teamALogoName;
         if (this.playerSelectorTeamId == '') {
           this.playerSelectorTeamId = this.teamAId;
           this.playerSelectorTeamName = this.teamAName;
+          this.playerSelectorTeamLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamALogoName);
+          console.log(this.playerSelectorTeamLogoUrl);
+
         };
         this.teamBId = fixture.teamBId;
         this.teamBName = fixture.teamBName;
+        this.teamBLogoName = fixture.teamBLogoName;
       }
     )
     this.matchService.wagonWheelUpdated.subscribe(
@@ -208,75 +217,83 @@ export class WagonWheelComponent {
           `  <circle cx="${legendX}" cy="${circleY}" r="${legendRadius}" fill="${color}" />\n` +
           `  <text x="${legendX}" y="${circleY}" font-size="${fontSize + 1}" fill="lightgray" text-anchor="middle" dominant-baseline="middle">${run}</text>\n`;
 
-          // Shot count text to the right of the legend item (if > 0)
-          if (shotCount > 0) { legendItem = legendItem +
-          `  <text x="${legendX + legendRadius + 2 * scale}" y="${circleY}" font-size="${fontSize}" fill="black" text-anchor="start" dominant-baseline="middle">${shotCount}</text>\n`
-          }
+        // Shot count text to the right of the legend item (if > 0)
+        if (shotCount > 0) {
+          legendItem = legendItem +
+            `  <text x="${legendX + legendRadius + 2 * scale}" y="${circleY}" font-size="${fontSize}" fill="black" text-anchor="start" dominant-baseline="middle">${shotCount}</text>\n`
+        }
         ;
         return legendItem;
-  })
+      })
       .join('');
-}
+  }
 
 
   private getColorByRuns(runs: number): string {
-  switch (runs) {
-    case 1:
-      return 'darkgreen';
-    case 2:
-      return 'blue';
-    case 3:
-      return 'purple';
-    case 4:
-      return 'black';
-    case 5:
-      return 'orange';
-    case 6:
-      return 'red';
-    default:
-      return 'gray';
+    switch (runs) {
+      case 1:
+        return 'darkgreen';
+      case 2:
+        return 'blue';
+      case 3:
+        return 'purple';
+      case 4:
+        return 'black';
+      case 5:
+        return 'orange';
+      case 6:
+        return 'red';
+      default:
+        return 'gray';
+    }
   }
-}
 
   public onPlayerSelectorTypeClick() {
-  if (this.playerSelectorType == 'batting') { this.playerSelectorType = 'bowling' } else { this.playerSelectorType = 'batting' }
-  this.loadPlayerSelectorLineup();
-}
+    if (this.playerSelectorType == 'batting') { this.playerSelectorType = 'bowling' } else { this.playerSelectorType = 'batting' }
+    this.loadPlayerSelectorLineup();
+  }
 
   public onPlayerSelectorTeamClick() {
-  if (this.playerSelectorTeamId == this.teamAId) { this.playerSelectorTeamId = this.teamBId } else { this.playerSelectorTeamId = this.teamAId }
-  if (this.playerSelectorTeamId == this.teamAId) { this.playerSelectorTeamName = this.teamAName } else { this.playerSelectorTeamName = this.teamBName };
-  this.loadPlayerSelectorLineup();
-}
+    if (this.playerSelectorTeamId == this.teamAId) {
+      this.playerSelectorTeamId = this.teamBId;
+      this.playerSelectorTeamName = this.teamBName;
+      this.playerSelectorTeamLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamBLogoName);
+    } else {
+      this.playerSelectorTeamId = this.teamAId
+      this.playerSelectorTeamName = this.teamAName;
+      this.playerSelectorTeamLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamALogoName);
+    }
+    this.loadPlayerSelectorLineup();
+  }
 
   private loadPlayerSelectorLineup() {
-  if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'batting') { this.playerSelectorLineup = this.teamABattingLineup };
-  if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'batting') { this.playerSelectorLineup = this.teamBBattingLineup };
-  if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'bowling') { this.playerSelectorLineup = this.teamABowlingLineup };
-  if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'bowling') { this.playerSelectorLineup = this.teamBBowlingLineup };
-}
+    if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'batting') { this.playerSelectorLineup = this.teamABattingLineup };
+    if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'batting') { this.playerSelectorLineup = this.teamBBattingLineup };
+    if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'bowling') { this.playerSelectorLineup = this.teamABowlingLineup };
+    if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'bowling') { this.playerSelectorLineup = this.teamBBowlingLineup };
+  }
 
   public onNextPlayerClick() {
-  let index = this.playerSelectorLineup.lineup.findIndex(player => player.playerId == this.wagonWheelData.playerId);
+    let index = this.playerSelectorLineup.lineup.findIndex(player => player.playerId == this.wagonWheelData.playerId);
 
-  if ((index || 0) < this.playerSelectorLineup.lineup.length - 1) {
-    index++;
-  } else { index = 0 }
+    if ((index || 0) < this.playerSelectorLineup.lineup.length - 1) {
+      index++;
+    } else { index = 0 }
 
-  let newPlayerId = this.playerSelectorLineup.lineup[index].playerId;
+    let newPlayerId = this.playerSelectorLineup.lineup[index].playerId;
 
-  this.onPlayerClick(newPlayerId);
-}
-  
+    this.onPlayerClick(newPlayerId);
+  }
+
   public onPreviousPlayerClick() {
-  let index = this.playerSelectorLineup.lineup.findIndex(player => player.playerId == this.wagonWheelData.playerId);
+    let index = this.playerSelectorLineup.lineup.findIndex(player => player.playerId == this.wagonWheelData.playerId);
 
-  if ((index || 0) > 0) {
-    index--;
-  } else { index = this.playerSelectorLineup.lineup.length - 1 }
+    if ((index || 0) > 0) {
+      index--;
+    } else { index = this.playerSelectorLineup.lineup.length - 1 }
 
-  let newPlayerId = this.playerSelectorLineup.lineup[index].playerId;
+    let newPlayerId = this.playerSelectorLineup.lineup[index].playerId;
 
-  this.onPlayerClick(newPlayerId);
-}
+    this.onPlayerClick(newPlayerId);
+  }
 }

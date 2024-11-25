@@ -27,6 +27,9 @@
 
 .lineup-heading {
 	font-weight: bold;
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 
 .playerSelectorToggle {
@@ -40,4 +43,8 @@
 .playerSelectorToggle:hover {
 	cursor: pointer;
 	text-decoration: underline;
+}
+
+.teamLogo {
+	height: 4rem;
 }

@@ -69,4 +69,9 @@ export class WebSportsAPIService {
     const url = `https://www.websports.co.za/api/live/fixture/team/${gameId}/${teamId}/1/bowling`;
     return this.http.get<any>(url, {});
   }
+
+  public teamSmallLogoUrl(logoName: string):string {
+    return `https://www.websports.co.za/images/logos/small_${logoName}`;
+
+  }
 }

@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TeamScore } from '../models/team-score';
 import { CommonModule, NgClass } from '@angular/common';
 import { MatchService } from '../services/match.service';
+import { WebSportsAPIService } from '../services/web-sports-api.service';
 
 @Component({
   selector: 'app-team-score',
@@ -15,7 +16,7 @@ export class TeamScoreComponent {
   public teamScore: TeamScore = new TeamScore;
   public logoUrl: string = '';
 
-  constructor(private matchService: MatchService) { }
+  constructor(private matchService: MatchService, private webSportsAPI: WebSportsAPIService) { }
 
   ngOnInit() {
   
@@ -23,7 +24,7 @@ export class TeamScoreComponent {
       this.matchService.teamAScoreUpdated.subscribe(
         teamScore => {
           this.teamScore = teamScore;
-          this.logoUrl = `https://www.websports.co.za/images/logos/small_${this.teamScore.logoName}`; // Dynamically generate the image URL
+          this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName);
         }
       )
     }
@@ -32,7 +33,7 @@ export class TeamScoreComponent {
       this.matchService.teamBScoreUpdated.subscribe(
         teamScore => {
           this.teamScore = teamScore;
-          this.logoUrl = `https://www.websports.co.za/images/logos/small_${this.teamScore.logoName}`; // Dynamically generate the image URL
+          this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName);
         }
       )
     }
