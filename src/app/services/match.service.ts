@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Fixture, Match, PlayerLineup, Status } from '../models/match';
 import { WebSportsAPIService } from './web-sports-api.service';
-import { BehaviorSubject, concatMap, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, catchError, concatMap, map, Observable, of, throwError } from 'rxjs';
 import { TeamScore } from '../models/team-score';
 import { InningsDetail } from '../models/innings-detail';
 import { RunComparison, RunComparisonFactory } from '../models/run-comparison';
@@ -9,6 +9,7 @@ import { BattingScorecard, BowlingScorecard } from '../models/scorecard';
 import { RecentBalls } from '../models/recent-balls';
 import { FallOfWickets } from '../models/fall-of-wickets';
 import { WagonWheel } from '../models/wagon-wheel';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -94,9 +95,21 @@ export class MatchService {
               this.inningsChange.next(this.match.status.currentInnings);
             }
           }
-
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let message = '';
+
+    if (error.error instanceof ProgressEvent && error.status === 0) {
+      message = 'Network error or timeout occurred while loading data from WebSports.';
+    } else if (error.status === 400) {
+      message = 'Error 404: WebSports API could not find the requested resource';
+    } else {
+      message = (`Error ${error.status}: ${error.statusText || 'Unknown error'}: ${error.message}`);
+    }
+    return throwError(() => new Error(message));
   }
 
   private loadGameTeamIDs(): Observable<any> {
@@ -107,7 +120,7 @@ export class MatchService {
             this.match.loadTeamIds(matches.fixtures[0]);
             this.fixtureUpdated.next(this.match.fixture);
           }
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
   }
 
@@ -119,7 +132,7 @@ export class MatchService {
           this.match.loadLineup('batting', 1, lineup);
           console.log();
           this.teamABattingLineupUpdated.next(this.match.teamABattingLineup);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
     if (type == 'batting' && teamNumber == 2) {
@@ -127,7 +140,7 @@ export class MatchService {
         map(lineup => {
           this.match.loadLineup('batting', 2, lineup);
           this.teamBBattingLineupUpdated.next(this.match.teamBBattingLineup);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
     if (type == 'bowling' && teamNumber == 1) {
@@ -135,7 +148,7 @@ export class MatchService {
         map(lineup => {
           this.match.loadLineup('bowling', 1, lineup);
           this.teamABowlingLineupUpdated.next(this.match.teamABowlingLineup);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
     if (type == 'bowling' && teamNumber == 2) {
@@ -143,7 +156,7 @@ export class MatchService {
         map(lineup => {
           this.match.loadLineup('bowling', 2, lineup)
           this.teamBBowlingLineupUpdated.next(this.match.teamBBowlingLineup);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
     return of('');
@@ -155,14 +168,14 @@ export class MatchService {
         map(ballCountdown => {
           this.match.innings1Detail.recentOvers.loadRecentOvers(ballCountdown);
           this.innings1RecentOversUpdated.next(this.match.innings1Detail.recentOvers)
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
       return this.webSportsApi.getBallCountdown(this.gameId, this.match.fixture.teamBId, 2).pipe(
         map(ballCountdown => {
           this.match.innings2Detail.recentOvers.loadRecentOvers(ballCountdown)
           this.innings2RecentOversUpdated.next(this.match.innings2Detail.recentOvers)
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
@@ -173,16 +186,14 @@ export class MatchService {
         map(batsmen => {
           this.match.innings1Detail.currentBatters.loadCurrentBatters(batsmen);
           this.match.innings1Detail.battingScorecard.addOnStrike(batsmen);
-        }
-        )
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
       return this.webSportsApi.getBatsmen(this.gameId, this.match.fixture.teamBId).pipe(
         map(batsmen => {
           this.match.innings2Detail.currentBatters.loadCurrentBatters(batsmen);
           this.match.innings2Detail.battingScorecard.addOnStrike(batsmen);
-        }
-        )
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
@@ -193,14 +204,14 @@ export class MatchService {
         map(fallOfWickets => {
           this.match.innings1Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
           this.innings1FallOfWicketsUpdated.next(this.match.innings1Detail.fallOfWickets);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
       return this.webSportsApi.getFallOfWickets(this.gameId, this.match.fixture.teamBId).pipe(
         map(fallOfWickets => {
           this.match.innings2Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
           this.innings2FallOfWicketsUpdated.next(this.match.innings2Detail.fallOfWickets);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
@@ -212,14 +223,14 @@ export class MatchService {
         map(scorecard => {
           innings.battingScorecard.loadBattingScorcard(scorecard);
           this.teamAbattingScorecardUpdated.next(innings.battingScorecard);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
       return this.webSportsApi.getBattingScorecard(this.gameId, this.match.fixture.teamBId).pipe(
         map(scorecard => {
           innings.battingScorecard.loadBattingScorcard(scorecard);
           this.teamBbattingScorecardUpdated.next(innings.battingScorecard);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
@@ -230,15 +241,14 @@ export class MatchService {
         map(scorecard => {
           innings.bowlingScorecard.loadBowlingScorcard(scorecard);
           this.teamBBowlingScorecardUpdated.next(innings.bowlingScorecard);
-
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
       return this.webSportsApi.getBowlingScorecard(this.gameId, this.match.fixture.teamAId).pipe(
         map(scorecard => {
           innings.bowlingScorecard.loadBowlingScorcard(scorecard);
           this.teamABowlingScorecardUpdated.next(innings.bowlingScorecard);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
@@ -254,7 +264,7 @@ export class MatchService {
           this.match.innings2Detail.currentBowlers.loadCurrentBowlers(bowling);
           this.match.innings2Detail.bowlingScorecard.addCurrentBowlers(this.match.innings2Detail.currentBowlers);
         }
-      })
+      }), catchError((error: HttpErrorResponse) => this.handleError(error))
     )
   }
 
@@ -265,7 +275,7 @@ export class MatchService {
         let runComparisonFactory = new RunComparisonFactory()
         this.match.runComparison = runComparisonFactory.loadRunComparison(inputRunComparison)
         this.runComparisonUpdated.next(this.match.runComparison);
-      })
+      }), catchError((error: HttpErrorResponse) => this.handleError(error))
     )
   }
 
@@ -282,7 +292,7 @@ export class MatchService {
         map(inputWagonWheel => {
           this.match.wagonWheel.loadWagonWheel(teamId, playerId, type, inputWagonWheel);
           this.wagonWheelUpdated.next(this.match.wagonWheel);
-        })
+        }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
       return of(true);
