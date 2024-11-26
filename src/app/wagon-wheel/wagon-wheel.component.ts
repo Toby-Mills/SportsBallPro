@@ -56,7 +56,7 @@ export class WagonWheelComponent {
           this.playerSelectorTeamName = this.teamAName;
           this.playerSelectorTeamLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamALogoName, 1);
           this.playerSelectorType = 'Batting';
-          this.playerSelectorTypeUrl = `../assets/${this.playerSelectorType}.png`;
+          this.playerSelectorTypeUrl = `assets/${this.playerSelectorType}.png`;
 
         };
         this.teamBId = fixture.teamBId;
@@ -252,7 +252,7 @@ export class WagonWheelComponent {
 
   public onPlayerSelectorTypeClick() {
     if (this.playerSelectorType === 'Batting') { this.playerSelectorType = 'Bowling' } else { this.playerSelectorType = 'Batting' }
-    this.playerSelectorTypeUrl = `../../assets/${this.playerSelectorType}.png`;
+    this.playerSelectorTypeUrl = `assets/${this.playerSelectorType}.png`;
     this.loadPlayerSelectorLineup();
   }
 
