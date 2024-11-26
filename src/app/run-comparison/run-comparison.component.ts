@@ -27,7 +27,7 @@ export class RunComparisonComponent {
       runComparison => {
         this.chartData = runComparison.createChartData();
 
-        this.chartOptions.scales.y.max = (Math.floor((this.chartData.maxRuns + 10) / 10)) * 10
+        this.chartOptions.scales.y.max = (Math.floor((this.chartData.maxRuns + 25) / 20)) * 20
         this.chartOptions.scales.x.max = this.chartData.maxOvers + 10;
         if (this.chartData.labels.length % 2 === 0) {
           this.chartData.labels.push((this.chartData.maxOvers + 1).toString());
@@ -36,14 +36,12 @@ export class RunComparisonComponent {
           if (dataset.label?.includes(this.chartData.teamAName)) {
             dataset.borderColor = this.teamAColour;
             dataset.pointBackgroundColor = this.teamAColour;
-            dataset.borderWidth = 2;
-            dataset.fill = true;
           } else {
             dataset.borderColor = this.teamBColour
             dataset.pointBackgroundColor = this.teamBColour;
-            dataset.borderWidth = 2;
-            dataset.fill = true;
           }
+          dataset.borderWidth = 1;
+          dataset.fill = true;
         }
         let maxRunsDataset = new ChartDataset()
         maxRunsDataset.label = 'target';

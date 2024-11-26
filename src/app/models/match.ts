@@ -53,13 +53,13 @@ export class Match {
         this.fixture.teamBId = input.bTeamID;
     }
 
-    public loadLineup(type: 'batting'|'bowling', teamNumber: 1|2, input: BattingLineup): void {
+    public loadLineup(type: 'Batting'|'Bowling', teamNumber: 1|2, input: BattingLineup): void {
         let lineup: Array<Player> = [];
 
-        if (type == 'batting' && teamNumber == 1) { lineup = this.teamABattingLineup.lineup }
-        if (type == 'batting' && teamNumber == 2) { lineup = this.teamBBattingLineup.lineup }
-        if (type == 'bowling' && teamNumber == 1) { lineup = this.teamABowlingLineup.lineup }
-        if (type == 'bowling' && teamNumber == 2) { lineup = this.teamBBowlingLineup.lineup }
+        if (type == 'Batting' && teamNumber == 1) { lineup = this.teamABattingLineup.lineup }
+        if (type == 'Batting' && teamNumber == 2) { lineup = this.teamBBattingLineup.lineup }
+        if (type == 'Bowling' && teamNumber == 1) { lineup = this.teamABowlingLineup.lineup }
+        if (type == 'Bowling' && teamNumber == 2) { lineup = this.teamBBowlingLineup.lineup }
 
         while (lineup.length > 0) { lineup.pop() }
 

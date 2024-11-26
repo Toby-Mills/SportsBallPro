@@ -12,7 +12,7 @@ import { WebSportsAPIService } from '../services/web-sports-api.service';
   styleUrl: './team-score.component.css'
 })
 export class TeamScoreComponent {
-  @Input() teamNumber: number = 0;
+  @Input() teamNumber: 1 | 2 = 1;
   public teamScore: TeamScore = new TeamScore;
   public logoUrl: string = '';
 
@@ -24,7 +24,7 @@ export class TeamScoreComponent {
       this.matchService.teamAScoreUpdated.subscribe(
         teamScore => {
           this.teamScore = teamScore;
-          this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName);
+          this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);
         }
       )
     }
@@ -33,7 +33,7 @@ export class TeamScoreComponent {
       this.matchService.teamBScoreUpdated.subscribe(
         teamScore => {
           this.teamScore = teamScore;
-          this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName);
+          this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);
         }
       )
     }

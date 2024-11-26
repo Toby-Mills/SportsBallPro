@@ -40,7 +40,7 @@ export class MatchService {
   private match: Match = new Match();
   private wagonWheelTeamId: string = '';
   private wagonWheelPlayerId: number = 0;
-  private wagonWheelType: 'batting' | 'bowling' = 'batting'
+  private wagonWheelType: 'Batting' | 'Bowling' = 'Batting'
 
   constructor(public webSportsApi: WebSportsAPIService, private toasterMessage: ToasterMessageService) { }
 
@@ -52,10 +52,10 @@ export class MatchService {
   public reloadMatchData() {
     this.loadFixture().pipe(
       concatMap(x => this.loadGameTeamIDs()),
-      concatMap(x => this.loadLineup('batting', 1)),
-      concatMap(x => this.loadLineup('batting', 2)),
-      concatMap(x => this.loadLineup('bowling', 1)),
-      concatMap(x => this.loadLineup('bowling', 2)),
+      concatMap(x => this.loadLineup('Batting', 1)),
+      concatMap(x => this.loadLineup('Batting', 2)),
+      concatMap(x => this.loadLineup('Bowling', 1)),
+      concatMap(x => this.loadLineup('Bowling', 2)),
       concatMap(x => this.loadRecentOvers(1)),
       concatMap(x => this.loadRecentOvers(2)),
       concatMap(x => this.loadFallOfWickets(1)),
@@ -126,37 +126,37 @@ export class MatchService {
       )
   }
 
-  private loadLineup(type: 'batting' | 'bowling', teamNumber: 1 | 2): Observable<any> {
+  private loadLineup(type: 'Batting' | 'Bowling', teamNumber: 1 | 2): Observable<any> {
 
-    if (type == 'batting' && teamNumber == 1) {
+    if (type == 'Batting' && teamNumber == 1) {
       return this.webSportsApi.getBattingLineup(this.gameId, this.match.fixture.teamAId).pipe(
         map(lineup => {
-          this.match.loadLineup('batting', 1, lineup);
+          this.match.loadLineup('Batting', 1, lineup);
           console.log();
           this.teamABattingLineupUpdated.next(this.match.teamABattingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
-    if (type == 'batting' && teamNumber == 2) {
+    if (type == 'Batting' && teamNumber == 2) {
       return this.webSportsApi.getBattingLineup(this.gameId, this.match.fixture.teamBId).pipe(
         map(lineup => {
-          this.match.loadLineup('batting', 2, lineup);
+          this.match.loadLineup('Batting', 2, lineup);
           this.teamBBattingLineupUpdated.next(this.match.teamBBattingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
-    if (type == 'bowling' && teamNumber == 1) {
+    if (type == 'Bowling' && teamNumber == 1) {
       return this.webSportsApi.getBowlingLineup(this.gameId, this.match.fixture.teamAId).pipe(
         map(lineup => {
-          this.match.loadLineup('bowling', 1, lineup);
+          this.match.loadLineup('Bowling', 1, lineup);
           this.teamABowlingLineupUpdated.next(this.match.teamABowlingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
-    if (type == 'bowling' && teamNumber == 2) {
+    if (type == 'Bowling' && teamNumber == 2) {
       return this.webSportsApi.getBowlingLineup(this.gameId, this.match.fixture.teamBId).pipe(
         map(lineup => {
-          this.match.loadLineup('bowling', 2, lineup)
+          this.match.loadLineup('Bowling', 2, lineup)
           this.teamBBowlingLineupUpdated.next(this.match.teamBBowlingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
@@ -281,14 +281,14 @@ export class MatchService {
     )
   }
 
-  public setWagonWheelPlayer(teamId: string, playerId: number, type: 'batting' | 'bowling') {
+  public setWagonWheelPlayer(teamId: string, playerId: number, type: 'Batting' | 'Bowling') {
     this.wagonWheelTeamId = teamId;
     this.wagonWheelPlayerId = playerId;
     this.wagonWheelType = type;
     this.loadWagonWheel(teamId, playerId, type).subscribe();
   }
 
-  private loadWagonWheel(teamId: string, playerId: number, type: 'batting' | 'bowling'): Observable<any> {
+  private loadWagonWheel(teamId: string, playerId: number, type: 'Batting' | 'Bowling'): Observable<any> {
     if (this.wagonWheelPlayerId > 0) {
       return this.webSportsApi.getWagonWheel(this.gameId, teamId, playerId.toString(), type).pipe(
         map(inputWagonWheel => {

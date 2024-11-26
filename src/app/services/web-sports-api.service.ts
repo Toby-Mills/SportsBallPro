@@ -55,7 +55,7 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
-  public getWagonWheel(gameId: string, teamId: string, playerId: string, type:'batting' | 'bowling'): Observable<WagonWheel> {
+  public getWagonWheel(gameId: string, teamId: string, playerId: string, type: 'Batting' | 'Bowling'): Observable<WagonWheel> {
     const url = `https://www.websports.co.za/api/live/fixture/wagonwheellines/${gameId}/1/${teamId}/${playerId}/${type}`;
     return this.http.get<any>(url, {});
   }
@@ -70,8 +70,11 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {});
   }
 
-  public teamSmallLogoUrl(logoName: string):string {
-    return `https://www.websports.co.za/images/logos/small_${logoName}`;
-
+  public teamSmallLogoUrl(logoName: string, teamNumber: 1 | 2): string {
+    if (logoName == 'websports.png' || logoName == 'webcricket.png') {
+      if (teamNumber == 1) { return '../../assets/logos/small_Team_A.png' }
+      else { return '../../assets/logos/small_Team_B.png' }
+    }
+    else { return `https://www.websports.co.za/images/logos/small_${logoName}`; }
   }
 }

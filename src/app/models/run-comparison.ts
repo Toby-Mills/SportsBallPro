@@ -67,7 +67,7 @@ export class RunComparison {
 			// Populate the specific over's wickets data
 			if (over.wicketsInOver > 0) {
 				for (let wicket = 0; wicket < over.wicketsInOver; wicket++) {
-					pointDataset.data.push({ x: over.overNumber.toString(), y: over.cumulativeRuns + (wicket * 3) }); // use the runs to ensure the plots is on the runs line
+					pointDataset.data.push({ x: over.overNumber.toString(), y: over.cumulativeRuns + (wicket * 4) }); // use the runs to ensure the plots is on the runs line
 				}
 			}
 			if (over.overNumber > chartData.maxOvers) { chartData.maxOvers = over.overNumber }
@@ -117,5 +117,6 @@ export class ChartDataset {
 	elements = {}
 	borderColor?: Color
 	pointBackgroundColor?: Color
+	pointBorderColor?: Color
 	borderWidth: number = 1
 }

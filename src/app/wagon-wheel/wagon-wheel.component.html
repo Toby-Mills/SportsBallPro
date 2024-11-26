@@ -16,10 +16,9 @@
 <app-modal-dialog [isVisible]="showPlayerSelector" title="Choose a player" (close)="onClosePlayerSelector()">
 	<div id="playerSelectorDialog">
 		<div class="lineup-heading">
-			<img class="teamLogo" [src]="this.playerSelectorTeamLogoUrl">
 			<button class="playerSelectorToggle"
-				(click)="onPlayerSelectorTeamClick()">{{playerSelectorTeamName}}</button>
-			<button class="playerSelectorToggle" (click)="onPlayerSelectorTypeClick()">{{playerSelectorType}}</button>
+				(click)="onPlayerSelectorTeamClick()"><img class="teamLogo" [src]="this.playerSelectorTeamLogoUrl">{{playerSelectorTeamName}}</button>
+			<button class="playerSelectorToggle" (click)="onPlayerSelectorTypeClick()"><img class="teamLogo" [src]="this.playerSelectorTypeUrl">{{playerSelectorType}}</button>
 		</div>
 		<span *ngIf="playerSelectorLineup.lineup.length == 0">no lineup yet...</span>
 		<table>

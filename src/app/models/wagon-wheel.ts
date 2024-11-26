@@ -5,10 +5,10 @@ export class WagonWheel {
 	playerId: number = 0
 	firstName: string = ''
 	surname: string = ''
-	type: 'batting' | 'bowling' | '' = ''
+	type: 'Batting' | 'Bowling' | '' = ''
 	events: Array<WagonWheelEvent> = []
 
-	public loadWagonWheel(teamId: string, playerId: number,type: 'batting'|'bowling', input: WebSportsWagonWheel) {
+	public loadWagonWheel(teamId: string, playerId: number,type: 'Batting'|'Bowling', input: WebSportsWagonWheel) {
 		this.teamId = teamId;
 		this.playerId = playerId;
 		this.type = type;
