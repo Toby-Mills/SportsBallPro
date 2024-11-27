@@ -18,14 +18,18 @@ export class WagonWheelComponent {
   public teamAId: string = '';
   public teamAName: string = '';
   public teamALogoName: string = '';
+  public teamALogoUrl: string = '';
   public teamBId: string = '';
   public teamBName: string = '';
   public teamBLogoName: string = '';
+  public teamBLogoUrl: string = '';
+
   public wagonWheelData: WagonWheel = new WagonWheel();
   public teamABattingLineup: PlayerLineup = new PlayerLineup();
   public teamBBattingLineup: PlayerLineup = new PlayerLineup();
   public teamABowlingLineup: PlayerLineup = new PlayerLineup();
   public teamBBowlingLineup: PlayerLineup = new PlayerLineup();
+  public playerId: number = 0;
   public playerNumber: number = 0;
   public playerName: string = '';
 
@@ -34,9 +38,7 @@ export class WagonWheelComponent {
   public showPlayerSelector = false;
   public playerSelectorTeamId = '';
   public playerSelectorTeamName = '';
-  public playerSelectorTeamLogoUrl = ''
   public playerSelectorType: 'Batting' | 'Bowling' = 'Batting';
-  public playerSelectorTypeUrl = '';
   public playerSelectorLineup: PlayerLineup = new PlayerLineup();
 
   onClosePlayerSelector() {
@@ -51,13 +53,12 @@ export class WagonWheelComponent {
         this.teamAId = fixture.teamAId;
         this.teamAName = fixture.teamAName;
         this.teamALogoName = fixture.teamALogoName;
+        this.teamALogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamALogoName, 1);
+        this.teamBLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamBLogoName, 2);
         if (this.playerSelectorTeamId == '') {
           this.playerSelectorTeamId = this.teamAId;
           this.playerSelectorTeamName = this.teamAName;
-          this.playerSelectorTeamLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamALogoName, 1);
           this.playerSelectorType = 'Batting';
-          this.playerSelectorTypeUrl = `assets/${this.playerSelectorType}.png`;
-
         };
         this.teamBId = fixture.teamBId;
         this.teamBName = fixture.teamBName;
@@ -75,8 +76,11 @@ export class WagonWheelComponent {
         if (player) {
           this.playerName = player.firstName + ' ' + player.surname;
           this.playerNumber = player.number;
+          this.playerId = player.playerId;
         } else {
-          this.playerName = 'choose a player...'
+          this.playerName = 'choose a player...';
+          this.playerNumber = 0;
+          this.playerId = 0;
         }
         this.svgContent = this.sanitizer.bypassSecurityTrustHtml(this.generateCricketFieldSvg(3));
       }
@@ -250,22 +254,13 @@ export class WagonWheelComponent {
     }
   }
 
-  public onPlayerSelectorTypeClick() {
-    if (this.playerSelectorType === 'Batting') { this.playerSelectorType = 'Bowling' } else { this.playerSelectorType = 'Batting' }
-    this.playerSelectorTypeUrl = `assets/${this.playerSelectorType}.png`;
+  public onPlayerSelectorTypeClick(mode: 'Batting' | 'Bowling') {
+    this.playerSelectorType = mode;
     this.loadPlayerSelectorLineup();
   }
 
-  public onPlayerSelectorTeamClick() {
-    if (this.playerSelectorTeamId == this.teamAId) {
-      this.playerSelectorTeamId = this.teamBId;
-      this.playerSelectorTeamName = this.teamBName;
-      this.playerSelectorTeamLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamBLogoName, 2);
-    } else {
-      this.playerSelectorTeamId = this.teamAId
-      this.playerSelectorTeamName = this.teamAName;
-      this.playerSelectorTeamLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamALogoName, 1);
-    }
+  public onPlayerSelectorTeamClick(teamId: string) {
+    this.playerSelectorTeamId = teamId;
     this.loadPlayerSelectorLineup();
   }
 

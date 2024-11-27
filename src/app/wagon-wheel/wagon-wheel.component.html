@@ -1,12 +1,20 @@
 <div class="card-header">
 	<span>Wagon Wheel</span>
 </div>
-<div style="text-align: center;margin-left:-80px;"><button class="player-change" *ngIf="wagonWheelData.playerId > 0"
-		(click)="onPreviousPlayerClick()">previous</button>
-	<button class="player-change" (click)="showPlayerSelector = true">select player</button>
-	<button class="player-change" *ngIf="wagonWheelData.playerId > 0" (click)="onNextPlayerClick()">next</button>
+<div style="display: flex;justify-content: center;margin-left: -85px;">
+	<div class="segmented-control">
+		<button class="segment secondary" (click)="onPreviousPlayerClick()">
+			◄ Previous
+		</button>
+		<button class="segment primary" (click)="showPlayerSelector = true">
+			Select Player
+		</button>
+		<button class="segment secondary" (click)="onNextPlayerClick()">
+			Next ►
+		</button>
+	</div>
 </div>
-
+<br>
 <div [innerHTML]="svgContent"></div>
 <div style="text-align: center;margin-left:-80px;"><span id="selected-player-name"
 		*ngIf="wagonWheelData.playerId != 0">{{playerNumber}}. {{playerName}}
@@ -15,14 +23,26 @@
 <!-- Player Selector Dialog -->
 <app-modal-dialog [isVisible]="showPlayerSelector" title="Choose a player" (close)="onClosePlayerSelector()">
 	<div id="playerSelectorDialog">
-		<div class="lineup-heading">
-			<button class="playerSelectorToggle"
-				(click)="onPlayerSelectorTeamClick()"><img class="teamLogo" [src]="this.playerSelectorTeamLogoUrl">{{playerSelectorTeamName}}</button>
-			<button class="playerSelectorToggle" (click)="onPlayerSelectorTypeClick()"><img class="teamLogo" [src]="this.playerSelectorTypeUrl">{{playerSelectorType}}</button>
+		<div class="segmented-control">
+			<button class="segment" [ngClass]="{'active': playerSelectorTeamId == teamAId}"
+				(click)="onPlayerSelectorTeamClick(teamAId)"><img class="icon"
+					[src]="teamALogoUrl">{{teamAName}}</button>
+			<button class="segment" [ngClass]="{'active': playerSelectorTeamId == teamBId}"
+				(click)="onPlayerSelectorTeamClick(teamBId)"><img class="icon"
+					[src]="teamBLogoUrl">{{teamBName}}</button>
+		</div>
+		<div class="segmented-control">
+			<button class="segment" [ngClass]="{'active': playerSelectorType == 'Batting'}"
+				(click)="onPlayerSelectorTypeClick('Batting')"><img class="icon"
+					src="/assets/Batting.png">Batting</button>
+			<button class="segment" [ngClass]="{'active': playerSelectorType == 'Bowling'}"
+				(click)="onPlayerSelectorTypeClick('Bowling')"><img class="icon"
+					src="/assets/Bowling.png">Bowling</button>
 		</div>
 		<span *ngIf="playerSelectorLineup.lineup.length == 0">no lineup yet...</span>
 		<table>
-			<tr *ngFor="let player of this.playerSelectorLineup.lineup">
+			<tr *ngFor="let player of this.playerSelectorLineup.lineup"
+				[ngClass]="{'selected-player': playerId > 0 && playerId == player.playerId && playerSelectorType == wagonWheelData.type}">
 				<td>{{player.number}}.</td>
 				<td><span class="player-name" (click)="onPlayerClick(player.playerId)">{{player.firstName}}
 						{{player.surname}}</span></td>

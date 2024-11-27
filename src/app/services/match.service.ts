@@ -282,6 +282,7 @@ export class MatchService {
   }
 
   public setWagonWheelPlayer(teamId: string, playerId: number, type: 'Batting' | 'Bowling') {
+    console.log('here');
     this.wagonWheelTeamId = teamId;
     this.wagonWheelPlayerId = playerId;
     this.wagonWheelType = type;

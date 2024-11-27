@@ -1,4 +1,8 @@
-.player-change {
+#playerSelectorDialog {
+	min-height: 40vh;
+}
+
+button.player-change {
 	font-size: 0.9em;
 	padding: 0px;
 	padding-left: 2px;
@@ -17,37 +21,55 @@
 	text-decoration: underline;
 }
 
-#player-selector:hover {
-	cursor: pointer;
+.icon {
+	height: 1.5rem;
+	flex-shrink: 0; /* Prevents the image from shrinking */
 }
 
-#playerSelectorDialog {
-	min-height: 40vh;
+.selected-player {
+	background-color: rgb(200, 216, 231);
 }
 
-.lineup-heading {
-	font-weight: bold;
+.segmented-control {
 	display: flex;
-	align-items: center;
-	gap: 10px;
-}
+	border: 1pt solid #ccc;
+	border-radius: 5px;
+	overflow: hidden;
+	width: fit-content;
+	margin: 2px;
+  }
+  
+  .segment {
+	display: flex; /* Aligns the image and text in a row */
+	align-items: center; /* Vertically centers the content */
+	justify-content: center; /* Horizontally centers the content */
+	gap: 8px; /* Adds space between the image and the text */
+	white-space: nowrap; /* Prevents text from wrapping */
+	overflow: hidden; /* Ensures content doesn't spill out */
+	text-overflow: ellipsis; /* Optional: Adds "..." if the content overflows */
 
-.playerSelectorToggle {
-	display: flex;
-	align-items: center;
-	gap: 5px;
-	background-color: lightgrey;
-	padding: 0.5em;
-	margin: 0.5em;
-	border-width: 1pt;
-	border-radius: 6px;
-}
+	border: none;
+	padding: 8px;
+	padding-left: 12px;
+	padding-right: 12px;
+  }
+  
+  .segment.active {
+	background-color: rgb(200, 216, 231);
+  }
+  
+  .segment:not(.active):hover {
+	background-color: #e6e6e6;
+  }
+  
+  .segment:focus {
+	outline: none;
+  }
 
-.playerSelectorToggle:hover {
-	cursor: pointer;
-	text-decoration: underline;
-}
-
-.teamLogo {
-	height: 2rem;
-}
+  .segment.primary {
+	background-color:  rgb(200, 216, 231) ;
+  }
+  .segment.secondary {
+	background-color:  rgb(222, 233, 243) ;
+	width: 85px;
+  }
