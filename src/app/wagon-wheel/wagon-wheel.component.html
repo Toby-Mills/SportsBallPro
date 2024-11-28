@@ -34,10 +34,10 @@
 		<div class="segmented-control">
 			<button class="segment" [ngClass]="{'active': playerSelectorType == 'Batting'}"
 				(click)="onPlayerSelectorTypeClick('Batting')"><img class="icon"
-					src="/assets/Batting.png">Batting</button>
+					src="assets/Batting.png">Batting</button>
 			<button class="segment" [ngClass]="{'active': playerSelectorType == 'Bowling'}"
 				(click)="onPlayerSelectorTypeClick('Bowling')"><img class="icon"
-					src="/assets/Bowling.png">Bowling</button>
+					src="assets/Bowling.png">Bowling</button>
 		</div>
 		<span *ngIf="playerSelectorLineup.lineup.length == 0">no lineup yet...</span>
 		<table>
