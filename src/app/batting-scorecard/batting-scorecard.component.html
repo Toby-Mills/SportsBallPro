@@ -1,7 +1,7 @@
 <div class="card-header">Batting</div>
 <div class="box">
-    <input type="checkbox" [(ngModel)] = "allBatters">Full Scorecard
-  </div>
+    <input type="checkbox" [(ngModel)]="allBatters">Full Scorecard
+</div>
 <table>
     <thead>
         <th></th>
@@ -13,21 +13,32 @@
         <th class="number">6</th>
         <th class="number">SR</th>
     </thead>
-    <tbody>
-        <ng-container *ngFor="let batter of scorecard.batters | visible:this.allBatters">
-            <tr *ngIf="batter.howOutFull != 'dnb' && batter.howOutFull !=''"
-                [ngClass]="{'highlighted':batter.batting, 'secondary':!batter.onStrike}">
-                <td class="number">{{batter.batterNumber}}</td>
-                <td>{{batter.firstname}} {{batter.surname}}<span *ngIf="batter.onStrike"> *</span></td>
-                <td class="how-out">{{batter.howOutFull}}</td>
-                <td class="number">{{batter.runs}}</td>
-                <td class="number">{{batter.balls}}</td>
-                <td class="number">{{batter.fours}}</td>
-                <td class="number">{{batter.sixes}}</td>
-                <td class="number">{{batter.strikeRate|number:'1.0-0'}}</td>
+    <ng-container *ngIf="scorecard.hasCurrentBatters || this.allBatters; else noCurrentBatters">
+        <tbody>
+            <ng-container *ngFor="let batter of scorecard.batters | visible:this.allBatters">
+                <tr *ngIf="batter.howOutFull != 'dnb' && batter.howOutFull !=''"
+                    [ngClass]="{'highlighted':batter.batting, 'secondary':!batter.onStrike}">
+                    <td class="number">{{batter.batterNumber}}</td>
+                    <td>{{batter.firstname}} {{batter.surname}}<span *ngIf="batter.onStrike"> *</span></td>
+                    <td class="how-out">{{batter.howOutFull}}</td>
+                    <td class="number">{{batter.runs}}</td>
+                    <td class="number">{{batter.balls}}</td>
+                    <td class="number">{{batter.fours}}</td>
+                    <td class="number">{{batter.sixes}}</td>
+                    <td class="number">{{batter.strikeRate|number:'1.0-0'}}</td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </ng-container>
+    <ng-template #noCurrentBatters>
+        <tbody>
+            <tr>
+                <td colspan="5">
+                    No Current Batters...
+                </td>
             </tr>
-        </ng-container>
-    </tbody>
+        </tbody>
+    </ng-template>
 </table>
 <br>
 <ng-container *ngIf="scorecard.stillToBat.length > 0">

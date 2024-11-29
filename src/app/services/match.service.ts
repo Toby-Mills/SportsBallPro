@@ -62,12 +62,12 @@ export class MatchService {
       concatMap(x => this.loadFallOfWickets(2)),
       concatMap(x => this.loadBattingScorecard(this.match.innings1Detail)),
       concatMap(x => this.loadBattingScorecard(this.match.innings2Detail)),
-      concatMap(x => this.loadBowlingScorecard(this.match.innings1Detail)),
-      concatMap(x => this.loadBowlingScorecard(this.match.innings2Detail)),
       concatMap(x => this.loadCurrentBatters(1)),
       concatMap(x => this.loadCurrentBatters(2)),
       concatMap(x => this.loadCurrentBowlers(1)),
       concatMap(x => this.loadCurrentBowlers(2)),
+      concatMap(x => this.loadBowlingScorecard(this.match.innings1Detail)),
+      concatMap(x => this.loadBowlingScorecard(this.match.innings2Detail)),
       concatMap(x => this.loadRunComparison()),
       concatMap(x => this.loadWagonWheel(this.wagonWheelTeamId, this.wagonWheelPlayerId, this.wagonWheelType))
     ).subscribe()
@@ -89,10 +89,13 @@ export class MatchService {
             this.match.teamBScore.load(updatedMatch);
             this.teamBScoreUpdated.next(this.match.teamBScore);
           }
-
+console.log(this.match.innings2Detail.currentBatters.batters.length );
           if (this.match.innings2Detail.currentBatters.batters.length > 0) {
             if (this.match.status.currentInnings == 1) {
               this.match.status.currentInnings = 2;
+              console.log(
+                'innings change'
+              )
               this.inningsChange.next(this.match.status.currentInnings);
             }
           }
@@ -242,6 +245,7 @@ export class MatchService {
       return this.webSportsApi.getBowlingScorecard(this.gameId, this.match.fixture.teamBId).pipe(
         map(scorecard => {
           innings.bowlingScorecard.loadBowlingScorcard(scorecard);
+          this.match.innings1Detail.bowlingScorecard.addCurrentBowlers(this.match.innings1Detail.currentBowlers);
           this.teamBBowlingScorecardUpdated.next(innings.bowlingScorecard);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
@@ -249,6 +253,7 @@ export class MatchService {
       return this.webSportsApi.getBowlingScorecard(this.gameId, this.match.fixture.teamAId).pipe(
         map(scorecard => {
           innings.bowlingScorecard.loadBowlingScorcard(scorecard);
+          this.match.innings2Detail.bowlingScorecard.addCurrentBowlers(this.match.innings2Detail.currentBowlers);
           this.teamABowlingScorecardUpdated.next(innings.bowlingScorecard);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
@@ -260,11 +265,9 @@ export class MatchService {
       map(bowling => {
         if (innings == 1) {
           this.match.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
-          this.match.innings1Detail.bowlingScorecard.addCurrentBowlers(this.match.innings1Detail.currentBowlers);
         }
         else {
           this.match.innings2Detail.currentBowlers.loadCurrentBowlers(bowling);
-          this.match.innings2Detail.bowlingScorecard.addCurrentBowlers(this.match.innings2Detail.currentBowlers);
         }
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     )
@@ -282,7 +285,6 @@ export class MatchService {
   }
 
   public setWagonWheelPlayer(teamId: string, playerId: number, type: 'Batting' | 'Bowling') {
-    console.log('here');
     this.wagonWheelTeamId = teamId;
     this.wagonWheelPlayerId = playerId;
     this.wagonWheelType = type;

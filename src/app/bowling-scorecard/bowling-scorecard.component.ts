@@ -11,8 +11,7 @@ import { FormsModule } from '@angular/forms';
 export class VisibleBowlers implements PipeTransform {
   transform(bowlers: BowlingScorecardEntry[], allBowlers: boolean): BowlingScorecardEntry[] {
     return bowlers.filter(bowler => {
-
-      return(allBowlers || (bowler.strikeBowler || bowler.nonStrikeBowler));
+      return (allBowlers || (bowler.strikeBowler || bowler.nonStrikeBowler));
     })
   }
 }
@@ -37,19 +36,19 @@ export class BowlingScorecardComponent {
   constructor(public matchService: MatchService) { }
 
   ngOnInit() {
-    if (this.teamNumber == 1) {
-      this.matchService.teamABowlingScorecardUpdated.subscribe(
-        scorecard => {
-          this.scorecard = scorecard
+    this.matchService.teamABowlingScorecardUpdated.subscribe(
+      scorecard => {
+        if (this.teamNumber == 1) {
+          this.scorecard = scorecard;
         }
-      )
-    }
-    else {
-      this.matchService.teamBBowlingScorecardUpdated.subscribe(
-        scorecard => {
-          this.scorecard = scorecard
+      }
+    )
+    this.matchService.teamBBowlingScorecardUpdated.subscribe(
+      scorecard => {
+        if (this.teamNumber == 2) {
+          this.scorecard = scorecard;
         }
-      )
-    }
+      }
+    )
   }
 }

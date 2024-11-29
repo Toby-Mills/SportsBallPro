@@ -1,7 +1,7 @@
 <div class="card-header">Bowling</div>
 <div class="box">
-    <input type="checkbox" [(ngModel)] = "allBowlers">Full Scorecard
-  </div>
+    <input type="checkbox" [(ngModel)]="allBowlers">Full Scorecard
+</div>
 <table>
     <thead>
         <th></th>
@@ -14,20 +14,31 @@
         <th class="number">WB</th>
         <th class="number">Ec</th>
     </thead>
-    <tbody>
-        <ng-container *ngFor="let bowler of scorecard.bowlers  | visible:this.allBowlers">
-            <tr *ngIf="bowler.bowlerNumber > 0" [ngClass]="{'highlighted': bowler.strikeBowler || bowler.nonStrikeBowler, 'secondary': bowler.nonStrikeBowler}">
-                <td class="number">{{bowler.bowlerNumber}}</td>
-                <td>{{bowler.firstname}} {{bowler.surname}}</td>
-                <td class="number">{{bowler.overs}}</td>
-                <td class="number">{{bowler.maidens}}</td>
-                <td class="number">{{bowler.runs}}</td>
-                <td class="number"><span class="wicket"
-                        [ngClass]="{'non-zero':bowler.wickets > 0}">{{bowler.wickets}}</span></td>
-                <td class="number">{{bowler.noBalls}}</td>
-                <td class="number">{{bowler.wides}}</td>
-                <td class="number">{{bowler.economy | number:'1.1-1'}}</td>
+    <ng-container *ngIf="scorecard.hasCurrentBowlers|| this.allBowlers; else noCurrentBowlers">
+        <tbody>
+            <ng-container *ngFor="let bowler of scorecard.bowlers  | visible:this.allBowlers">
+                <tr *ngIf="bowler.bowlerNumber > 0"
+                    [ngClass]="{'highlighted': bowler.strikeBowler || bowler.nonStrikeBowler, 'secondary': bowler.nonStrikeBowler}">
+                    <td class="number">{{bowler.bowlerNumber}}</td>
+                    <td>{{bowler.firstname}} {{bowler.surname}}</td>
+                    <td class="number">{{bowler.overs}}</td>
+                    <td class="number">{{bowler.maidens}}</td>
+                    <td class="number">{{bowler.runs}}</td>
+                    <td class="number"><span class="wicket"
+                            [ngClass]="{'non-zero':bowler.wickets > 0}">{{bowler.wickets}}</span></td>
+                    <td class="number">{{bowler.noBalls}}</td>
+                    <td class="number">{{bowler.wides}}</td>
+                    <td class="number">{{bowler.economy | number:'1.1-1'}}</td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </ng-container>
+    <ng-template #noCurrentBowlers>
+        <tbody>
+            <tr>
+                <td colspan="5">No current bowlers...</td>
             </tr>
-        </ng-container>
-    </tbody>
+        </tbody>
+    </ng-template>
+
 </table>

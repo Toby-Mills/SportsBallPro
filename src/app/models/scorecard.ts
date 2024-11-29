@@ -3,6 +3,7 @@ import { Batsmen, BattingScorecard as WebSportsBattingScorecard, BowlingScorecar
 
 export class BattingScorecard {
     batters: BattingScorecardEntry[] = [];
+    hasCurrentBatters: boolean = false;
     stillToBat: String[] = [];
 
     public loadBattingScorcard(input: WebSportsBattingScorecard) {
@@ -27,6 +28,7 @@ export class BattingScorecard {
                     newBatter.howOut = batter.HowOut;
                     newBatter.howOutFull = batter.HowOutFull;
                     newBatter.batting = (newBatter.howOutFull == 'n/o');
+                    if (newBatter.batting) { this.hasCurrentBatters = true }
                     if (newBatter.balls > 0) {
                         newBatter.strikeRate = (newBatter.runs / newBatter.balls) * 100;
                     }
@@ -73,6 +75,7 @@ export class BattingScorecardEntry {
 
 export class BowlingScorecard {
     bowlers: BowlingScorecardEntry[] = [];
+    hasCurrentBowlers: boolean = false;
 
     public loadBowlingScorcard(input: WebSportsBowlingScorecard) {
         this.bowlers = [];
@@ -103,19 +106,26 @@ export class BowlingScorecard {
 
     public addCurrentBowlers(input: CurrentBowlers) {
         //update the Bowling Scorecard to reflect who the current bowlers are
+        this.hasCurrentBowlers = false;
 
         //Strike Bowler
         let strikeBowlerInput = input.bowlers.find(a => a.currentPlayer == 'BowlOn');
-        let strikeBowler = this.bowlers.find(a => a.serverPlayerID === strikeBowlerInput?.serverPlayerID);
-        if (strikeBowler) {
-            strikeBowler.strikeBowler = true;
+        if (strikeBowlerInput) {
+            let strikeBowler = this.bowlers.find(a => a.firstname === strikeBowlerInput.playerName && a.surname === strikeBowlerInput.playerSurname);
+            if (strikeBowler) {
+                strikeBowler.strikeBowler = true;
+                this.hasCurrentBowlers = true;
+            }
         }
 
         //Non-Strike Bowler
         let nonStrikeBowlerInput = input.bowlers.find(a => a.currentPlayer == 'NotOn');
-        let nonStrikeBowler = this.bowlers.find(a => a.serverPlayerID === nonStrikeBowlerInput?.serverPlayerID);
-        if (nonStrikeBowler) {
-            nonStrikeBowler.nonStrikeBowler = true;
+        if (nonStrikeBowlerInput) {
+            let nonStrikeBowler = this.bowlers.find(a => a.firstname === nonStrikeBowlerInput.playerName && a.surname === nonStrikeBowlerInput.playerSurname);
+            if (nonStrikeBowler) {
+                nonStrikeBowler.nonStrikeBowler = true;
+                this.hasCurrentBowlers = true;
+            }
         }
     }
 }
