@@ -89,16 +89,6 @@ export class MatchService {
             this.match.teamBScore.load(updatedMatch);
             this.teamBScoreUpdated.next(this.match.teamBScore);
           }
-console.log(this.match.innings2Detail.currentBatters.batters.length );
-          if (this.match.innings2Detail.currentBatters.batters.length > 0) {
-            if (this.match.status.currentInnings == 1) {
-              this.match.status.currentInnings = 2;
-              console.log(
-                'innings change'
-              )
-              this.inningsChange.next(this.match.status.currentInnings);
-            }
-          }
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
   }
@@ -198,6 +188,13 @@ console.log(this.match.innings2Detail.currentBatters.batters.length );
         map(batsmen => {
           this.match.innings2Detail.currentBatters.loadCurrentBatters(batsmen);
           this.match.innings2Detail.battingScorecard.addOnStrike(batsmen);
+
+          if (this.match.innings2Detail.currentBatters.batters.length > 0) {
+            if (this.match.status.currentInnings == 1) {
+              this.match.status.currentInnings = 2;
+              this.inningsChange.next(this.match.status.currentInnings);
+            }
+          }
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }

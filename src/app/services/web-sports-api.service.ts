@@ -26,6 +26,7 @@ export class WebSportsAPIService {
   }
 
   public getBatsmen(gameId: string, teamId: string): Observable<Batsmen> {
+    //Return an object with an array of the Current Batsmen at the crease (striker & non-stiker)
     const url: string = `https://www.websports.co.za/api/live/fixture/batsmen/${gameId}/${teamId}/1`;
     return this.http.get<any>(url, {})
   }
