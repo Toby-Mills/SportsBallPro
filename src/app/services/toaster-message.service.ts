@@ -6,11 +6,12 @@ import { Subject } from 'rxjs';
 })
 export class ToasterMessageService {
 
-  private messageSubject = new Subject<string>();
+  private messageSubject = new Subject<{ message: string, type: 'success' | 'error' }>();
   message$ = this.messageSubject.asObservable();
 
   constructor() {}
 
-  showMessage(message: string): void {
-    this.messageSubject.next(message);
-  }}
+  showMessage(message: string, type: 'success' | 'error' = 'success'): void {
+    this.messageSubject.next({ message, type });
+  }
+}

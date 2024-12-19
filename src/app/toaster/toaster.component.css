@@ -18,3 +18,10 @@
 	opacity: 0; /* Ensure smooth hiding animation */
   }
   
+  .success {
+	background-color: green;
+  }
+  
+  .error {
+	background-color: red;
+  }

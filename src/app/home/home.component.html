@@ -1,4 +1,7 @@
 <div class="container">
+    <div class="pin-icon" (click)="toggleWakeLock()">
+        <span [ngClass]="isWakeLockActive ? 'material-icons' : 'material-icons-outlined'">push_pin</span>
+    </div>
     <ng-container *ngIf="fixture.gameId; else noMatch">
         <div class="box fixture">
             <h1>{{this.fixture.game}}</h1>
@@ -37,7 +40,8 @@
             <app-fall-of-wickets *ngIf="viewingInnings==2" [innings]="2"></app-fall-of-wickets>
         </div>
         <div class="small-box card run-comparison">
-            <app-run-comparison></app-run-comparison></div>
+            <app-run-comparison></app-run-comparison>
+        </div>
         <div class="small-box card"><app-wagon-wheel></app-wagon-wheel></div>
     </ng-container>
     <ng-template #noMatch>

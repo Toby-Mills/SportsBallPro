@@ -1,4 +1,4 @@
-<div class="toaster" *ngIf="showToast">
+<div class="toaster" *ngIf="showToast"  [ngClass]="messageType">
 	<p>{{ message }}</p>
   </div>
   
