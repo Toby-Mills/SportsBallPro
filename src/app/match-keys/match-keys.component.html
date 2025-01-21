@@ -1,5 +1,10 @@
 <div class="container">
     <div class="card">
+        <div class="card-header" for="urlInput">Wynberg Fixtures</div>
+        <a href="./wynberg">All Wynberg Fixtures</a>
+    </div>
+    <br>
+    <div class="card">
         <div class="card-header" for="urlInput">Generate URL from Game ID</div>
         <input type="text" id="urlInput" placeholder="Game ID" (change)="onGameIdChange($event)"> <span> URL: </span><a
             href="{{this.url}}">{{this.url}}</a>
