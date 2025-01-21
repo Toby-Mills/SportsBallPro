@@ -7,15 +7,14 @@ import { SortFixturesPipe } from '../pipes/sort-fixtures.pipe';
 import { environment } from '../../../src/environments/environment';
 
 @Component({
-  selector: 'app-match-keys',
-  standalone: true,
-  imports: [
-    CommonModule,
-    NgFor,
-    SortFixturesPipe
-  ],
-  templateUrl: './match-keys.component.html',
-  styleUrl: './match-keys.component.css'
+    selector: 'app-match-keys',
+    imports: [
+        CommonModule,
+        NgFor,
+        SortFixturesPipe
+    ],
+    templateUrl: './match-keys.component.html',
+    styleUrl: './match-keys.component.css'
 })
 export class MatchKeysComponent implements OnInit {
   public gameId: string = '';

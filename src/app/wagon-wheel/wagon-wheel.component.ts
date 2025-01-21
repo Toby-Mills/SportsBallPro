@@ -8,11 +8,10 @@ import { WagonWheel } from '../models/wagon-wheel';
 import { WebSportsAPIService } from '../services/web-sports-api.service';
 
 @Component({
-  selector: 'app-wagon-wheel',
-  standalone: true,
-  imports: [ModalDialogComponent, CommonModule],
-  templateUrl: './wagon-wheel.component.html',
-  styleUrl: './wagon-wheel.component.css'
+    selector: 'app-wagon-wheel',
+    imports: [ModalDialogComponent, CommonModule],
+    templateUrl: './wagon-wheel.component.html',
+    styleUrl: './wagon-wheel.component.css'
 })
 export class WagonWheelComponent {
   public teamAId: string = '';

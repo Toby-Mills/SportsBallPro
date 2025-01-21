@@ -17,23 +17,22 @@ import { MatchService } from '../services/match.service';
 import { ToasterMessageService } from '../services/toaster-message.service';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TeamScoreComponent,
-    RecentBallsComponent,
-    FallOfWicketsComponent,
-    BattingScorecardComponent,
-    BowlingScorecardComponent,
-    RefreshTimerComponent,
-    RunComparisonComponent,
-    WagonWheelComponent
-  ],
-  providers: [HttpClient,],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+    selector: 'app-home',
+    imports: [
+        CommonModule,
+        FormsModule,
+        TeamScoreComponent,
+        RecentBallsComponent,
+        FallOfWicketsComponent,
+        BattingScorecardComponent,
+        BowlingScorecardComponent,
+        RefreshTimerComponent,
+        RunComparisonComponent,
+        WagonWheelComponent
+    ],
+    providers: [HttpClient,],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.css'
 })
 export class HomeComponent {
   public parameterGameKey = this.route.snapshot.paramMap.get('id');

@@ -18,7 +18,6 @@ export class VisibleBowlers implements PipeTransform {
 
 @Component({
   selector: 'app-bowling-scorecard',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

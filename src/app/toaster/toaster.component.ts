@@ -3,11 +3,10 @@ import { ToasterMessageService } from '../services/toaster-message.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-toaster',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './toaster.component.html',
-  styleUrl: './toaster.component.css'
+    selector: 'app-toaster',
+    imports: [CommonModule],
+    templateUrl: './toaster.component.html',
+    styleUrl: './toaster.component.css'
 })
 export class ToasterComponent {
   message: string | null = null;

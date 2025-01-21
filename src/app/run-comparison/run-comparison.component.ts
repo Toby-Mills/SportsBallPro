@@ -6,14 +6,13 @@ import { Color } from 'chart.js';
 import { MatchService } from '../services/match.service';
 
 @Component({
-  selector: 'app-run-comparison',
-  standalone: true,
-  imports: [
-    CommonModule,
-    BaseChartDirective,
-  ],
-  styleUrl: './run-comparison.component.css',
-  templateUrl: './run-comparison.component.html',
+    selector: 'app-run-comparison',
+    imports: [
+        CommonModule,
+        BaseChartDirective,
+    ],
+    styleUrl: './run-comparison.component.css',
+    templateUrl: './run-comparison.component.html'
 })
 export class RunComparisonComponent {
   public chartData: RunComparisonChartData = new RunComparisonChartData()

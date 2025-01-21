@@ -11,19 +11,17 @@ import { SortFixturesByTeamPipe } from '../pipes/sort-fixtures-by-team.pipe';
 import { concatMap, from, map, take } from 'rxjs';
 
 @Component({
-  selector: 'app-fixtures-wynberg',
-  standalone: true,
-  imports: [
-    CommonModule,
-    NgFor,
-    SortFixturesPipe,
-    SortFixturesByTeamPipe,
-    HomeTeamPipe,
-    OpponentTeamPipe,
-    GroupFixturesPipe
-  ],
-  templateUrl: './fixtures-wynberg.component.html',
-  styleUrl: './fixtures-wynberg.component.css'
+    selector: 'app-fixtures-wynberg',
+    imports: [
+        CommonModule,
+        NgFor,
+        SortFixturesByTeamPipe,
+        HomeTeamPipe,
+        OpponentTeamPipe,
+        GroupFixturesPipe
+    ],
+    templateUrl: './fixtures-wynberg.component.html',
+    styleUrl: './fixtures-wynberg.component.css'
 })
 export class FixturesWynbergComponent implements OnInit {
   public club: string = 'Wynberg BHS';

@@ -4,11 +4,10 @@ import { CommonModule, NgFor } from '@angular/common';
 import { MatchService } from '../services/match.service';
 
 @Component({
-  selector: 'app-recent-balls',
-  standalone: true,
-  imports: [CommonModule, NgFor],
-  templateUrl: './recent-balls.component.html',
-  styleUrl: './recent-balls.component.css'
+    selector: 'app-recent-balls',
+    imports: [CommonModule, NgFor],
+    templateUrl: './recent-balls.component.html',
+    styleUrl: './recent-balls.component.css'
 })
 export class RecentBallsComponent {
   @Input() inningsNumber: 1 | 2 = 1;

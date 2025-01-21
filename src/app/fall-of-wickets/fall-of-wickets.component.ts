@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 import { MatchService } from '../services/match.service';
 
 @Component({
-  selector: 'app-fall-of-wickets',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './fall-of-wickets.component.html',
-  styleUrl: './fall-of-wickets.component.css'
+    selector: 'app-fall-of-wickets',
+    imports: [CommonModule],
+    templateUrl: './fall-of-wickets.component.html',
+    styleUrl: './fall-of-wickets.component.css'
 })
 export class FallOfWicketsComponent {
 @Input() innings: 1 | 2 = 1;

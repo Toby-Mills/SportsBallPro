@@ -26,16 +26,15 @@ export class VisibleBatter implements PipeTransform {
 }
 
 @Component({
-  selector: 'app-batting-scorecard',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    NgFor,
-    VisibleBatter,
-  ],
-  templateUrl: './batting-scorecard.component.html',
-  styleUrl: './batting-scorecard.component.css'
+    selector: 'app-batting-scorecard',
+    imports: [
+        CommonModule,
+        FormsModule,
+        NgFor,
+        VisibleBatter,
+    ],
+    templateUrl: './batting-scorecard.component.html',
+    styleUrl: './batting-scorecard.component.css'
 })
 export class BattingScorecardComponent {
   @Input() teamNumber: 1 | 2 = 1;

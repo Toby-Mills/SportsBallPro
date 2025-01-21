@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 import { CurrentBatters } from '../models/current-batters';
 
 @Component({
-  selector: 'app-current-batters',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './current-batters.component.html',
-  styleUrl: './current-batters.component.css'
+    selector: 'app-current-batters',
+    imports: [CommonModule],
+    templateUrl: './current-batters.component.html',
+    styleUrl: './current-batters.component.css'
 })
 export class CurrentBattersComponent {
   @Input()currentBatters: CurrentBatters = new CurrentBatters;

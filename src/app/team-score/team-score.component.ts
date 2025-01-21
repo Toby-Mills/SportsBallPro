@@ -5,11 +5,10 @@ import { MatchService } from '../services/match.service';
 import { WebSportsAPIService } from '../services/web-sports-api.service';
 
 @Component({
-  selector: 'app-team-score',
-  standalone: true,
-  imports: [CommonModule, NgClass],
-  templateUrl: './team-score.component.html',
-  styleUrl: './team-score.component.css'
+    selector: 'app-team-score',
+    imports: [CommonModule, NgClass],
+    templateUrl: './team-score.component.html',
+    styleUrl: './team-score.component.css'
 })
 export class TeamScoreComponent {
   @Input() teamNumber: 1 | 2 = 1;

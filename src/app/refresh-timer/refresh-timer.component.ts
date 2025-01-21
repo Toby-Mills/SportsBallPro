@@ -2,11 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-refresh-timer',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './refresh-timer.component.html',
-  styleUrl: './refresh-timer.component.css'
+    selector: 'app-refresh-timer',
+    imports: [CommonModule],
+    templateUrl: './refresh-timer.component.html',
+    styleUrl: './refresh-timer.component.css'
 })
 export class RefreshTimerComponent implements OnDestroy {
   @Output() timerTriggered: EventEmitter<number> = new EventEmitter<number>();
