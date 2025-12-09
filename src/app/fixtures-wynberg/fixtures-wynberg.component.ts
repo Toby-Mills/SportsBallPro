@@ -9,6 +9,7 @@ import { OpponentTeamPipe } from '../pipes/opponent-team.pipe';
 import { GroupFixturesPipe } from '../pipes/group-fixtures.pipe';
 import { SortFixturesByTeamPipe } from '../pipes/sort-fixtures-by-team.pipe';
 import { concatMap, from, map, take } from 'rxjs';
+import { WebSportsAPIService } from '../services/web-sports-api.service';
 
 @Component({
     selector: 'app-fixtures-wynberg',
@@ -30,17 +31,15 @@ export class FixturesWynbergComponent implements OnInit {
   public constructor(
     private http: HttpClient,
     private matchKey: MatchKeyService,
+    private webSportsAPI: WebSportsAPIService
   ) { }
 
   public ngOnInit(): void {
     this.loadFixtures();
   }
   public loadFixtures() {
-    let urlEncodedSearch = encodeURI(this.club);
 
-    let url = `https://www.websports.co.za/api/fixture/teamname/${urlEncodedSearch}`
-
-    this.http.get<any>(url, {}).subscribe(
+    this.webSportsAPI.getFixturesByTeamName(this.club).subscribe(
       fixtures => {
         this.fixtures = new FixtureSummaries;
         this.fixtures.loadFixtures(fixtures);
@@ -53,8 +52,7 @@ export class FixturesWynbergComponent implements OnInit {
         from(this.fixtures.fixtureSummaries).pipe(
           take(100),
           concatMap(fixture => {
-            const fixtureUrl = `https://www.websports.co.za/api/live/getfixture/${fixture.gameId}/1`;
-            return this.http.get<any>(fixtureUrl).pipe(
+            return this.webSportsAPI.getFixtures(fixture.gameId).pipe(
               map(fixturesInput => {
                 //console.log(fixturesInput);
                 switch (fixturesInput.fixtures[0].result) {

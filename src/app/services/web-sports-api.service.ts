@@ -9,6 +9,13 @@ import { BallCountdown, Batsmen, BattingLineup, BattingScorecard, Bowlers, Bowli
 export class WebSportsAPIService {
 
   constructor(private http: HttpClient,) { }
+  
+  public getFixturesByTeamName(teamName: string): Observable<Fixtures> {
+    let urlEncodedSearch = encodeURI(teamName);
+    let url = `https://www.websports.co.za/api/fixture/teamname/${urlEncodedSearch}`
+    console.log('Fetching fixtures for team name:', teamName, 'URL:', url);
+    return this.http.get<any>(url, {})
+  }
 
   public getFixtures(gameId: string): Observable<Fixtures> {
     const url: string = `https://www.websports.co.za/api/live/getfixture/${gameId}/1`;

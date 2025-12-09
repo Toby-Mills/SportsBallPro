@@ -1,0 +1,51 @@
+<div class="header">
+    <img src="https://www.websports.co.za/images/logos/small_wynberg.png" alt="Logo" class="logo">
+    <h1>Wynberg BHS Cricket Matches</h1>
+</div>
+<div class="container">
+    <label for="teamName">Enter Team Name:</label>
+    <input type="text" id="teamName" name="teamName" placeholder="Type team name here" [(ngModel)]="teamNameSearch">
+    <button (click)="searchTeam()">Search</button>
+</div>
+<div class="container" *ngIf="teamNamesFromSearch.length > 0">
+    <label for="uniqueTeams">Select Team:</label>
+    <select id="uniqueTeams" [(ngModel)]="selectedTeamName" (change)="onTeamSelect()">
+        <option *ngFor="let team of teamNamesFromSearch" [value]="team">{{ team }}</option>
+    </select>
+</div>
+<div class="container" *ngIf="uniqueYears.length > 0">
+    <label for="uniqueYears">Select Year:</label>
+    <select id="uniqueYears" [(ngModel)]="selectedYear" (change)="onYearSelect()">
+        <option *ngFor="let year of uniqueYears" [value]="year">{{ year }}</option>
+    </select>
+</div>
+<div class="container" *ngIf="selectedYearFixtures.length > 0">
+    <label>Select Fixtures:</label>
+    <div *ngFor="let fixture of selectedYearFixtures">
+        <input type="checkbox" [checked]="isSelected(fixture)" (change)="onFixtureSelect(fixture, $event)">
+        <a [routerLink]="['/match', getMatchKey(fixture)]" (click)="saveState()">
+            {{ fixture.aTeam }} vs {{ fixture.bTeam }} on {{ fixture.datePlayed | date:'mediumDate' }}
+        </a>
+    </div>
+</div>
+<div class="container" *ngIf="allPlayers.size > 0">
+    <h3>All Players</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Player Name</th>
+                <th>Matches Played</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let player of getSortedPlayers()">
+                <td>{{ player.PlayerName }} {{ player.PlayerSurname }}</td>
+                <td>{{ player.gameTeamPairs.length }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="container" *ngIf="selectedPlayer">
+    <h3>Player Stats</h3>
+    <p>{{ selectedPlayer.PlayerName }} {{ selectedPlayer.PlayerSurname }} has played in {{ selectedPlayer.gameTeamPairs.length }} matches.</p>
+</div>
