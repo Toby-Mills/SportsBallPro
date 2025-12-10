@@ -65,20 +65,12 @@ export class PlayerAggregationService {
 
         lineups.forEach((lineupData: any) => {
           const { fixture, teamId, players, isBatter } = lineupData;
-          console.log(`Processing ${isBatter ? 'batting' : 'bowling'} scorecard: ${players.length} players`);
           players.forEach((player: any) => {
-            if (isBatter) {
-              const howOut = player.HowOut || '';
-              const isNotOut = howOut.toLowerCase() === 'n/o';
-              const hasHowOut = (howOut?.trim().length ?? 0) > 0;
-              console.log(`  ${player.PlayerName} ${player.PlayerSurname}: HowOut="${howOut}", isNotOut=${isNotOut}, hasHowOut=${hasHowOut}`);
-            }
             this.addPlayerToMap(playerMap, player, fixture.gameID, teamId, isBatter);
           });
         });
 
         const result = Array.from(playerMap.values());
-        console.log('Aggregated players:', result.map(p => `${p.PlayerName} ${p.PlayerSurname}: ${p.totalRuns} runs, ${p.timesOut} dismissals, avg=${p.timesOut > 0 ? (p.totalRuns / p.timesOut).toFixed(2) : '-'}`));
         return of(result);
       })
     );
@@ -105,10 +97,6 @@ export class PlayerAggregationService {
       const howOut = (player.HowOut || '').trim();
       const isNotOut = howOut.toLowerCase() === 'not out' || howOut.toLowerCase() === 'did not bat';
       const timesOut = isBatter && !isNotOut && howOut.length > 0 ? 1 : 0;
-      
-      if (isBatter) {
-        console.log(`    [NEW] ${playerKey}: HowOut="${player.HowOut}", isNotOut=${isNotOut}, timesOut=${timesOut}`);
-      }
       
       playerMap.set(playerKey, {
         PlayerName: player.PlayerName,
@@ -147,9 +135,6 @@ export class PlayerAggregationService {
         const isNotOut = howOut.toLowerCase() === 'not out' || howOut.toLowerCase() === 'did not bat';
         if (!isNotOut && howOut.length > 0) {
           existing.timesOut += 1;
-          console.log(`    [UPDATE] ${playerKey}: dismissed (HowOut="${player.HowOut}"), timesOut=${existing.timesOut}`);
-        } else if (isNotOut) {
-          console.log(`    [UPDATE] ${playerKey}: not out/DNB (HowOut="${player.HowOut}"), timesOut=${existing.timesOut}`);
         }
       }
     }

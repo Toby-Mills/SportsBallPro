@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FixtureSearchService } from '../../services/fixture-search.service';
@@ -8,7 +8,7 @@ import { FixtureSearchService } from '../../services/fixture-search.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="container">
+    <div class="container" *ngIf="showSearchBox">
       <label for="teamName">Enter Team Name:</label>
       <input 
         type="text" 
@@ -60,14 +60,24 @@ import { FixtureSearchService } from '../../services/fixture-search.service';
     }
   `]
 })
-export class TeamSearchComponent {
+export class TeamSearchComponent implements OnInit {
   @Output() teamSelected = new EventEmitter<string>();
+  @Input() prefilterTeam?: string;
+  @Input() showSearchBox: boolean = true;
 
   teamNameSearch = '';
   selectedTeamName = '';
   teamNamesFromSearch: string[] = [];
 
   constructor(private fixtureSearch: FixtureSearchService) {}
+
+  ngOnInit() {
+    // If prefilterTeam is provided, auto-search with it
+    if (this.prefilterTeam) {
+      this.teamNameSearch = this.prefilterTeam;
+      this.searchTeam();
+    }
+  }
 
   onSearchInput() {
     // Optional: auto-search as user types
