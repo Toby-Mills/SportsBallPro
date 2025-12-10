@@ -8,8 +8,9 @@ import { WebSportsAPIService } from './web-sports-api.service';
   providedIn: 'root'
 })
 export class FixtureSearchService {
-  private fixtureCache: Fixture[] = [];
-  private cacheSubject = new BehaviorSubject<Fixture[]>([]);
+  private cacheBySearchTerm = new Map<string, Fixture[]>();
+  private subjectBySearchTerm = new Map<string, BehaviorSubject<Fixture[]>>();
+  private lastSearchTerm: string | null = null;
 
   constructor(
     private webSportsAPI: WebSportsAPIService
@@ -17,13 +18,23 @@ export class FixtureSearchService {
 
   /**
    * Search for unique team names that partially match the search term
+   * Caches results by search term to prevent cross-contamination across different searches
    */
   searchTeams(searchTerm: string): Observable<string[]> {
+    // Store the search term so getYears and getFixtures can access the correct cache
+    this.lastSearchTerm = searchTerm;
+    
     return this.webSportsAPI.getFixturesByTeamName(searchTerm).pipe(
       map((fixtures: Fixtures) => {
-        // Cache the fixtures for later use
-        this.fixtureCache = fixtures.fixtures;
-        this.cacheSubject.next(this.fixtureCache);
+        // Cache the fixtures by search term
+        this.cacheBySearchTerm.set(searchTerm, fixtures.fixtures);
+        
+        // Create or update subject for this search term
+        if (!this.subjectBySearchTerm.has(searchTerm)) {
+          this.subjectBySearchTerm.set(searchTerm, new BehaviorSubject<Fixture[]>(fixtures.fixtures));
+        } else {
+          this.subjectBySearchTerm.get(searchTerm)!.next(fixtures.fixtures);
+        }
 
         const teamSet = new Set<string>();
         const lowerSearch = searchTerm.toLowerCase();
@@ -42,10 +53,23 @@ export class FixtureSearchService {
   }
 
   /**
-   * Get all unique years for a given team (uses cached fixture data from search)
+   * Get all unique years for a given team (uses cached fixture data from last search)
    */
   getYears(team: string): Observable<number[]> {
-    return this.cacheSubject.pipe(
+    if (!this.lastSearchTerm) {
+      return new Observable(observer => {
+        observer.error(new Error('No search has been performed yet'));
+      });
+    }
+
+    const subject = this.subjectBySearchTerm.get(this.lastSearchTerm);
+    if (!subject) {
+      return new Observable(observer => {
+        observer.error(new Error('No cached fixtures for search term'));
+      });
+    }
+
+    return subject.pipe(
       map((fixtures: Fixture[]) => {
         const yearSet = new Set<number>();
         fixtures.forEach((fixture: Fixture) => {
@@ -60,10 +84,23 @@ export class FixtureSearchService {
   }
 
   /**
-   * Get all fixtures for a given team and year (uses cached fixture data from search)
+   * Get all fixtures for a given team and year (uses cached fixture data from last search)
    */
   getFixtures(team: string, year: number | string): Observable<Fixture[]> {
-    return this.cacheSubject.pipe(
+    if (!this.lastSearchTerm) {
+      return new Observable(observer => {
+        observer.error(new Error('No search has been performed yet'));
+      });
+    }
+
+    const subject = this.subjectBySearchTerm.get(this.lastSearchTerm);
+    if (!subject) {
+      return new Observable(observer => {
+        observer.error(new Error('No cached fixtures for search term'));
+      });
+    }
+
+    return subject.pipe(
       map((fixtures: Fixture[]) => {
         // Convert year to number to handle string values from ngModel
         const yearAsNumber = Number(year);
