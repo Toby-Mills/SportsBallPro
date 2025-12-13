@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="pin-icon" (click)="toggleWakeLock()">
+    <div class="pin-icon" (click)="toggleWakeLock()" *ngIf="showWakeLock">
         <span [ngClass]="isWakeLockActive ? 'material-icons' : 'material-icons-outlined'">push_pin</span>
     </div>
     <ng-container *ngIf="fixture.gameId; else noMatch">
@@ -45,8 +45,8 @@
         <div class="small-box card"><app-wagon-wheel></app-wagon-wheel></div>
     </ng-container>
     <ng-template #noMatch>
-        <div *ngIf="this.parameterGameKey == ''" class="no-match">Please select a Match to load</div>
-        <div *ngIf="this.parameterGameKey != ''" class="no-match">Loading match data...</div>
+        <div *ngIf="this.parameterGameKey == '' && !gameId" class="no-match">Please select a Match to load</div>
+        <div *ngIf="this.parameterGameKey != '' || gameId" class="no-match">Loading match data...</div>
     </ng-template>
-    <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()"></app-refresh-timer>
+    <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()" *ngIf="showRefreshTimer"></app-refresh-timer>
 </div>

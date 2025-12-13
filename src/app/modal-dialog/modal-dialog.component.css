@@ -16,7 +16,8 @@
 	background: #fff;
 	border-radius: 8px;
 	width: 90%;
-	max-width: 500px;
+	max-width: 1200px;
+	max-height: 90vh;
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
@@ -42,6 +43,8 @@
   
   .modal-body {
 	padding: 1rem;
+	overflow-y: auto;
+	flex: 1;
   }
   
   .modal-footer {

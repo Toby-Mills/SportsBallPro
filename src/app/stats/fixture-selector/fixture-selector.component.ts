@@ -4,43 +4,55 @@ import { RouterModule } from '@angular/router';
 import { Fixture } from '../../models/web-sports';
 import { MatchKeyService } from '../../services/match-key.service';
 import { StatsStateService } from '../../services/stats-state.service';
+import { ModalDialogComponent } from '../../modal-dialog/modal-dialog.component';
+import { HomeComponent } from '../../home/home.component';
 
 @Component({
   selector: 'app-fixture-selector',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ModalDialogComponent, HomeComponent],
   template: `
     <div class="container" *ngIf="fixtures.length > 0">
       <label>Select Fixtures:</label>
       <div class="fixtures-list">
-        <div *ngFor="let fixture of getSortedFixtures()" class="fixture-row" [ngClass]="'status-' + getStatusClass(fixture)">
+        <div *ngFor="let fixture of getSortedFixtures()" 
+             class="fixture-row" 
+             [ngClass]="'status-' + getStatusClass(fixture)"
+             (click)="onFixtureRowClick(fixture, $event)">
           <input 
             type="checkbox" 
             [checked]="isSelected(fixture)" 
             (change)="onFixtureToggle(fixture, $event)"
+            (click)="$event.stopPropagation()"
             [attr.id]="'fixture-' + fixture.gameID">
-          <label [attr.for]="'fixture-' + fixture.gameID" class="fixture-label">
+          <div class="fixture-label">
             <div class="fixture-info">
-              <a [routerLink]="['/match', getMatchKey(fixture)]" (click)="saveState()">
+              <span class="fixture-teams">
                 {{ fixture.aTeam }} vs {{ fixture.bTeam }} on {{ fixture.datePlayed | date:'mediumDate' }}
-              </a>
+              </span>
               <span class="fixture-status" [ngClass]="getStatusClass(fixture)">
                 {{ getFixtureStatus(fixture) }}
               </span>
             </div>
-          </label>
+          </div>
         </div>
       </div>
       <div class="selection-summary">
         {{ selectedFixtures.length }} of {{ fixtures.length }} fixtures selected
       </div>
-      <button 
-        class="analyze-button"
-        [disabled]="selectedFixtures.length === 0"
-        (click)="onAnalyzeClick()">
-        Analyze Selected Fixtures
-      </button>
     </div>
+    
+    <app-modal-dialog 
+      [isVisible]="showMatchModal"
+      [title]="'Match Details'"
+      (close)="closeMatchModal()">
+      <app-home 
+        [gameId]="selectedMatchGameId"
+        [showRefreshTimer]="false"
+        [showWakeLock]="false"
+        *ngIf="showMatchModal">
+      </app-home>
+    </app-modal-dialog>
   `,
   styles: [`
     .container {
@@ -66,6 +78,10 @@ import { StatsStateService } from '../../services/stats-state.service';
       align-items: center;
       padding: 8px;
       border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+    }
+    .fixture-row:hover {
+      background-color: rgba(0, 0, 0, 0.02);
     }
     .fixture-row:last-child {
       border-bottom: none;
@@ -95,13 +111,9 @@ import { StatsStateService } from '../../services/stats-state.service';
       align-items: center;
       gap: 10px;
     }
-    a {
-      color: #007bff;
-      text-decoration: none;
+    .fixture-teams {
       flex: 1;
-    }
-    a:hover {
-      text-decoration: underline;
+      color: #333;
     }
     .selection-summary {
       margin-top: 15px;
@@ -110,25 +122,6 @@ import { StatsStateService } from '../../services/stats-state.service';
       border-radius: 4px;
       font-size: 0.9em;
       color: #666;
-    }
-    .analyze-button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
-      font-weight: bold;
-    }
-    .analyze-button:hover:not(:disabled) {
-      background-color: #218838;
-    }
-    .analyze-button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-      opacity: 0.6;
     }
     .fixture-status {
       padding: 4px 12px;
@@ -157,7 +150,9 @@ export class FixtureSelectorComponent implements OnChanges {
   @Input() fixtures: Fixture[] = [];
   @Input() selectedFixtures: Fixture[] = [];
   @Output() fixturesSelected = new EventEmitter<Fixture[]>();
-  @Output() analyzeRequested = new EventEmitter<Fixture[]>();
+
+  showMatchModal: boolean = false;
+  selectedMatchGameId: string = '';
 
   constructor(
     private matchKey: MatchKeyService,
@@ -212,15 +207,6 @@ export class FixtureSelectorComponent implements OnChanges {
   }
 
   /**
-   * Trigger analysis of selected fixtures
-   */
-  onAnalyzeClick() {
-    if (this.selectedFixtures.length > 0) {
-      this.analyzeRequested.emit([...this.selectedFixtures]);
-    }
-  }
-
-  /**
    * Get the match status string for display
    */
   getFixtureStatus(fixture: Fixture): string {
@@ -256,5 +242,27 @@ export class FixtureSelectorComponent implements OnChanges {
     }
     
     return 'upcoming';
+  }
+
+  /**
+   * Handle click on fixture row to open modal
+   */
+  onFixtureRowClick(fixture: Fixture, event: MouseEvent) {
+    // Don't open modal if clicking on checkbox or label
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'LABEL') {
+      return;
+    }
+    
+    this.selectedMatchGameId = fixture.gameID;
+    this.showMatchModal = true;
+  }
+
+  /**
+   * Close the match details modal
+   */
+  closeMatchModal() {
+    this.showMatchModal = false;
+    this.selectedMatchGameId = '';
   }
 }

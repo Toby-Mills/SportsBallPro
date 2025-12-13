@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -35,11 +35,14 @@ import { ToasterMessageService } from '../services/toaster-message.service';
     styleUrl: './home.component.css'
 })
 export class HomeComponent {
+  @Input() gameId?: string; // Optional: pass gameId directly for modal usage
+  @Input() showRefreshTimer: boolean = true;
+  @Input() showWakeLock: boolean = true;
+  
   public parameterGameKey = this.route.snapshot.paramMap.get('id');
   @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
   title = 'SportsBallPro';
-  gameId: string = '';
   fixture: Fixture = new Fixture;
   status: Status = new Status;
   viewingInnings: number = 1;
@@ -57,11 +60,21 @@ export class HomeComponent {
   ) { }
 
   ngAfterViewInit() {
-    this.parameterGameKey = this.route.snapshot.paramMap.get('id');
-    if (this.parameterGameKey != null) {
-      let gameId = this.matchKeys.readKey(this.parameterGameKey);
-      this.matchService.loadMatch(gameId);
-      this.refreshTimer.setTimer(30000);
+    // Use input gameId if provided (modal usage), otherwise use route param
+    if (this.gameId) {
+      this.matchService.loadMatch(this.gameId);
+      if (this.showRefreshTimer && this.refreshTimer) {
+        this.refreshTimer.setTimer(30000);
+      }
+    } else {
+      this.parameterGameKey = this.route.snapshot.paramMap.get('id');
+      if (this.parameterGameKey != null) {
+        const routeGameId = this.matchKeys.readKey(this.parameterGameKey);
+        this.matchService.loadMatch(routeGameId);
+        if (this.showRefreshTimer && this.refreshTimer) {
+          this.refreshTimer.setTimer(30000);
+        }
+      }
     }
   }
 

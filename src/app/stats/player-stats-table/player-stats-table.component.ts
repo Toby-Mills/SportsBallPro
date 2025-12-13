@@ -64,7 +64,7 @@ export interface PlayerDisplay {
             <td>{{ (player.timesOut > 0 ? (player.totalRuns / player.timesOut).toFixed(2) : '-') }}</td>
             <td>{{ player.totalFours }}</td>
             <td>{{ player.totalSixes }}</td>
-            <td>{{ (player.totalBalls > 0 ? ((player.totalRuns / player.totalBalls) * 100).toFixed(2) : '-') }}%</td>
+            <td>{{ (player.totalBalls > 0 ? Math.round((player.totalRuns / player.totalBalls) * 100) : '-') }}</td>
             <td>{{ player.timesOut }}</td>
           </tr>
         </tbody>
@@ -124,6 +124,7 @@ export class PlayerStatsTableComponent {
 
   sortField: string = 'name';
   sortDirection: 'asc' | 'desc' = 'asc';
+  Math = Math;
 
   getSortedPlayers(): PlayerDisplay[] {
     return [...this.players].sort((a, b) => {

@@ -11,6 +11,6 @@ export const routes: Routes = [
     { path: 'match/:id', component: HomeComponent },
     { path: 'wynberg', component: FixturesWynbergComponent },
     { path: 'stats', component: StatsContainerComponent },
-    { path: 'wynbergbhsstats', component: WynbergStatsContainerComponent },
+    { path: 'wynberg-stats', component: WynbergStatsContainerComponent },
 ];
 
