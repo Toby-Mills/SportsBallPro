@@ -11,19 +11,20 @@ import { MatchService } from '../services/match.service';
 })
 export class RecentBallsComponent {
   @Input() inningsNumber: 1 | 2 = 1;
+  @Input() gameId: string = '';
   recentBalls: RecentBalls = new RecentBalls();
 
   constructor(public matchService: MatchService) { }
 
   ngOnInit() {
     if (this.inningsNumber == 1) {
-      this.matchService.innings1RecentOversUpdated.subscribe(
+      this.matchService.getInnings1RecentOversUpdates(this.gameId).subscribe(
         recentBalls => {
           this.recentBalls = recentBalls
         }
       )
     } else {
-      this.matchService.innings2RecentOversUpdated.subscribe(
+      this.matchService.getInnings2RecentOversUpdates(this.gameId).subscribe(
         recentBalls => {
           this.recentBalls = recentBalls
         }

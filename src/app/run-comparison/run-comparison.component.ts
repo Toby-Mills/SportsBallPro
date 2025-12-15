@@ -15,6 +15,7 @@ import { MatchService } from '../services/match.service';
     templateUrl: './run-comparison.component.html'
 })
 export class RunComparisonComponent {
+  @Input() gameId: string = '';
   public chartData: RunComparisonChartData = new RunComparisonChartData()
   private teamAColour: Color = '#990000';
   private teamBColour: Color = '#000099'
@@ -22,7 +23,7 @@ export class RunComparisonComponent {
   constructor(public matchService: MatchService) { }
 
   ngOnInit() {
-    this.matchService.runComparisonUpdated.subscribe(
+    this.matchService.getRunComparisonUpdates(this.gameId).subscribe(
       runComparison => {
         this.chartData = runComparison.createChartData();
 

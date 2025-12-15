@@ -48,6 +48,7 @@ export class HomeComponent {
   viewingInnings: number = 1;
   private wakeLock: any = null;
   public isWakeLockActive: boolean = false;
+  public actualGameId: string = ''; // Store the resolved gameId
 
 
   constructor(
@@ -62,36 +63,41 @@ export class HomeComponent {
   ngAfterViewInit() {
     // Use input gameId if provided (modal usage), otherwise use route param
     if (this.gameId) {
-      this.matchService.loadMatch(this.gameId);
-      if (this.showRefreshTimer && this.refreshTimer) {
-        this.refreshTimer.setTimer(30000);
-      }
+      this.actualGameId = this.gameId;
     } else {
       this.parameterGameKey = this.route.snapshot.paramMap.get('id');
       if (this.parameterGameKey != null) {
-        const routeGameId = this.matchKeys.readKey(this.parameterGameKey);
-        this.matchService.loadMatch(routeGameId);
-        if (this.showRefreshTimer && this.refreshTimer) {
-          this.refreshTimer.setTimer(30000);
-        }
+        this.actualGameId = this.matchKeys.readKey(this.parameterGameKey);
+      }
+    }
+
+    // Now that we have actualGameId, set up subscriptions
+    if (this.actualGameId) {
+      this.matchService.getInningsChangeUpdates(this.actualGameId).subscribe(
+        inningsNumber => this.viewingInnings = inningsNumber
+      )
+      this.matchService.getFixtureUpdates(this.actualGameId).subscribe(
+        fixture => this.fixture = fixture
+      )
+      this.matchService.getStatusUpdates(this.actualGameId).subscribe(
+        status => this.status = status
+      )
+
+      // Load the match data
+      this.matchService.loadMatch(this.actualGameId);
+      
+      if (this.showRefreshTimer && this.refreshTimer) {
+        this.refreshTimer.setTimer(30000);
       }
     }
   }
 
   ngOnInit() {
-    this.matchService.inningsChange.subscribe(
-      inningsNumber => this.viewingInnings = inningsNumber
-    )
-    this.matchService.fixtureUpdated.subscribe(
-      fixture => this.fixture = fixture
-    )
-    this.matchService.statusUpdated.subscribe(
-      status => this.status = status
-    )
+    // Initialization happens in ngAfterViewInit
   }
 
   public onRefreshTimer() {
-    this.matchService.reloadMatchData();
+    this.matchService.reloadMatchData(this.actualGameId);
   }
 
   async toggleWakeLock() {

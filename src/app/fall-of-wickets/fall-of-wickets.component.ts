@@ -11,19 +11,20 @@ import { MatchService } from '../services/match.service';
 })
 export class FallOfWicketsComponent {
 @Input() innings: 1 | 2 = 1;
+  @Input() gameId: string = '';
   public fallOfWickets:FallOfWickets = new FallOfWickets;
 
   constructor (public matchService: MatchService){}
 
   ngOnInit(){
     if(this.innings ==1){
-      this.matchService.innings1FallOfWicketsUpdated.subscribe(
+      this.matchService.getInnings1FallOfWicketsUpdates(this.gameId).subscribe(
         fallOfWickets => {
           this.fallOfWickets = fallOfWickets;
         }
       )
     }else{
-      this.matchService.innings2FallOfWicketsUpdated.subscribe(
+      this.matchService.getInnings2FallOfWicketsUpdates(this.gameId).subscribe(
         fallOfWickets => {
           this.fallOfWickets = fallOfWickets;
         }

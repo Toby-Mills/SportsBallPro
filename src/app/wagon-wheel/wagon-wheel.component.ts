@@ -14,6 +14,7 @@ import { WebSportsAPIService } from '../services/web-sports-api.service';
     styleUrl: './wagon-wheel.component.css'
 })
 export class WagonWheelComponent {
+  @Input() gameId: string = '';
   public teamAId: string = '';
   public teamAName: string = '';
   public teamALogoName: string = '';
@@ -47,24 +48,26 @@ export class WagonWheelComponent {
   constructor(private sanitizer: DomSanitizer, private matchService: MatchService, private webSportsAPI: WebSportsAPIService) { }
 
   ngOnInit() {
-    this.matchService.fixtureUpdated.subscribe(
+    this.matchService.getFixtureUpdates(this.gameId).subscribe(
       fixture => {
         this.teamAId = fixture.teamAId;
         this.teamAName = fixture.teamAName;
         this.teamALogoName = fixture.teamALogoName;
+        this.teamBId = fixture.teamBId;
+        this.teamBName = fixture.teamBName;
+        this.teamBLogoName = fixture.teamBLogoName;
+        
         this.teamALogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamALogoName, 1);
         this.teamBLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamBLogoName, 2);
+        
         if (this.playerSelectorTeamId == '') {
           this.playerSelectorTeamId = this.teamAId;
           this.playerSelectorTeamName = this.teamAName;
           this.playerSelectorType = 'Batting';
         };
-        this.teamBId = fixture.teamBId;
-        this.teamBName = fixture.teamBName;
-        this.teamBLogoName = fixture.teamBLogoName;
       }
     )
-    this.matchService.wagonWheelUpdated.subscribe(
+    this.matchService.getWagonWheelUpdates(this.gameId).subscribe(
       wagonWheel => {
         this.wagonWheelData = wagonWheel;
         let player = undefined;
@@ -84,25 +87,25 @@ export class WagonWheelComponent {
         this.svgContent = this.sanitizer.bypassSecurityTrustHtml(this.generateCricketFieldSvg(3));
       }
     )
-    this.matchService.teamABattingLineupUpdated.subscribe(
+    this.matchService.getTeamABattingLineupUpdates(this.gameId).subscribe(
       battingLineup => {
         this.teamABattingLineup = battingLineup;
         this.loadPlayerSelectorLineup();
       }
     )
-    this.matchService.teamBBattingLineupUpdated.subscribe(
+    this.matchService.getTeamBBattingLineupUpdates(this.gameId).subscribe(
       battingLineup => {
         this.teamBBattingLineup = battingLineup;
         this.loadPlayerSelectorLineup();
       }
     )
-    this.matchService.teamABowlingLineupUpdated.subscribe(
+    this.matchService.getTeamABowlingLineupUpdates(this.gameId).subscribe(
       bowlingLineup => {
         this.teamABowlingLineup = bowlingLineup;
         this.loadPlayerSelectorLineup();
       }
     )
-    this.matchService.teamBBowlingLineupUpdated.subscribe(
+    this.matchService.getTeamBBowlingLineupUpdates(this.gameId).subscribe(
       bowlingLineup => {
         this.teamBBowlingLineup = bowlingLineup;
         this.loadPlayerSelectorLineup();
@@ -113,7 +116,7 @@ export class WagonWheelComponent {
 
   public onPlayerClick(playerId: number) {
     this.showPlayerSelector = false;
-    this.matchService.setWagonWheelPlayer(this.playerSelectorTeamId, playerId, this.playerSelectorType);
+    this.matchService.setWagonWheelPlayer(this.gameId, this.playerSelectorTeamId, playerId, this.playerSelectorType);
   }
 
   generateCricketFieldSvg(scale: number): string {

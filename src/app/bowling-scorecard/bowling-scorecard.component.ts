@@ -29,20 +29,21 @@ export class VisibleBowlers implements PipeTransform {
 })
 export class BowlingScorecardComponent {
   @Input() teamNumber: 1 | 2 = 1;
+  @Input() gameId: string = '';
   public scorecard: BowlingScorecard = new BowlingScorecard();
   public allBowlers: boolean = false;
 
   constructor(public matchService: MatchService) { }
 
   ngOnInit() {
-    this.matchService.teamABowlingScorecardUpdated.subscribe(
+    this.matchService.getTeamABowlingScorecardUpdates(this.gameId).subscribe(
       scorecard => {
         if (this.teamNumber == 1) {
           this.scorecard = scorecard;
         }
       }
     )
-    this.matchService.teamBBowlingScorecardUpdated.subscribe(
+    this.matchService.getTeamBBowlingScorecardUpdates(this.gameId).subscribe(
       scorecard => {
         if (this.teamNumber == 2) {
           this.scorecard = scorecard;

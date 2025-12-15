@@ -38,20 +38,21 @@ export class VisibleBatter implements PipeTransform {
 })
 export class BattingScorecardComponent {
   @Input() teamNumber: 1 | 2 = 1;
+  @Input() gameId: string = '';
   public scorecard: BattingScorecard = new BattingScorecard;
   public allBatters: boolean = false;
 
   constructor(public matchService: MatchService) { }
 
   ngOnInit() {
-    this.matchService.teamAbattingScorecardUpdated.subscribe(
+    this.matchService.getTeamABattingScorecardUpdates(this.gameId).subscribe(
       scorecard => {
         if (this.teamNumber == 1) {
           this.scorecard = scorecard;
         }
       }
     )
-    this.matchService.teamBbattingScorecardUpdated.subscribe(
+    this.matchService.getTeamBBattingScorecardUpdates(this.gameId).subscribe(
       scorecard => {
         if (this.teamNumber == 2) { this.scorecard = scorecard; }
       }

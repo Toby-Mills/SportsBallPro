@@ -12,6 +12,7 @@ import { WebSportsAPIService } from '../services/web-sports-api.service';
 })
 export class TeamScoreComponent {
   @Input() teamNumber: 1 | 2 = 1;
+  @Input() gameId: string = '';
   public teamScore: TeamScore = new TeamScore;
   public logoUrl: string = '';
 
@@ -20,7 +21,7 @@ export class TeamScoreComponent {
   ngOnInit() {
   
     if (this.teamNumber == 1) {
-      this.matchService.teamAScoreUpdated.subscribe(
+      this.matchService.getTeamAScoreUpdates(this.gameId).subscribe(
         teamScore => {
           this.teamScore = teamScore;
           this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);
@@ -29,7 +30,7 @@ export class TeamScoreComponent {
     }
 
     if (this.teamNumber == 2) {
-      this.matchService.teamBScoreUpdated.subscribe(
+      this.matchService.getTeamBScoreUpdates(this.gameId).subscribe(
         teamScore => {
           this.teamScore = teamScore;
           this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);

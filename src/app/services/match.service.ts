@@ -16,78 +16,218 @@ import { ToasterMessageService } from './toaster-message.service';
   providedIn: 'root'
 })
 export class MatchService {
-  fixtureUpdated: BehaviorSubject<Fixture> = new BehaviorSubject<Fixture>(new Fixture);
-  statusUpdated: BehaviorSubject<Status> = new BehaviorSubject<Status>(new Status);
-  teamAScoreUpdated: BehaviorSubject<TeamScore> = new BehaviorSubject<TeamScore>(new TeamScore);
-  teamBScoreUpdated: BehaviorSubject<TeamScore> = new BehaviorSubject<TeamScore>(new TeamScore);
-  teamAbattingScorecardUpdated: BehaviorSubject<BattingScorecard> = new BehaviorSubject<BattingScorecard>(new BattingScorecard);
-  teamBbattingScorecardUpdated: BehaviorSubject<BattingScorecard> = new BehaviorSubject<BattingScorecard>(new BattingScorecard);
-  teamABowlingScorecardUpdated: BehaviorSubject<BowlingScorecard> = new BehaviorSubject<BowlingScorecard>(new BowlingScorecard);
-  teamBBowlingScorecardUpdated: BehaviorSubject<BowlingScorecard> = new BehaviorSubject<BowlingScorecard>(new BowlingScorecard);
-  innings1RecentOversUpdated: BehaviorSubject<RecentBalls> = new BehaviorSubject<RecentBalls>(new RecentBalls);
-  innings2RecentOversUpdated: BehaviorSubject<RecentBalls> = new BehaviorSubject<RecentBalls>(new RecentBalls);
-  innings1FallOfWicketsUpdated: BehaviorSubject<FallOfWickets> = new BehaviorSubject<FallOfWickets>(new FallOfWickets);
-  innings2FallOfWicketsUpdated: BehaviorSubject<FallOfWickets> = new BehaviorSubject<FallOfWickets>(new FallOfWickets);
-  runComparisonUpdated: BehaviorSubject<RunComparison> = new BehaviorSubject<RunComparison>(new RunComparison);
-  wagonWheelUpdated: BehaviorSubject<WagonWheel> = new BehaviorSubject<WagonWheel>(new WagonWheel);
-  teamABattingLineupUpdated: BehaviorSubject<PlayerLineup> = new BehaviorSubject<PlayerLineup>(new PlayerLineup);
-  teamBBattingLineupUpdated: BehaviorSubject<PlayerLineup> = new BehaviorSubject<PlayerLineup>(new PlayerLineup);
-  teamABowlingLineupUpdated: BehaviorSubject<PlayerLineup> = new BehaviorSubject<PlayerLineup>(new PlayerLineup);
-  teamBBowlingLineupUpdated: BehaviorSubject<PlayerLineup> = new BehaviorSubject<PlayerLineup>(new PlayerLineup);
-  inningsChange: BehaviorSubject<1 | 2> = new BehaviorSubject<1 | 2>(1);
-
-  private gameId: string = '';
-  private match: Match = new Match();
-  private wagonWheelTeamId: string = '';
-  private wagonWheelPlayerId: number = 0;
-  private wagonWheelType: 'Batting' | 'Bowling' = 'Batting'
+  // Map-based storage for multiple matches
+  private matches = new Map<string, Match>();
+  private fixtureSubjects = new Map<string, BehaviorSubject<Fixture>>();
+  private statusSubjects = new Map<string, BehaviorSubject<Status>>();
+  private teamAScoreSubjects = new Map<string, BehaviorSubject<TeamScore>>();
+  private teamBScoreSubjects = new Map<string, BehaviorSubject<TeamScore>>();
+  private teamAbattingScorecardSubjects = new Map<string, BehaviorSubject<BattingScorecard>>();
+  private teamBbattingScorecardSubjects = new Map<string, BehaviorSubject<BattingScorecard>>();
+  private teamABowlingScorecardSubjects = new Map<string, BehaviorSubject<BowlingScorecard>>();
+  private teamBBowlingScorecardSubjects = new Map<string, BehaviorSubject<BowlingScorecard>>();
+  private innings1RecentOversSubjects = new Map<string, BehaviorSubject<RecentBalls>>();
+  private innings2RecentOversSubjects = new Map<string, BehaviorSubject<RecentBalls>>();
+  private innings1FallOfWicketsSubjects = new Map<string, BehaviorSubject<FallOfWickets>>();
+  private innings2FallOfWicketsSubjects = new Map<string, BehaviorSubject<FallOfWickets>>();
+  private runComparisonSubjects = new Map<string, BehaviorSubject<RunComparison>>();
+  private wagonWheelSubjects = new Map<string, BehaviorSubject<WagonWheel>>();
+  private teamABattingLineupSubjects = new Map<string, BehaviorSubject<PlayerLineup>>();
+  private teamBBattingLineupSubjects = new Map<string, BehaviorSubject<PlayerLineup>>();
+  private teamABowlingLineupSubjects = new Map<string, BehaviorSubject<PlayerLineup>>();
+  private teamBBowlingLineupSubjects = new Map<string, BehaviorSubject<PlayerLineup>>();
+  private inningsChangeSubjects = new Map<string, BehaviorSubject<1 | 2>>();
+  
+  // Wagon wheel state per match
+  private wagonWheelState = new Map<string, { teamId: string, playerId: number, type: 'Batting' | 'Bowling' }>();
 
   constructor(public webSportsApi: WebSportsAPIService, private toasterMessage: ToasterMessageService) { }
 
-  public loadMatch(gameId: string) {
-    this.gameId = gameId;
-    this.reloadMatchData();
+  /**
+   * Get observable for fixture updates for a specific match
+   */
+  getFixtureUpdates(gameId: string): Observable<Fixture> {
+    return this.getOrCreateSubject(this.fixtureSubjects, gameId, new Fixture()).asObservable();
   }
 
-  public reloadMatchData() {
-    this.loadFixture().pipe(
-      concatMap(x => this.loadGameTeamIDs()),
-      concatMap(x => this.loadLineup('Batting', 1)),
-      concatMap(x => this.loadLineup('Batting', 2)),
-      concatMap(x => this.loadLineup('Bowling', 1)),
-      concatMap(x => this.loadLineup('Bowling', 2)),
-      concatMap(x => this.loadRecentOvers(1)),
-      concatMap(x => this.loadRecentOvers(2)),
-      concatMap(x => this.loadFallOfWickets(1)),
-      concatMap(x => this.loadFallOfWickets(2)),
-      concatMap(x => this.loadBattingScorecard(this.match.innings1Detail)),
-      concatMap(x => this.loadBattingScorecard(this.match.innings2Detail)),
-      concatMap(x => this.loadCurrentBatters(1)),
-      concatMap(x => this.loadCurrentBatters(2)),
-      concatMap(x => this.loadCurrentBowlers(1)),
-      concatMap(x => this.loadCurrentBowlers(2)),
-      concatMap(x => this.loadBowlingScorecard(this.match.innings1Detail)),
-      concatMap(x => this.loadBowlingScorecard(this.match.innings2Detail)),
-      concatMap(x => this.loadRunComparison()),
-      concatMap(x => this.loadWagonWheel(this.wagonWheelTeamId, this.wagonWheelPlayerId, this.wagonWheelType))
+  getStatusUpdates(gameId: string): Observable<Status> {
+    return this.getOrCreateSubject(this.statusSubjects, gameId, new Status()).asObservable();
+  }
+
+  getTeamAScoreUpdates(gameId: string): Observable<TeamScore> {
+    return this.getOrCreateSubject(this.teamAScoreSubjects, gameId, new TeamScore()).asObservable();
+  }
+
+  getTeamBScoreUpdates(gameId: string): Observable<TeamScore> {
+    return this.getOrCreateSubject(this.teamBScoreSubjects, gameId, new TeamScore()).asObservable();
+  }
+
+  getTeamABattingScorecardUpdates(gameId: string): Observable<BattingScorecard> {
+    return this.getOrCreateSubject(this.teamAbattingScorecardSubjects, gameId, new BattingScorecard()).asObservable();
+  }
+
+  getTeamBBattingScorecardUpdates(gameId: string): Observable<BattingScorecard> {
+    return this.getOrCreateSubject(this.teamBbattingScorecardSubjects, gameId, new BattingScorecard()).asObservable();
+  }
+
+  getTeamABowlingScorecardUpdates(gameId: string): Observable<BowlingScorecard> {
+    return this.getOrCreateSubject(this.teamABowlingScorecardSubjects, gameId, new BowlingScorecard()).asObservable();
+  }
+
+  getTeamBBowlingScorecardUpdates(gameId: string): Observable<BowlingScorecard> {
+    return this.getOrCreateSubject(this.teamBBowlingScorecardSubjects, gameId, new BowlingScorecard()).asObservable();
+  }
+
+  getInnings1RecentOversUpdates(gameId: string): Observable<RecentBalls> {
+    return this.getOrCreateSubject(this.innings1RecentOversSubjects, gameId, new RecentBalls()).asObservable();
+  }
+
+  getInnings2RecentOversUpdates(gameId: string): Observable<RecentBalls> {
+    return this.getOrCreateSubject(this.innings2RecentOversSubjects, gameId, new RecentBalls()).asObservable();
+  }
+
+  getInnings1FallOfWicketsUpdates(gameId: string): Observable<FallOfWickets> {
+    return this.getOrCreateSubject(this.innings1FallOfWicketsSubjects, gameId, new FallOfWickets()).asObservable();
+  }
+
+  getInnings2FallOfWicketsUpdates(gameId: string): Observable<FallOfWickets> {
+    return this.getOrCreateSubject(this.innings2FallOfWicketsSubjects, gameId, new FallOfWickets()).asObservable();
+  }
+
+  getRunComparisonUpdates(gameId: string): Observable<RunComparison> {
+    return this.getOrCreateSubject(this.runComparisonSubjects, gameId, new RunComparison()).asObservable();
+  }
+
+  getWagonWheelUpdates(gameId: string): Observable<WagonWheel> {
+    return this.getOrCreateSubject(this.wagonWheelSubjects, gameId, new WagonWheel()).asObservable();
+  }
+
+  getTeamABattingLineupUpdates(gameId: string): Observable<PlayerLineup> {
+    return this.getOrCreateSubject(this.teamABattingLineupSubjects, gameId, new PlayerLineup()).asObservable();
+  }
+
+  getTeamBBattingLineupUpdates(gameId: string): Observable<PlayerLineup> {
+    return this.getOrCreateSubject(this.teamBBattingLineupSubjects, gameId, new PlayerLineup()).asObservable();
+  }
+
+  getTeamABowlingLineupUpdates(gameId: string): Observable<PlayerLineup> {
+    return this.getOrCreateSubject(this.teamABowlingLineupSubjects, gameId, new PlayerLineup()).asObservable();
+  }
+
+  getTeamBBowlingLineupUpdates(gameId: string): Observable<PlayerLineup> {
+    return this.getOrCreateSubject(this.teamBBowlingLineupSubjects, gameId, new PlayerLineup()).asObservable();
+  }
+
+  getInningsChangeUpdates(gameId: string): Observable<1 | 2> {
+    return this.getOrCreateSubject(this.inningsChangeSubjects, gameId, 1 as 1 | 2).asObservable();
+  }
+
+  /**
+   * Helper to get or create a BehaviorSubject for a specific gameId
+   */
+  private getOrCreateSubject<T>(map: Map<string, BehaviorSubject<T>>, gameId: string, initialValue: T): BehaviorSubject<T> {
+    if (!map.has(gameId)) {
+      map.set(gameId, new BehaviorSubject<T>(initialValue));
+    }
+    return map.get(gameId)!;
+  }
+
+  /**
+   * Get or create Match instance for gameId
+   */
+  private getOrCreateMatch(gameId: string): Match {
+    if (!this.matches.has(gameId)) {
+      this.matches.set(gameId, new Match());
+    }
+    return this.matches.get(gameId)!;
+  }
+
+  /**
+   * Load match data - checks cache first, only loads from API if not cached
+   */
+  public loadMatch(gameId: string) {
+    // If match is already cached, emit cached data and skip API calls
+    if (this.matches.has(gameId)) {
+      // Defer emission to next tick to allow subscriptions to be set up
+      setTimeout(() => this.emitCachedData(gameId), 0);
+      return;
+    }
+
+    // Not cached, load from API
+    this.reloadMatchData(gameId);
+  }
+
+  /**
+   * Emit all cached data for a match
+   */
+  private emitCachedData(gameId: string) {
+    const match = this.matches.get(gameId);
+    if (!match) return;
+
+    this.getOrCreateSubject(this.fixtureSubjects, gameId, new Fixture()).next(match.fixture);
+    this.getOrCreateSubject(this.statusSubjects, gameId, new Status()).next(match.status);
+    this.getOrCreateSubject(this.teamAScoreSubjects, gameId, new TeamScore()).next(match.teamAScore);
+    this.getOrCreateSubject(this.teamBScoreSubjects, gameId, new TeamScore()).next(match.teamBScore);
+    this.getOrCreateSubject(this.teamAbattingScorecardSubjects, gameId, new BattingScorecard()).next(match.innings1Detail.battingScorecard);
+    this.getOrCreateSubject(this.teamBbattingScorecardSubjects, gameId, new BattingScorecard()).next(match.innings2Detail.battingScorecard);
+    this.getOrCreateSubject(this.teamABowlingScorecardSubjects, gameId, new BowlingScorecard()).next(match.innings2Detail.bowlingScorecard);
+    this.getOrCreateSubject(this.teamBBowlingScorecardSubjects, gameId, new BowlingScorecard()).next(match.innings1Detail.bowlingScorecard);
+    this.getOrCreateSubject(this.innings1RecentOversSubjects, gameId, new RecentBalls()).next(match.innings1Detail.recentOvers);
+    this.getOrCreateSubject(this.innings2RecentOversSubjects, gameId, new RecentBalls()).next(match.innings2Detail.recentOvers);
+    this.getOrCreateSubject(this.innings1FallOfWicketsSubjects, gameId, new FallOfWickets()).next(match.innings1Detail.fallOfWickets);
+    this.getOrCreateSubject(this.innings2FallOfWicketsSubjects, gameId, new FallOfWickets()).next(match.innings2Detail.fallOfWickets);
+    this.getOrCreateSubject(this.runComparisonSubjects, gameId, new RunComparison()).next(match.runComparison);
+    this.getOrCreateSubject(this.wagonWheelSubjects, gameId, new WagonWheel()).next(match.wagonWheel);
+    this.getOrCreateSubject(this.teamABattingLineupSubjects, gameId, new PlayerLineup()).next(match.teamABattingLineup);
+    this.getOrCreateSubject(this.teamBBattingLineupSubjects, gameId, new PlayerLineup()).next(match.teamBBattingLineup);
+    this.getOrCreateSubject(this.teamABowlingLineupSubjects, gameId, new PlayerLineup()).next(match.teamABowlingLineup);
+    this.getOrCreateSubject(this.teamBBowlingLineupSubjects, gameId, new PlayerLineup()).next(match.teamBBowlingLineup);
+    this.getOrCreateSubject(this.inningsChangeSubjects, gameId, 1 as 1 | 2).next(match.status.currentInnings);
+  }
+
+  public reloadMatchData(gameId: string) {
+    const match = this.getOrCreateMatch(gameId);
+    const wagonWheelState = this.wagonWheelState.get(gameId);
+    
+    this.loadFixture(gameId).pipe(
+      concatMap(x => this.loadGameTeamIDs(gameId)),
+      concatMap(x => this.loadLineup(gameId, 'Batting', 1)),
+      concatMap(x => this.loadLineup(gameId, 'Batting', 2)),
+      concatMap(x => this.loadLineup(gameId, 'Bowling', 1)),
+      concatMap(x => this.loadLineup(gameId, 'Bowling', 2)),
+      concatMap(x => this.loadRecentOvers(gameId, 1)),
+      concatMap(x => this.loadRecentOvers(gameId, 2)),
+      concatMap(x => this.loadFallOfWickets(gameId, 1)),
+      concatMap(x => this.loadFallOfWickets(gameId, 2)),
+      concatMap(x => this.loadBattingScorecard(gameId, match.innings1Detail)),
+      concatMap(x => this.loadBattingScorecard(gameId, match.innings2Detail)),
+      concatMap(x => this.loadCurrentBatters(gameId, 1)),
+      concatMap(x => this.loadCurrentBatters(gameId, 2)),
+      concatMap(x => this.loadCurrentBowlers(gameId, 1)),
+      concatMap(x => this.loadCurrentBowlers(gameId, 2)),
+      concatMap(x => this.loadBowlingScorecard(gameId, match.innings1Detail)),
+      concatMap(x => this.loadBowlingScorecard(gameId, match.innings2Detail)),
+      concatMap(x => this.loadRunComparison(gameId)),
+      concatMap(x => this.loadWagonWheel(gameId, wagonWheelState?.teamId || '', wagonWheelState?.playerId || 0, wagonWheelState?.type || 'Batting'))
     ).subscribe()
   }
 
-  private loadFixture(): Observable<any> {
-    return this.webSportsApi.getFixtures(this.gameId)
+  private loadFixture(gameId: string): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
+    return this.webSportsApi.getFixtures(gameId)
       .pipe(
         map(result => {
           if (result.fixtures.length > 0) {
             let updatedMatch = result.fixtures[0];
-            this.match.loadFixture(updatedMatch);
-            this.fixtureUpdated.next(this.match.fixture);
-            this.statusUpdated.next(this.match.status);
+            match.loadFixture(updatedMatch);
+            this.getOrCreateSubject(this.fixtureSubjects, gameId, new Fixture()).next(match.fixture);
+            this.getOrCreateSubject(this.statusSubjects, gameId, new Status()).next(match.status);
 
-            this.match.teamAScore.load(updatedMatch);
-            this.teamAScoreUpdated.next(this.match.teamAScore);
+            match.teamAScore.load(updatedMatch);
+            this.getOrCreateSubject(this.teamAScoreSubjects, gameId, new TeamScore()).next(match.teamAScore);
 
-            this.match.teamBScore.load(updatedMatch);
-            this.teamBScoreUpdated.next(this.match.teamBScore);
+            match.teamBScore.load(updatedMatch);
+            this.getOrCreateSubject(this.teamBScoreSubjects, gameId, new TeamScore()).next(match.teamBScore);
           }
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
@@ -107,92 +247,95 @@ export class MatchService {
     return throwError(() => new Error(message));
   }
 
-  private loadGameTeamIDs(): Observable<any> {
-    return this.webSportsApi.getFixtureBySport(this.gameId)
+  private loadGameTeamIDs(gameId: string): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
+    return this.webSportsApi.getFixtureBySport(gameId)
       .pipe(
         map(matches => {
           if (matches.fixtures.length > 0) {
-            this.match.loadTeamIds(matches.fixtures[0]);
-            this.fixtureUpdated.next(this.match.fixture);
+            match.loadTeamIds(matches.fixtures[0]);
+            this.getOrCreateSubject(this.fixtureSubjects, gameId, new Fixture()).next(match.fixture);
           }
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
   }
 
-  private loadLineup(type: 'Batting' | 'Bowling', teamNumber: 1 | 2): Observable<any> {
+  private loadLineup(gameId: string, type: 'Batting' | 'Bowling', teamNumber: 1 | 2): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
 
     if (type == 'Batting' && teamNumber == 1) {
-      return this.webSportsApi.getBattingLineup(this.gameId, this.match.fixture.teamAId).pipe(
+      return this.webSportsApi.getBattingLineup(gameId, match.fixture.teamAId).pipe(
         map(lineup => {
-          this.match.loadLineup('Batting', 1, lineup);
-          console.log();
-          this.teamABattingLineupUpdated.next(this.match.teamABattingLineup);
+          match.loadLineup('Batting', 1, lineup);
+          this.getOrCreateSubject(this.teamABattingLineupSubjects, gameId, new PlayerLineup()).next(match.teamABattingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
     if (type == 'Batting' && teamNumber == 2) {
-      return this.webSportsApi.getBattingLineup(this.gameId, this.match.fixture.teamBId).pipe(
+      return this.webSportsApi.getBattingLineup(gameId, match.fixture.teamBId).pipe(
         map(lineup => {
-          this.match.loadLineup('Batting', 2, lineup);
-          this.teamBBattingLineupUpdated.next(this.match.teamBBattingLineup);
+          match.loadLineup('Batting', 2, lineup);
+          this.getOrCreateSubject(this.teamBBattingLineupSubjects, gameId, new PlayerLineup()).next(match.teamBBattingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
     if (type == 'Bowling' && teamNumber == 1) {
-      return this.webSportsApi.getBowlingLineup(this.gameId, this.match.fixture.teamAId).pipe(
+      return this.webSportsApi.getBowlingLineup(gameId, match.fixture.teamAId).pipe(
         map(lineup => {
-          this.match.loadLineup('Bowling', 1, lineup);
-          this.teamABowlingLineupUpdated.next(this.match.teamABowlingLineup);
+          match.loadLineup('Bowling', 1, lineup);
+          this.getOrCreateSubject(this.teamABowlingLineupSubjects, gameId, new PlayerLineup()).next(match.teamABowlingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
     if (type == 'Bowling' && teamNumber == 2) {
-      return this.webSportsApi.getBowlingLineup(this.gameId, this.match.fixture.teamBId).pipe(
+      return this.webSportsApi.getBowlingLineup(gameId, match.fixture.teamBId).pipe(
         map(lineup => {
-          this.match.loadLineup('Bowling', 2, lineup)
-          this.teamBBowlingLineupUpdated.next(this.match.teamBBowlingLineup);
+          match.loadLineup('Bowling', 2, lineup)
+          this.getOrCreateSubject(this.teamBBowlingLineupSubjects, gameId, new PlayerLineup()).next(match.teamBBowlingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
     return of('');
   }
 
-  private loadRecentOvers(innings: number): Observable<any> {
+  private loadRecentOvers(gameId: string, innings: number): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
     if (innings == 1) {
-      return this.webSportsApi.getBallCountdown(this.gameId, this.match.fixture.teamAId, 1).pipe(
+      return this.webSportsApi.getBallCountdown(gameId, match.fixture.teamAId, 1).pipe(
         map(ballCountdown => {
-          this.match.innings1Detail.recentOvers.loadRecentOvers(ballCountdown);
-          this.innings1RecentOversUpdated.next(this.match.innings1Detail.recentOvers)
+          match.innings1Detail.recentOvers.loadRecentOvers(ballCountdown);
+          this.getOrCreateSubject(this.innings1RecentOversSubjects, gameId, new RecentBalls()).next(match.innings1Detail.recentOvers)
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
-      return this.webSportsApi.getBallCountdown(this.gameId, this.match.fixture.teamBId, 2).pipe(
+      return this.webSportsApi.getBallCountdown(gameId, match.fixture.teamBId, 2).pipe(
         map(ballCountdown => {
-          this.match.innings2Detail.recentOvers.loadRecentOvers(ballCountdown)
-          this.innings2RecentOversUpdated.next(this.match.innings2Detail.recentOvers)
+          match.innings2Detail.recentOvers.loadRecentOvers(ballCountdown)
+          this.getOrCreateSubject(this.innings2RecentOversSubjects, gameId, new RecentBalls()).next(match.innings2Detail.recentOvers)
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
 
-  private loadCurrentBatters(innings: number): Observable<any> {
+  private loadCurrentBatters(gameId: string, innings: number): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
     if (innings == 1) {
-      return this.webSportsApi.getBatsmen(this.gameId, this.match.fixture.teamAId).pipe(
+      return this.webSportsApi.getBatsmen(gameId, match.fixture.teamAId).pipe(
         map(batsmen => {
-          this.match.innings1Detail.currentBatters.loadCurrentBatters(batsmen);
-          this.match.innings1Detail.battingScorecard.addOnStrike(batsmen);
+          match.innings1Detail.currentBatters.loadCurrentBatters(batsmen);
+          match.innings1Detail.battingScorecard.addOnStrike(batsmen);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
-      return this.webSportsApi.getBatsmen(this.gameId, this.match.fixture.teamBId).pipe(
+      return this.webSportsApi.getBatsmen(gameId, match.fixture.teamBId).pipe(
         map(batsmen => {
-          this.match.innings2Detail.currentBatters.loadCurrentBatters(batsmen);
-          this.match.innings2Detail.battingScorecard.addOnStrike(batsmen);
+          match.innings2Detail.currentBatters.loadCurrentBatters(batsmen);
+          match.innings2Detail.battingScorecard.addOnStrike(batsmen);
 
-          if (this.match.innings2Detail.currentBatters.batters.length > 0) {
-            if (this.match.status.currentInnings == 1) {
-              this.match.status.currentInnings = 2;
-              this.inningsChange.next(this.match.status.currentInnings);
+          if (match.innings2Detail.currentBatters.batters.length > 0) {
+            if (match.status.currentInnings == 1) {
+              match.status.currentInnings = 2;
+              this.getOrCreateSubject(this.inningsChangeSubjects, gameId, 1 as 1 | 2).next(match.status.currentInnings);
             }
           }
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
@@ -200,100 +343,102 @@ export class MatchService {
     }
   }
 
-  private loadFallOfWickets(innings: number): Observable<any> {
+  private loadFallOfWickets(gameId: string, innings: number): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
     if (innings == 1) {
-      return this.webSportsApi.getFallOfWickets(this.gameId, this.match.fixture.teamAId).pipe(
+      return this.webSportsApi.getFallOfWickets(gameId, match.fixture.teamAId).pipe(
         map(fallOfWickets => {
-          this.match.innings1Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
-          this.innings1FallOfWicketsUpdated.next(this.match.innings1Detail.fallOfWickets);
+          match.innings1Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
+          this.getOrCreateSubject(this.innings1FallOfWicketsSubjects, gameId, new FallOfWickets()).next(match.innings1Detail.fallOfWickets);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
-      return this.webSportsApi.getFallOfWickets(this.gameId, this.match.fixture.teamBId).pipe(
+      return this.webSportsApi.getFallOfWickets(gameId, match.fixture.teamBId).pipe(
         map(fallOfWickets => {
-          this.match.innings2Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
-          this.innings2FallOfWicketsUpdated.next(this.match.innings2Detail.fallOfWickets);
+          match.innings2Detail.fallOfWickets.loadFallOfWickets(fallOfWickets);
+          this.getOrCreateSubject(this.innings2FallOfWicketsSubjects, gameId, new FallOfWickets()).next(match.innings2Detail.fallOfWickets);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
 
-  private loadBattingScorecard(innings: InningsDetail): Observable<any> {
-    let url: string = '';
+  private loadBattingScorecard(gameId: string, innings: InningsDetail): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
     if (innings.number == 1) {
-      return this.webSportsApi.getBattingScorecard(this.gameId, this.match.fixture.teamAId).pipe(
+      return this.webSportsApi.getBattingScorecard(gameId, match.fixture.teamAId).pipe(
         map(scorecard => {
           innings.battingScorecard.loadBattingScorcard(scorecard);
-          this.teamAbattingScorecardUpdated.next(innings.battingScorecard);
+          this.getOrCreateSubject(this.teamAbattingScorecardSubjects, gameId, new BattingScorecard()).next(innings.battingScorecard);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
-      return this.webSportsApi.getBattingScorecard(this.gameId, this.match.fixture.teamBId).pipe(
+      return this.webSportsApi.getBattingScorecard(gameId, match.fixture.teamBId).pipe(
         map(scorecard => {
           innings.battingScorecard.loadBattingScorcard(scorecard);
-          this.teamBbattingScorecardUpdated.next(innings.battingScorecard);
+          this.getOrCreateSubject(this.teamBbattingScorecardSubjects, gameId, new BattingScorecard()).next(innings.battingScorecard);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
 
-  private loadBowlingScorecard(innings: InningsDetail): Observable<any> {
+  private loadBowlingScorecard(gameId: string, innings: InningsDetail): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
     if (innings.number == 1) {
-      return this.webSportsApi.getBowlingScorecard(this.gameId, this.match.fixture.teamBId).pipe(
+      return this.webSportsApi.getBowlingScorecard(gameId, match.fixture.teamBId).pipe(
         map(scorecard => {
           innings.bowlingScorecard.loadBowlingScorcard(scorecard);
-          this.match.innings1Detail.bowlingScorecard.addCurrentBowlers(this.match.innings1Detail.currentBowlers);
-          this.teamBBowlingScorecardUpdated.next(innings.bowlingScorecard);
+          match.innings1Detail.bowlingScorecard.addCurrentBowlers(match.innings1Detail.currentBowlers);
+          this.getOrCreateSubject(this.teamBBowlingScorecardSubjects, gameId, new BowlingScorecard()).next(innings.bowlingScorecard);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
-      return this.webSportsApi.getBowlingScorecard(this.gameId, this.match.fixture.teamAId).pipe(
+      return this.webSportsApi.getBowlingScorecard(gameId, match.fixture.teamAId).pipe(
         map(scorecard => {
           innings.bowlingScorecard.loadBowlingScorcard(scorecard);
-          this.match.innings2Detail.bowlingScorecard.addCurrentBowlers(this.match.innings2Detail.currentBowlers);
-          this.teamABowlingScorecardUpdated.next(innings.bowlingScorecard);
+          match.innings2Detail.bowlingScorecard.addCurrentBowlers(match.innings2Detail.currentBowlers);
+          this.getOrCreateSubject(this.teamABowlingScorecardSubjects, gameId, new BowlingScorecard()).next(innings.bowlingScorecard);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     }
   }
 
-  private loadCurrentBowlers(innings: number): Observable<any> {
-    return this.webSportsApi.getCurrentBowlers(this.gameId).pipe(
+  private loadCurrentBowlers(gameId: string, innings: number): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
+    return this.webSportsApi.getCurrentBowlers(gameId).pipe(
       map(bowling => {
         if (innings == 1) {
-          this.match.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
+          match.innings1Detail.currentBowlers.loadCurrentBowlers(bowling);
         }
         else {
-          this.match.innings2Detail.currentBowlers.loadCurrentBowlers(bowling);
+          match.innings2Detail.currentBowlers.loadCurrentBowlers(bowling);
         }
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     )
   }
 
-  private loadRunComparison(): Observable<any> {
-
-    return this.webSportsApi.getRunComparison(this.gameId).pipe(
+  private loadRunComparison(gameId: string): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
+    return this.webSportsApi.getRunComparison(gameId).pipe(
       map(inputRunComparison => {
         let runComparisonFactory = new RunComparisonFactory()
-        this.match.runComparison = runComparisonFactory.loadRunComparison(inputRunComparison)
-        this.runComparisonUpdated.next(this.match.runComparison);
+        match.runComparison = runComparisonFactory.loadRunComparison(inputRunComparison)
+        this.getOrCreateSubject(this.runComparisonSubjects, gameId, new RunComparison()).next(match.runComparison);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     )
   }
 
-  public setWagonWheelPlayer(teamId: string, playerId: number, type: 'Batting' | 'Bowling') {
-    this.wagonWheelTeamId = teamId;
-    this.wagonWheelPlayerId = playerId;
-    this.wagonWheelType = type;
-    this.loadWagonWheel(teamId, playerId, type).subscribe();
+  public setWagonWheelPlayer(gameId: string, teamId: string, playerId: number, type: 'Batting' | 'Bowling') {
+    this.wagonWheelState.set(gameId, { teamId, playerId, type });
+    this.loadWagonWheel(gameId, teamId, playerId, type).subscribe();
   }
 
-  private loadWagonWheel(teamId: string, playerId: number, type: 'Batting' | 'Bowling'): Observable<any> {
-    if (this.wagonWheelPlayerId > 0) {
-      return this.webSportsApi.getWagonWheel(this.gameId, teamId, playerId.toString(), type).pipe(
+  private loadWagonWheel(gameId: string, teamId: string, playerId: number, type: 'Batting' | 'Bowling'): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
+    if (playerId > 0) {
+      return this.webSportsApi.getWagonWheel(gameId, teamId, playerId.toString(), type).pipe(
         map(inputWagonWheel => {
-          this.match.wagonWheel.loadWagonWheel(teamId, playerId, type, inputWagonWheel);
-          this.wagonWheelUpdated.next(this.match.wagonWheel);
+          match.wagonWheel.loadWagonWheel(teamId, playerId, type, inputWagonWheel);
+          this.getOrCreateSubject(this.wagonWheelSubjects, gameId, new WagonWheel()).next(match.wagonWheel);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
