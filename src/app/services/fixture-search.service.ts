@@ -17,28 +17,51 @@ export class FixtureSearchService {
   ) {}
 
   /**
-   * Search for unique team names that partially match the search term
-   * Caches results by search term to prevent cross-contamination across different searches
+   * Search for fixtures by team name
+   * Caches results by search term and returns Observable of fixtures
+   * If cache exists, emits cached data immediately, otherwise fetches from API
    */
-  searchTeams(searchTerm: string): Observable<string[]> {
+  searchByTerm(searchTerm: string): Observable<Fixture[]> {
     // Store the search term so getYears and getFixtures can access the correct cache
     this.lastSearchTerm = searchTerm;
     
-    return this.webSportsAPI.getFixturesByTeamName(searchTerm).pipe(
-      map((fixtures: Fixtures) => {
+    // Check if we have a cached subject for this search term
+    if (this.subjectBySearchTerm.has(searchTerm)) {
+      const subject = this.subjectBySearchTerm.get(searchTerm)!;
+      // Emit cached data immediately using setTimeout to ensure subscriptions are ready
+      setTimeout(() => {
+        if (this.cacheBySearchTerm.has(searchTerm)) {
+          subject.next(this.cacheBySearchTerm.get(searchTerm)!);
+        }
+      }, 0);
+      return subject.asObservable();
+    }
+    
+    // No cache exists, create new subject and fetch from API
+    const subject = new BehaviorSubject<Fixture[]>([]);
+    this.subjectBySearchTerm.set(searchTerm, subject);
+    
+    this.webSportsAPI.getFixturesByTeamName(searchTerm).subscribe(
+      (fixtures: Fixtures) => {
         // Cache the fixtures by search term
         this.cacheBySearchTerm.set(searchTerm, fixtures.fixtures);
-        
-        // Create or update subject for this search term
-        if (!this.subjectBySearchTerm.has(searchTerm)) {
-          this.subjectBySearchTerm.set(searchTerm, new BehaviorSubject<Fixture[]>(fixtures.fixtures));
-        } else {
-          this.subjectBySearchTerm.get(searchTerm)!.next(fixtures.fixtures);
-        }
+        subject.next(fixtures.fixtures);
+      }
+    );
+    
+    return subject.asObservable();
+  }
 
+  /**
+   * Search for unique team names that partially match the search term
+   * Uses cached fixture data if available, otherwise fetches from API
+   */
+  searchTeams(searchTerm: string): Observable<string[]> {
+    return this.searchByTerm(searchTerm).pipe(
+      map((fixtures: Fixture[]) => {
         const teamSet = new Set<string>();
         const lowerSearch = searchTerm.toLowerCase();
-        fixtures.fixtures.forEach((fixture: Fixture) => {
+        fixtures.forEach((fixture: Fixture) => {
           if (fixture.aTeam && fixture.aTeam.toLowerCase().includes(lowerSearch)) {
             teamSet.add(fixture.aTeam);
           }
@@ -47,8 +70,7 @@ export class FixtureSearchService {
           }
         });
         return Array.from(teamSet).sort();
-      }),
-      shareReplay(1)
+      })
     );
   }
 
@@ -113,5 +135,25 @@ export class FixtureSearchService {
         });
       })
     );
+  }
+
+  /**
+   * Clear cached fixtures for a specific search term
+   */
+  clearCache(searchTerm: string): void {
+    this.cacheBySearchTerm.delete(searchTerm);
+    this.subjectBySearchTerm.delete(searchTerm);
+    if (this.lastSearchTerm === searchTerm) {
+      this.lastSearchTerm = null;
+    }
+  }
+
+  /**
+   * Clear all cached fixtures
+   */
+  clearAllCaches(): void {
+    this.cacheBySearchTerm.clear();
+    this.subjectBySearchTerm.clear();
+    this.lastSearchTerm = null;
   }
 }

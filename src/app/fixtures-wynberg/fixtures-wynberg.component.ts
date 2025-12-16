@@ -1,6 +1,5 @@
 import { CommonModule, NgFor } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { FixtureSummaries } from '../models/fixture-summary';
 import { MatchKeyService } from '../services/match-key.service';
 import { SortFixturesPipe } from '../pipes/sort-fixtures.pipe';
@@ -9,7 +8,9 @@ import { OpponentTeamPipe } from '../pipes/opponent-team.pipe';
 import { GroupFixturesPipe } from '../pipes/group-fixtures.pipe';
 import { SortFixturesByTeamPipe } from '../pipes/sort-fixtures-by-team.pipe';
 import { concatMap, from, map, take } from 'rxjs';
-import { WebSportsAPIService } from '../services/web-sports-api.service';
+import { FixtureSearchService } from '../services/fixture-search.service';
+import { FixtureDetailsService } from '../services/fixture-details.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-fixtures-wynberg',
@@ -19,7 +20,8 @@ import { WebSportsAPIService } from '../services/web-sports-api.service';
         SortFixturesByTeamPipe,
         HomeTeamPipe,
         OpponentTeamPipe,
-        GroupFixturesPipe
+        GroupFixturesPipe,
+        RouterLink
     ],
     templateUrl: './fixtures-wynberg.component.html',
     styleUrl: './fixtures-wynberg.component.css'
@@ -27,22 +29,31 @@ import { WebSportsAPIService } from '../services/web-sports-api.service';
 export class FixturesWynbergComponent implements OnInit {
   public club: string = 'Wynberg BHS';
   public fixtures: FixtureSummaries = new FixtureSummaries;
+  public isReloading: boolean = false;
 
   public constructor(
-    private http: HttpClient,
     private matchKey: MatchKeyService,
-    private webSportsAPI: WebSportsAPIService
+    private fixtureSearchService: FixtureSearchService,
+    private fixtureDetailsService: FixtureDetailsService
   ) { }
 
   public ngOnInit(): void {
     this.loadFixtures();
   }
-  public loadFixtures() {
 
-    this.webSportsAPI.getFixturesByTeamName(this.club).subscribe(
-      fixtures => {
+  public onReloadFixtures(): void {
+    this.isReloading = true;
+    this.fixtureSearchService.clearCache(this.club);
+    this.fixtureDetailsService.clearAllFixtureDetails();
+    this.loadFixtures();
+  }
+
+  public loadFixtures() {
+    this.fixtureSearchService.searchByTerm(this.club).subscribe(
+      fixtureArray => {
         this.fixtures = new FixtureSummaries;
-        this.fixtures.loadFixtures(fixtures);
+        // Wrap Fixture[] in Fixtures format expected by loadFixtures
+        this.fixtures.loadFixtures({ fixtures: fixtureArray });
         this.fixtures.fixtureSummaries = this.fixtures.fixtureSummaries.sort((a, b) => {
           return new Date(b.datePlayed).getTime() - new Date(a.datePlayed).getTime();
         })
@@ -52,7 +63,7 @@ export class FixturesWynbergComponent implements OnInit {
         from(this.fixtures.fixtureSummaries).pipe(
           take(100),
           concatMap(fixture => {
-            return this.webSportsAPI.getFixtures(fixture.gameId).pipe(
+            return this.fixtureDetailsService.getFixtureDetails(fixture.gameId).pipe(
               map(fixturesInput => {
                 //console.log(fixturesInput);
                 switch (fixturesInput.fixtures[0].result) {
@@ -64,7 +75,11 @@ export class FixturesWynbergComponent implements OnInit {
               })
             );
           })
-        ).subscribe();
+        ).subscribe({
+          complete: () => {
+            this.isReloading = false;
+          }
+        });
       }
     )
   }

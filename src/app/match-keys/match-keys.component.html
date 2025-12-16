@@ -1,7 +1,7 @@
 <div class="container">
     <div class="card">
         <div class="card-header" for="urlInput">Wynberg Fixtures</div>
-        <a href="./wynberg">All Wynberg Fixtures</a>
+        <a routerLink="/wynberg">All Wynberg Fixtures</a>
     </div>
     <br>
     <div class="card">
@@ -14,6 +14,12 @@
         <div class="card-header">Search by Team Name</div>
         <input #TeamName type="text" placeholder="Team Name" (keypress)="onKeyPress($event, TeamName.value)"><button
             (click)="this.loadFixtures(TeamName.value)">Search</button>
+        <div class="reload-section">
+            <button class="reload-button" (click)="onReloadAllKeys()" [disabled]="isReloading">
+                <span class="material-icons" [class.spinning]="isReloading">sync</span>
+                Reload Fixtures
+            </button>
+        </div>
         <table>
             <thead>
                 <th>Match</th>
@@ -22,7 +28,7 @@
             <tbody>
                 <tr *ngFor="let fixtureSummary of this.fixtureSummaries.fixtureSummaries|sortFixtures">
                     <td>
-                        <a href="./match/{{fixtureSummary.matchKey}}">{{fixtureSummary.game}}</a>
+                        <a [routerLink]="['/match', fixtureSummary.matchKey]">{{fixtureSummary.game}}</a>
                     </td>
                     <td>
                         {{fixtureSummary.datePlayed|date: 'longDate'}}

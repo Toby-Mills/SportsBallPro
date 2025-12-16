@@ -3,6 +3,12 @@
 	<h1>Wynberg BHS Cricket Matches</h1>
 </div>
 <div class="container">
+	<div class="reload-section">
+		<button class="reload-button" (click)="onReloadFixtures()" [disabled]="isReloading">
+			<span class="material-icons" [class.spinning]="isReloading">sync</span>
+			Reload Fixtures
+		</button>
+	</div>
 	<div class="searching"><span *ngIf="!fixtures || fixtures.fixtureSummaries.length == 0">searching for fixtures...</span>
 	</div>
 	<div class="card day" *ngFor="let group of fixtures.fixtureSummaries | groupFixtures:'date'">
@@ -12,7 +18,7 @@
 				<ng-container *ngFor="let fixture of group.fixtures | sortFixturesByTeam:this.club">
 				<tr>
 					<td colspan="2">
-						<a href="./match/{{fixture.matchKey}}">{{fixture | homeTeam:this.club}}</a>
+						<a [routerLink]="['/match', fixture.matchKey]">{{fixture | homeTeam:this.club}}</a>
 					</td>
 					<td>
 						vs
