@@ -4,13 +4,34 @@ import { HomeComponent } from '../app/home/home.component';
 import { FixturesWynbergComponent } from './fixtures-wynberg/fixtures-wynberg.component';
 import { StatsContainerComponent } from './stats/stats-container/stats-container.component';
 import { WynbergStatsContainerComponent } from './stats/wynberg-stats-container/wynberg-stats-container.component';
+import { WynbergLayoutComponent } from './layouts/wynberg-layout/wynberg-layout.component';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 
 export const routes: Routes = [
-    { path: '', component: HomeComponent }, 
-    { path: 'match-keys', component: MatchKeysComponent },
-    { path: 'match/:id', component: HomeComponent },
-    { path: 'wynberg', component: FixturesWynbergComponent },
-    { path: 'stats', component: StatsContainerComponent },
-    { path: 'wynberg-stats', component: WynbergStatsContainerComponent },
+    { path: '', redirectTo: '/main', pathMatch: 'full' },
+    {
+        path: 'wynberg',
+        component: WynbergLayoutComponent,
+        data: { area: 'wynberg' },
+        children: [
+            { path: '', redirectTo: 'fixtures', pathMatch: 'full' },
+            { path: 'fixtures', component: FixturesWynbergComponent },
+            { path: 'stats', component: WynbergStatsContainerComponent },
+            { path: 'match/:id', component: HomeComponent }
+        ]
+    },
+    {
+        path: 'main',
+        component: MainLayoutComponent,
+        data: { area: 'main' },
+        children: [
+            { path: '', redirectTo: 'match-keys', pathMatch: 'full' },
+            { path: 'match-keys', component: MatchKeysComponent },
+            { path: 'stats', component: StatsContainerComponent },
+            { path: 'wynberg-fixtures', component: FixturesWynbergComponent },
+            { path: 'wynberg-stats', component: WynbergStatsContainerComponent },
+            { path: 'match/:id', component: HomeComponent }
+        ]
+    }
 ];
 

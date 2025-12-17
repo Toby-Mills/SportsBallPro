@@ -1,0 +1,34 @@
+<div class="main-layout">
+  <button class="hamburger" [class.hidden]="isScrollingDown && !isMenuOpen" (click)="toggleMenu()" aria-label="Toggle menu">
+    <span class="material-icons">menu</span>
+  </button>
+
+  <div class="overlay" [class.open]="isMenuOpen" (click)="closeMenu()"></div>
+  
+  <nav class="slide-menu" [class.open]="isMenuOpen">
+    <div class="menu-header">
+      <h2>Sports Ball Pro</h2>
+      <button class="close-button" (click)="closeMenu()" aria-label="Close menu">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="menu-items">
+      <a routerLink="match-keys" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
+        <span class="material-icons">vpn_key</span>
+        Match Keys
+      </a>
+      <a routerLink="stats" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
+        <span class="material-icons">bar_chart</span>
+        Stats
+      </a>
+      <a routerLink="/wynberg" class="menu-item" (click)="closeMenu()">
+        <span class="material-icons">school</span>
+        Wynberg BHS
+      </a>
+    </div>
+  </nav>
+
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

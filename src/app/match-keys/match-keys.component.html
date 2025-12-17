@@ -1,9 +1,5 @@
 <div class="container">
-    <div class="card">
-        <div class="card-header" for="urlInput">Wynberg Fixtures</div>
-        <a routerLink="/wynberg">All Wynberg Fixtures</a>
-    </div>
-    <br>
+
     <div class="card">
         <div class="card-header" for="urlInput">Generate URL from Game ID</div>
         <input type="text" id="urlInput" placeholder="Game ID" (change)="onGameIdChange($event)"> <span> URL: </span><a
@@ -28,7 +24,7 @@
             <tbody>
                 <tr *ngFor="let fixtureSummary of this.fixtureSummaries.fixtureSummaries|sortFixtures">
                     <td>
-                        <a [routerLink]="['/match', fixtureSummary.matchKey]">{{fixtureSummary.game}}</a>
+                        <a [routerLink]="['../match', fixtureSummary.matchKey]">{{fixtureSummary.game}}</a>
                     </td>
                     <td>
                         {{fixtureSummary.datePlayed|date: 'longDate'}}

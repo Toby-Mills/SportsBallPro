@@ -18,7 +18,7 @@
 				<ng-container *ngFor="let fixture of group.fixtures | sortFixturesByTeam:this.club">
 				<tr>
 					<td colspan="2">
-						<a [routerLink]="['/match', fixture.matchKey]">{{fixture | homeTeam:this.club}}</a>
+						<a [routerLink]="['../match', fixture.matchKey]">{{fixture | homeTeam:this.club}}</a>
 					</td>
 					<td>
 						vs

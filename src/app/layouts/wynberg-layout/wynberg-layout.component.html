@@ -1,0 +1,31 @@
+<div class="wynberg-layout">
+  <button class="hamburger" [class.hidden]="isScrollingDown && !isMenuOpen" (click)="toggleMenu()" aria-label="Toggle menu">
+    <span class="material-icons">menu</span>
+  </button>
+
+  <div class="overlay" [class.open]="isMenuOpen" (click)="closeMenu()"></div>
+  
+  <nav class="slide-menu" [class.open]="isMenuOpen">
+    <div class="menu-header">
+      <img src="https://www.websports.co.za/images/logos/small_wynberg.png" alt="Wynberg Logo" class="menu-logo">
+      <h2>Wynberg BHS</h2>
+      <button class="close-button" (click)="closeMenu()" aria-label="Close menu">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="menu-items">
+      <a routerLink="fixtures" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
+        <span class="material-icons">list</span>
+        Fixtures
+      </a>
+      <a routerLink="stats" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
+        <span class="material-icons">bar_chart</span>
+        Stats
+      </a>
+    </div>
+  </nav>
+
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
