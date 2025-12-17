@@ -5,12 +5,12 @@ import { Fixture } from '../../models/web-sports';
 import { MatchKeyService } from '../../services/match-key.service';
 import { StatsStateService } from '../../services/stats-state.service';
 import { ModalDialogComponent } from '../../modal-dialog/modal-dialog.component';
-import { HomeComponent } from '../../home/home.component';
+import { MatchDetailsComponent } from '../../match-details/match-details.component';
 
 @Component({
   selector: 'app-fixture-selector',
   standalone: true,
-  imports: [CommonModule, RouterModule, ModalDialogComponent, HomeComponent],
+  imports: [CommonModule, RouterModule, ModalDialogComponent, MatchDetailsComponent],
   template: `
     <div class="container" *ngIf="fixtures.length > 0">
       <label>Select Fixtures:</label>
@@ -46,12 +46,12 @@ import { HomeComponent } from '../../home/home.component';
       [isVisible]="showMatchModal"
       [title]="'Match Details'"
       (close)="closeMatchModal()">
-      <app-home 
+      <app-match-details 
         [gameId]="selectedMatchGameId"
         [showRefreshTimer]="false"
         [showWakeLock]="false"
         *ngIf="showMatchModal">
-      </app-home>
+      </app-match-details>
     </app-modal-dialog>
   `,
   styles: [`

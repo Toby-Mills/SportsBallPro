@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { MatchKeysComponent } from './match-keys/match-keys.component';
-import { HomeComponent } from '../app/home/home.component';
+import { MatchDetailsComponent } from './match-details/match-details.component';
 import { FixturesWynbergComponent } from './fixtures-wynberg/fixtures-wynberg.component';
 import { StatsContainerComponent } from './stats/stats-container/stats-container.component';
 import { WynbergStatsContainerComponent } from './stats/wynberg-stats-container/wynberg-stats-container.component';
@@ -17,7 +17,7 @@ export const routes: Routes = [
             { path: '', redirectTo: 'fixtures', pathMatch: 'full' },
             { path: 'fixtures', component: FixturesWynbergComponent },
             { path: 'stats', component: WynbergStatsContainerComponent },
-            { path: 'match/:id', component: HomeComponent }
+            { path: 'match/:id', component: MatchDetailsComponent }
         ]
     },
     {
@@ -30,7 +30,7 @@ export const routes: Routes = [
             { path: 'stats', component: StatsContainerComponent },
             { path: 'wynberg-fixtures', component: FixturesWynbergComponent },
             { path: 'wynberg-stats', component: WynbergStatsContainerComponent },
-            { path: 'match/:id', component: HomeComponent }
+            { path: 'match/:id', component: MatchDetailsComponent }
         ]
     }
 ];

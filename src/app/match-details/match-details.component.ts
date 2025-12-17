@@ -17,7 +17,7 @@ import { MatchService } from '../services/match.service';
 import { ToasterMessageService } from '../services/toaster-message.service';
 
 @Component({
-    selector: 'app-home',
+    selector: 'app-match-details',
     imports: [
         CommonModule,
         FormsModule,
@@ -31,10 +31,10 @@ import { ToasterMessageService } from '../services/toaster-message.service';
         WagonWheelComponent
     ],
     providers: [HttpClient,],
-    templateUrl: './home.component.html',
-    styleUrl: './home.component.css'
+    templateUrl: './match-details.component.html',
+    styleUrl: './match-details.component.css'
 })
-export class HomeComponent {
+export class MatchDetailsComponent {
   @Input() gameId?: string; // Optional: pass gameId directly for modal usage
   @Input() showRefreshTimer: boolean = true;
   @Input() showWakeLock: boolean = true;
