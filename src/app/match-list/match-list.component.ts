@@ -73,8 +73,17 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   
   ngAfterViewInit() {
     // Initialize refresh timer if we have matches and timer is available
+    this.ensureTimerStarted();
+  }
+
+  private ensureTimerStarted() {
+    // Start timer if we have matches and timer is available and not already running
     if (this.watchedMatches.length > 0 && this.refreshTimer) {
-      this.refreshTimer.setTimer(30000); // 30 seconds
+      // Check if timer already has an interval set by checking if it has a timer property
+      if (!this.refreshTimer.timer) {
+        console.log('[MatchListComponent] Starting refresh timer');
+        this.refreshTimer.setTimer(30000); // 30 seconds
+      }
     }
   }
 
@@ -110,6 +119,9 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.currentScrollIndex >= this.watchedMatches.length) {
       this.currentScrollIndex = Math.max(0, this.watchedMatches.length - this.visibleMatchCount);
     }
+    
+    // Ensure timer is started if we have matches
+    this.ensureTimerStarted();
   }
 
   private updateVisibleMatchCount() {
