@@ -8,6 +8,7 @@ import { MatchDetailsComponent } from '../match-details/match-details.component'
 import { MatchKeyService } from '../services/match-key.service';
 import { RefreshTimerComponent } from '../refresh-timer/refresh-timer.component';
 import { MatchService } from '../services/match.service';
+import { ToasterMessageService } from '../services/toaster-message.service';
 
 @Component({
   selector: 'app-match-list',
@@ -34,7 +35,8 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private watchList: WatchListService,
     private matchKeyService: MatchKeyService,
-    private matchService: MatchService
+    private matchService: MatchService,
+    private toasterMessage: ToasterMessageService
   ) {
     this.checkViewport();
   }
@@ -187,13 +189,15 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(matchUrl).then(() => {
         console.log('Match link copied to clipboard');
-        // TODO: Show toast notification
+        this.toasterMessage.showMessage('Match link copied to clipboard');
       }).catch(err => {
         console.error('Failed to copy link:', err);
+        this.toasterMessage.showMessage('Failed to copy link to clipboard');
       });
     } else {
       // Fallback for non-secure contexts
       console.log('Share link:', matchUrl);
+      this.toasterMessage.showMessage('Clipboard not available in this context');
     }
   }
 
