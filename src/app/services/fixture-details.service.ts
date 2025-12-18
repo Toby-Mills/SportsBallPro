@@ -12,10 +12,7 @@ export class FixtureDetailsService {
 
   constructor(
     private webSportsAPI: WebSportsAPIService
-  ) {
-    console.log('FixtureDetailsService: Constructor called - creating new service instance');
-    console.log('FixtureDetailsService: Cache size on construction:', this.cacheByGameId.size);
-  }
+  ) { }
 
   /**
    * Get fixture details by gameId
@@ -25,7 +22,6 @@ export class FixtureDetailsService {
   getFixtureDetails(gameId: string): Observable<Fixtures> {
     // Check if we have a cached subject for this gameId
     if (this.subjectByGameId.has(gameId)) {
-      console.log('FixtureDetailsService: Using cached fixture details for', gameId);
       const subject = this.subjectByGameId.get(gameId)!;
       // Emit cached data immediately using setTimeout to ensure subscriptions are ready
       setTimeout(() => {
@@ -36,7 +32,6 @@ export class FixtureDetailsService {
       return subject.asObservable();
     }
     
-    console.log('FixtureDetailsService: Fetching fixture details from API for', gameId);
     // No cache exists, create new subject and fetch from API
     const subject = new BehaviorSubject<Fixtures>({ fixtures: [] });
     this.subjectByGameId.set(gameId, subject);

@@ -13,7 +13,6 @@ export class WebSportsAPIService {
   public getFixturesByTeamName(teamName: string): Observable<Fixtures> {
     let urlEncodedSearch = encodeURI(teamName);
     let url = `https://www.websports.co.za/api/fixture/teamname/${urlEncodedSearch}`
-    console.log('Fetching fixtures for team name:', teamName, 'URL:', url);
     return this.http.get<any>(url, {})
   }
 

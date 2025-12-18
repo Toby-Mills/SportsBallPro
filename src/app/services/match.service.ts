@@ -185,6 +185,28 @@ export class MatchService {
     this.getOrCreateSubject(this.inningsChangeSubjects, gameId, 1 as 1 | 2).next(match.status.currentInnings);
   }
 
+  /**
+   * Check if a match is complete (finished) based on its result status
+   * Returns false if match is still in progress, upcoming, or status not yet loaded
+   * Returns true if match has a definitive result (won, drawn, no result)
+   */
+  public isMatchComplete(gameId: string): boolean {
+    const match = this.matches.get(gameId);
+    
+    // If match not loaded or no status, treat as incomplete (will refresh)
+    if (!match || !match.status.result) {
+      return false;
+    }
+    
+    const result = match.status.result.toLowerCase();
+    
+    // Match is complete if result contains these keywords
+    return result.includes('won') || 
+           result.includes('drawn') || 
+           result.includes('no result') ||
+           result.includes('abandoned');
+  }
+
   public reloadMatchData(gameId: string) {
     const match = this.getOrCreateMatch(gameId);
     const wagonWheelState = this.wagonWheelState.get(gameId);

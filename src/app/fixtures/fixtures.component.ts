@@ -44,11 +44,18 @@ export class FixturesComponent implements OnInit {
   public addToWatchList(gameId: string, event: Event): void {
     event.stopPropagation();
     event.preventDefault();
-    const added = this.watchList.addMatch(this.area, gameId);
-    if (added) {
-      console.log(`Match ${gameId} added to ${this.area} watch list`);
+    
+    // Toggle: if already watching, remove it; otherwise add it
+    if (this.watchList.isWatching(this.area, gameId)) {
+      this.watchList.removeMatch(this.area, gameId);
+      console.log(`Match ${gameId} removed from ${this.area} watch list`);
     } else {
-      console.log(`Could not add match (already watching or limit reached)`);
+      const added = this.watchList.addMatch(this.area, gameId);
+      if (added) {
+        console.log(`Match ${gameId} added to ${this.area} watch list`);
+      } else {
+        console.log(`Could not add match (limit reached)`);
+      }
     }
   }
 

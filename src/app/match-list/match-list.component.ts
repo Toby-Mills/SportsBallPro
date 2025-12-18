@@ -202,8 +202,12 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   
   public onRefreshTimer() {
-    // Refresh all watched matches simultaneously
-    this.watchedMatches.forEach(gameId => {
+    // Only refresh matches that are not complete
+    const liveMatches = this.watchedMatches.filter(gameId => !this.matchService.isMatchComplete(gameId));
+    
+    console.log(`[MatchListComponent] Refreshing ${liveMatches.length} of ${this.watchedMatches.length} matches`);
+    
+    liveMatches.forEach(gameId => {
       this.matchService.reloadMatchData(gameId);
     });
   }

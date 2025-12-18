@@ -7,7 +7,7 @@ import { HomeTeamPipe } from '../pipes/home-team.pipe';
 import { OpponentTeamPipe } from '../pipes/opponent-team.pipe';
 import { GroupFixturesPipe } from '../pipes/group-fixtures.pipe';
 import { SortFixturesByTeamPipe } from '../pipes/sort-fixtures-by-team.pipe';
-import { concatMap, from, map, take } from 'rxjs';
+import { concatMap, filter, from, map, take } from 'rxjs';
 import { FixtureSearchService } from '../services/fixture-search.service';
 import { FixtureDetailsService } from '../services/fixture-details.service';
 import { RouterLink, ActivatedRoute } from '@angular/router';
@@ -49,11 +49,18 @@ export class FixturesWynbergComponent implements OnInit {
   public addToWatchList(gameId: string, event: Event): void {
     event.stopPropagation();
     event.preventDefault();
-    const added = this.watchList.addMatch(this.area, gameId);
-    if (added) {
-      console.log(`Match ${gameId} added to ${this.area} watch list`);
+    
+    // Toggle: if already watching, remove it; otherwise add it
+    if (this.watchList.isWatching(this.area, gameId)) {
+      this.watchList.removeMatch(this.area, gameId);
+      console.log(`Match ${gameId} removed from ${this.area} watch list`);
     } else {
-      console.log(`Could not add match (already watching or limit reached)`);
+      const added = this.watchList.addMatch(this.area, gameId);
+      if (added) {
+        console.log(`Match ${gameId} added to ${this.area} watch list`);
+      } else {
+        console.log(`Could not add match (limit reached)`);
+      }
     }
   }
 
@@ -84,18 +91,26 @@ export class FixturesWynbergComponent implements OnInit {
           take(100),
           concatMap(fixture => {
             return this.fixtureDetailsService.getFixtureDetails(fixture.gameId).pipe(
+              filter(fixturesInput => fixturesInput.fixtures && fixturesInput.fixtures.length > 0),
+              take(1),
               map(fixturesInput => {
-                //console.log(fixturesInput);
-                switch (fixturesInput.fixtures[0].result) {
-                  case '': break;
-                  case 'Fixture': break;
-                  default: fixture.description = fixturesInput.fixtures[0].result;
+                if (fixturesInput.fixtures && fixturesInput.fixtures.length > 0) {
+                  const result = fixturesInput.fixtures[0].result;
+                  switch (result) {
+                    case '': break;
+                    case 'Fixture': break;
+                    default: fixture.description = result;
+                  }
                 }
                 return fixture;
               })
             );
           })
         ).subscribe({
+          error: (err) => {
+            console.error('Error processing fixture descriptions:', err);
+            this.isReloading = false;
+          },
           complete: () => {
             this.isReloading = false;
           }
