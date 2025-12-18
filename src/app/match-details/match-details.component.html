@@ -18,10 +18,10 @@
             {{status.decidedTo}}
         </div>
         <div class="box view-innings">
-            <input type="radio" name="innings" id="innings1" [value]="1" [(ngModel)]="viewingInnings"><label
-                for="innings1"> 1st Innings</label>
-            <input type="radio" name="innings" id="innings2" [value]="2" [(ngModel)]="viewingInnings"><label
-                for="innings2"> 2nd Innings</label>
+            <input type="radio" [name]="'innings-' + componentId" [id]="'innings1-' + componentId" [value]="1" [(ngModel)]="viewingInnings"><label
+                [for]="'innings1-' + componentId"> 1st Innings</label>
+            <input type="radio" [name]="'innings-' + componentId" [id]="'innings2-' + componentId" [value]="2" [(ngModel)]="viewingInnings"><label
+                [for]="'innings2-' + componentId"> 2nd Innings</label>
         </div>
         <div class="small-box card">
             <app-batting-scorecard *ngIf="viewingInnings==1" [teamNumber]="1" [gameId]="actualGameId"></app-batting-scorecard>
@@ -48,5 +48,4 @@
         <div *ngIf="this.parameterGameKey == '' && !gameId" class="no-match">Please select a Match to load</div>
         <div *ngIf="this.parameterGameKey != '' || gameId" class="no-match">Loading match data...</div>
     </ng-template>
-    <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()" *ngIf="showRefreshTimer"></app-refresh-timer>
 </div>

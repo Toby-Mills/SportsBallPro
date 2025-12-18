@@ -6,35 +6,54 @@ import { MatchKeyService } from '../services/match-key.service'
 import { SortFixturesPipe } from '../pipes/sort-fixtures.pipe';
 import { environment } from '../../../src/environments/environment';
 import { FixtureSearchService } from '../services/fixture-search.service';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
+import { WatchListService } from '../services/watch-list.service';
 
 @Component({
-    selector: 'app-match-keys',
+    selector: 'app-fixtures',
     imports: [
         CommonModule,
         NgFor,
         SortFixturesPipe,
         RouterLink
     ],
-    templateUrl: './match-keys.component.html',
-    styleUrl: './match-keys.component.css'
+    templateUrl: './fixtures.component.html',
+    styleUrl: './fixtures.component.css'
 })
-export class MatchKeysComponent implements OnInit {
+export class FixturesComponent implements OnInit {
   public gameId: string = '';
   public key: string = '';
   public url: string = '';
   public fixtureSummaries: FixtureSummaries = new FixtureSummaries;
   public isReloading: boolean = false;
   public lastSearch: string = '';
+  public area: 'wynberg' | 'main' = 'main';
 
   constructor(
     private http: HttpClient,
     private matchKey: MatchKeyService,
-    private fixtureSearchService: FixtureSearchService
+    private fixtureSearchService: FixtureSearchService,
+    private watchList: WatchListService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    
+    this.area = this.route.parent?.snapshot.data['area'] || 'main';
+  }
+
+  public addToWatchList(gameId: string, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    const added = this.watchList.addMatch(this.area, gameId);
+    if (added) {
+      console.log(`Match ${gameId} added to ${this.area} watch list`);
+    } else {
+      console.log(`Could not add match (already watching or limit reached)`);
+    }
+  }
+
+  public isWatching(gameId: string): boolean {
+    return this.watchList.isWatching(this.area, gameId);
   }
 
   public createKey(Id: string | null) {

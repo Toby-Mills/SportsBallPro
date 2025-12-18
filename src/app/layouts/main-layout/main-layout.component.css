@@ -42,109 +42,81 @@
   font-size: 1.5em;
 }
 
-.overlay {
+.menu-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  background-color: transparent;
   z-index: 998;
 }
 
-.overlay.open {
+.popup-menu {
+  position: fixed;
+  bottom: 5.5em;
+  right: 1.5em;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.popup-menu.open {
   opacity: 1;
   visibility: visible;
-}
-
-.slide-menu {
-  position: fixed;
-  top: 0;
-  left: -280px;
-  width: 280px;
-  height: 100vh;
-  background-color: #fff;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-  transition: left 0.3s ease;
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-}
-
-.slide-menu.open {
-  left: 0;
+  transform: translateY(0);
 }
 
 .menu-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 1em;
-  border-bottom: 1px solid #ddd;
+  padding: 12px 16px;
   background-color: #f8f9fa;
-}
-
-.menu-header h2 {
-  margin: 0;
-  font-size: 1.2em;
-  color: #333;
-  flex: 1;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.25em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 500;
+  font-size: 0.9em;
   color: #666;
-  transition: color 0.2s ease;
-}
-
-.close-button:hover {
-  color: #333;
-}
-
-.close-button .material-icons {
-  font-size: 1.5em;
-}
-
-.menu-items {
-  display: flex;
-  flex-direction: column;
-  padding: 1em 0;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 1em;
-  padding: 1em 1.5em;
-  color: #666;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #333;
   text-decoration: none;
-  font-size: 1em;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  font-size: 0.95em;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
 }
 
 .menu-item:hover {
   background-color: #f8f9fa;
-  color: #333;
 }
 
 .menu-item.active {
-  background-color: #e9ecef;
-  color: #333;
-  font-weight: 500;
-  border-left: 3px solid #333;
+  background-color: #e3f2fd;
+  color: #1976d2;
 }
 
 .menu-item .material-icons {
-  font-size: 1.5em;
+  font-size: 20px;
+  color: #666;
+}
+
+.menu-item.active .material-icons {
+  color: #1976d2;
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: #e9ecef;
+  margin: 4px 0;
 }
 
 .content {

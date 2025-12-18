@@ -48,7 +48,6 @@ import { MatchDetailsComponent } from '../../match-details/match-details.compone
       (close)="closeMatchModal()">
       <app-match-details 
         [gameId]="selectedMatchGameId"
-        [showRefreshTimer]="false"
         [showWakeLock]="false"
         *ngIf="showMatchModal">
       </app-match-details>

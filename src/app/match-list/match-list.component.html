@@ -1,0 +1,76 @@
+<div class="match-list-container">
+  <!-- Navigation Controls (shown when in carousel mode) -->
+  <div class="matches-nav" *ngIf="watchedMatches.length > 0 && useCarouselView">
+    <button class="nav-arrow" (click)="scrollLeft()" [disabled]="!canScrollLeft" aria-label="Previous">
+      <span class="material-icons">chevron_left</span>
+    </button>
+    
+    <div class="dots">
+      <span *ngFor="let match of watchedMatches; let i = index"
+            class="dot"
+            [class.active]="i >= currentScrollIndex && i < currentScrollIndex + visibleMatchCount"
+            (click)="scrollToMatch(i)"
+            [attr.aria-label]="'Go to match ' + (i + 1)">
+      </span>
+    </div>
+    
+    <button class="nav-arrow" (click)="scrollRight()" [disabled]="!canScrollRight" aria-label="Next">
+      <span class="material-icons">chevron_right</span>
+    </button>
+  </div>
+
+  <!-- Refresh Timer (shown when matches exist) -->
+  <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()" *ngIf="watchedMatches.length > 0"></app-refresh-timer>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="watchedMatches.length === 0">
+    <span class="material-icons large-icon">sports_cricket</span>
+    <h2>No matches being watched</h2>
+    <p>Add matches to monitor them side-by-side</p>
+    <button class="primary-button" (click)="openFixtureSelection()">
+      <span class="material-icons">add</span> Add Your First Match
+    </button>
+  </div>
+
+  <!-- Carousel View (Mobile or Desktop with 4+ matches) -->
+  <div class="matches-carousel" *ngIf="watchedMatches.length > 0 && useCarouselView" 
+       [style.--visible-count]="visibleMatchCount">
+    <div class="carousel-track" 
+         [style.transform]="'translateX(calc(-' + currentScrollIndex + ' * (100% / ' + visibleMatchCount + ' + 1.5em)))'">
+      <div class="match-card" *ngFor="let gameId of watchedMatches; let i = index">
+        <div class="match-card-header">
+          <button class="icon-btn share-btn" (click)="shareMatch(gameId)" title="Share match">
+            <span class="material-icons">share</span>
+          </button>
+          <button class="icon-btn close-btn" (click)="removeMatch(gameId)" title="Remove from watch list">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        
+        <app-match-details 
+          [gameId]="gameId"
+          [showWakeLock]="false">
+        </app-match-details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid View: Multiple Matches Side-by-Side (Desktop with 1-3 matches) -->
+  <div class="matches-grid" *ngIf="watchedMatches.length > 0 && !useCarouselView">
+    <div class="match-card" *ngFor="let gameId of watchedMatches; let i = index">
+      <div class="match-card-header">
+        <button class="icon-btn" (click)="shareMatch(gameId)" aria-label="Share match">
+          <span class="material-icons">share</span>
+        </button>
+        <button class="icon-btn close-btn" (click)="removeMatch(gameId)" aria-label="Remove match">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      
+      <app-match-details 
+        [gameId]="gameId"
+        [showWakeLock]="false">
+      </app-match-details>
+    </div>
+  </div>
+</div>

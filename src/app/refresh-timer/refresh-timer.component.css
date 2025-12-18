@@ -1,9 +1,18 @@
   #pieChartIcon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 9999;
+  }
+  
+  .wrapper {
     position: fixed;
     top: 0;
-    /* Adjust as needed */
     right: 0;
-    /* Adjust as needed */
     z-index: 9999;
-    /* Ensure it's on top of other content */
+    pointer-events: none;
+  }
+  
+  .wrapper #pieChartIcon {
+    pointer-events: auto;
   }

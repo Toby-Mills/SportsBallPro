@@ -26,6 +26,14 @@
 					<td>
 						{{fixture | opponentTeam:this.club}}
 					</td>
+					<td>
+						<button class="watch-btn" 
+						        (click)="addToWatchList(fixture.gameId, $event)"
+						        [class.watching]="isWatching(fixture.gameId)"
+						        [title]="isWatching(fixture.gameId) ? 'Already watching' : 'Add to watch list'">
+							<span class="material-icons">{{ isWatching(fixture.gameId) ? 'visibility' : 'visibility_off' }}</span>
+						</button>
+					</td>
 				</tr>
 				<tr *ngIf="fixture.description !=''"><td width="2em;"></td><td colspan="4" class="fixture-description">{{fixture.description}}</td></tr>
 			</ng-container>

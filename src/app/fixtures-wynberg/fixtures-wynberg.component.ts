@@ -10,7 +10,8 @@ import { SortFixturesByTeamPipe } from '../pipes/sort-fixtures-by-team.pipe';
 import { concatMap, from, map, take } from 'rxjs';
 import { FixtureSearchService } from '../services/fixture-search.service';
 import { FixtureDetailsService } from '../services/fixture-details.service';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
+import { WatchListService } from '../services/watch-list.service';
 
 @Component({
     selector: 'app-fixtures-wynberg',
@@ -28,17 +29,36 @@ import { RouterLink } from '@angular/router';
 })
 export class FixturesWynbergComponent implements OnInit {
   public club: string = 'Wynberg BHS';
+  public area: 'wynberg' | 'main' = 'wynberg';
   public fixtures: FixtureSummaries = new FixtureSummaries;
   public isReloading: boolean = false;
 
   public constructor(
     private matchKey: MatchKeyService,
     private fixtureSearchService: FixtureSearchService,
-    private fixtureDetailsService: FixtureDetailsService
+    private fixtureDetailsService: FixtureDetailsService,
+    private watchList: WatchListService,
+    private route: ActivatedRoute
   ) { }
 
   public ngOnInit(): void {
+    this.area = this.route.parent?.snapshot.data['area'] || 'wynberg';
     this.loadFixtures();
+  }
+
+  public addToWatchList(gameId: string, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    const added = this.watchList.addMatch(this.area, gameId);
+    if (added) {
+      console.log(`Match ${gameId} added to ${this.area} watch list`);
+    } else {
+      console.log(`Could not add match (already watching or limit reached)`);
+    }
+  }
+
+  public isWatching(gameId: string): boolean {
+    return this.watchList.isWatching(this.area, gameId);
   }
 
   public onReloadFixtures(): void {

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Fixture, Status } from '../models/match';
 import { RecentBallsComponent } from '../recent-balls/recent-balls.component';
-import { RefreshTimerComponent } from '../refresh-timer/refresh-timer.component';
 import { TeamScoreComponent } from '../team-score/team-score.component';
 import { FallOfWicketsComponent } from '../fall-of-wickets/fall-of-wickets.component';
 import { BattingScorecardComponent } from '../batting-scorecard/batting-scorecard.component';
@@ -26,7 +25,6 @@ import { ToasterMessageService } from '../services/toaster-message.service';
         FallOfWicketsComponent,
         BattingScorecardComponent,
         BowlingScorecardComponent,
-        RefreshTimerComponent,
         RunComparisonComponent,
         WagonWheelComponent
     ],
@@ -36,11 +34,9 @@ import { ToasterMessageService } from '../services/toaster-message.service';
 })
 export class MatchDetailsComponent {
   @Input() gameId?: string; // Optional: pass gameId directly for modal usage
-  @Input() showRefreshTimer: boolean = true;
   @Input() showWakeLock: boolean = true;
   
   public parameterGameKey = this.route.snapshot.paramMap.get('id');
-  @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
   title = 'SportsBallPro';
   fixture: Fixture = new Fixture;
@@ -49,6 +45,7 @@ export class MatchDetailsComponent {
   private wakeLock: any = null;
   public isWakeLockActive: boolean = false;
   public actualGameId: string = ''; // Store the resolved gameId
+  public componentId: string = Math.random().toString(36).substring(7); // Unique ID for this instance
 
 
   constructor(
@@ -85,19 +82,11 @@ export class MatchDetailsComponent {
 
       // Load the match data
       this.matchService.loadMatch(this.actualGameId);
-      
-      if (this.showRefreshTimer && this.refreshTimer) {
-        this.refreshTimer.setTimer(30000);
-      }
     }
   }
 
   ngOnInit() {
     // Initialization happens in ngAfterViewInit
-  }
-
-  public onRefreshTimer() {
-    this.matchService.reloadMatchData(this.actualGameId);
   }
 
   async toggleWakeLock() {

@@ -20,6 +20,7 @@
             <thead>
                 <th>Match</th>
                 <th>Date</th>
+                <th>Watch</th>
             </thead>
             <tbody>
                 <tr *ngFor="let fixtureSummary of this.fixtureSummaries.fixtureSummaries|sortFixtures">
@@ -28,6 +29,14 @@
                     </td>
                     <td>
                         {{fixtureSummary.datePlayed|date: 'longDate'}}
+                    </td>
+                    <td>
+                        <button class="watch-btn" 
+                                (click)="addToWatchList(fixtureSummary.gameId, $event)"
+                                [class.watching]="isWatching(fixtureSummary.gameId)"
+                                [title]="isWatching(fixtureSummary.gameId) ? 'Already watching' : 'Add to watch list'">
+                            <span class="material-icons">{{ isWatching(fixtureSummary.gameId) ? 'visibility' : 'visibility_off' }}</span>
+                        </button>
                     </td>
                 </tr>
             </tbody>
