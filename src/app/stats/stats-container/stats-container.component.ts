@@ -113,6 +113,12 @@ export class StatsContainerComponent implements OnInit, OnDestroy {
 			this.selectedYear = saved.selectedYear || null;
 			this.selectedYearFixtures = (saved.selectedYearFixtures as Fixture[]) || [];
 
+			// If we have a team, trigger a search to populate the cache
+			// This ensures year-filter component can call getYears() successfully
+			if (this.selectedTeam) {
+				this.fixtureSearch.searchByTerm(this.selectedTeam);
+			}
+
 			// Restore selected fixtures from gameID strings
 			const savedSelectedIds = saved.selectedFixturesForStats || [];
 			if (Array.isArray(savedSelectedIds) && savedSelectedIds.length > 0) {

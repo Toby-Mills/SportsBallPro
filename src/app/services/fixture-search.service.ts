@@ -78,16 +78,16 @@ export class FixtureSearchService {
    * Get all unique years for a given team (uses cached fixture data from last search)
    */
   getYears(team: string): Observable<number[]> {
-    if (!this.lastSearchTerm) {
-      return new Observable(observer => {
-        observer.error(new Error('No search has been performed yet'));
-      });
+    // If no search has been performed yet, trigger one with the team name
+    if (!this.lastSearchTerm || this.lastSearchTerm !== team) {
+      // Trigger search for this team
+      this.searchByTerm(team);
     }
 
-    const subject = this.subjectBySearchTerm.get(this.lastSearchTerm);
+    const subject = this.subjectBySearchTerm.get(team);
     if (!subject) {
       return new Observable(observer => {
-        observer.error(new Error('No cached fixtures for search term'));
+        observer.error(new Error('No cached fixtures for team'));
       });
     }
 
@@ -109,16 +109,16 @@ export class FixtureSearchService {
    * Get all fixtures for a given team and year (uses cached fixture data from last search)
    */
   getFixtures(team: string, year: number | string): Observable<Fixture[]> {
-    if (!this.lastSearchTerm) {
-      return new Observable(observer => {
-        observer.error(new Error('No search has been performed yet'));
-      });
+    // If no search has been performed yet, trigger one with the team name
+    if (!this.lastSearchTerm || this.lastSearchTerm !== team) {
+      // Trigger search for this team
+      this.searchByTerm(team);
     }
 
-    const subject = this.subjectBySearchTerm.get(this.lastSearchTerm);
+    const subject = this.subjectBySearchTerm.get(team);
     if (!subject) {
       return new Observable(observer => {
-        observer.error(new Error('No cached fixtures for search term'));
+        observer.error(new Error('No cached fixtures for team'));
       });
     }
 
