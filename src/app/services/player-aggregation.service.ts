@@ -68,25 +68,16 @@ export class PlayerAggregationService {
 
     return forkJoin(lineupObservables).pipe(
       mergeMap((lineups: any[]) => {
-        console.log('[PlayerAggregation] Total lineups retrieved:', lineups.length);
         const playerMap = new Map<string, AggregatedPlayer>();
 
         lineups.forEach((lineupData: any) => {
           const { fixture, teamId, players, isBatter } = lineupData;
-          console.log(`[PlayerAggregation] Processing ${isBatter ? 'batting' : 'bowling'} data for game ${fixture.gameID}, ${players.length} players`);
           players.forEach((player: any) => {
-            if (!isBatter) {
-              console.log(`[PlayerAggregation] Bowler: ${player.PlayerName} ${player.PlayerSurname}, Balls: ${player.TotalBowlerBalls}, Wickets: ${player.Wickets}, Runs: ${player.RunsAgainst}`);
-            }
             this.addPlayerToMap(playerMap, player, fixture.gameID, teamId, isBatter);
           });
         });
 
         const result = Array.from(playerMap.values());
-        console.log('[PlayerAggregation] Final aggregated players:', result.length);
-        result.forEach(p => {
-          console.log(`[PlayerAggregation] ${p.PlayerName} ${p.PlayerSurname}: Balls=${p.totalBowlerBalls}, Wickets=${p.totalWickets}, RunsAgainst=${p.totalRunsAgainst}`);
-        });
         return of(result);
       })
     );

@@ -139,6 +139,7 @@ export interface PlayerDisplay {
       text-align: left;
       border-bottom: 2px solid #ddd;
       font-weight: bold;
+      vertical-align: bottom;
     }
     th.group-header {
       text-align: center;
