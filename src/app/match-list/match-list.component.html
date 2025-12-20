@@ -24,12 +24,9 @@
 
   <!-- Empty State -->
   <div class="empty-state" *ngIf="watchedMatches.length === 0">
-    <span class="material-icons large-icon">sports_cricket</span>
+    <img src="assets/logos/SportsBallPro_Ball.png" alt="SportsBallPro" class="large-icon">
     <h2>No matches being watched</h2>
     <p>Add matches to monitor them side-by-side</p>
-    <button class="primary-button" (click)="openFixtureSelection()">
-      <span class="material-icons">add</span> Add Your First Match
-    </button>
   </div>
 
   <!-- Carousel View (Mobile or Desktop with 4+ matches) -->

@@ -87,32 +87,19 @@ td.fixture-description {
     color: rgb(54, 54, 54);
 }
 
-.watch-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
+.watch-icon {
     padding: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s, color 0.2s;
-    color: #999;
+    color: #ccc;
+    transition: color 0.2s;
 }
 
-.watch-btn:hover {
-    background-color: #f5f5f5;
+.watch-icon.watching {
     color: #1976d2;
 }
 
-.watch-btn.watching {
-    color: #1976d2;
-}
-
-.watch-btn.watching:hover {
-    color: #1565c0;
-}
-
-.watch-btn .material-icons {
+.watch-icon .material-icons {
     font-size: 20px;
 }

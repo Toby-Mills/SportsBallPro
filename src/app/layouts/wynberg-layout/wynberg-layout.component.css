@@ -27,6 +27,48 @@
   margin: 0;
 }
 
+.menu-callout {
+  position: fixed;
+  bottom: calc(1.5em + 24px);
+  right: 5.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  z-index: 999;
+  animation: bounce 2s ease-in-out infinite;
+  transform: translateY(50%);
+}
+
+.callout-icon {
+  font-size: 32px;
+  color: #1976d2;
+}
+
+.callout-text {
+  font-size: 1em;
+  color: #666;
+  margin: 0;
+  background: white;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+
+.callout-text strong {
+  color: #1976d2;
+  font-size: 1.2em;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(50%) translateX(0);
+  }
+  50% {
+    transform: translateY(50%) translateX(-10px);
+  }
+}
+
 .hamburger.hidden {
   transform: translateY(100px);
   opacity: 0;

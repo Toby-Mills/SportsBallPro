@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 interface WatchedMatch {
   gameId: string;
@@ -12,9 +13,14 @@ export class WatchListService {
   private readonly STORAGE_KEY = 'sportsBallPro_watchList';
   private readonly MAX_MATCHES = 5;
   private watchListByArea = new Map<'wynberg' | 'main', WatchedMatch[]>();
+  private watchListChanged$ = new Subject<'wynberg' | 'main'>();
 
   constructor() {
     this.loadFromStorage();
+  }
+
+  get watchListChanged() {
+    return this.watchListChanged$.asObservable();
   }
 
   getWatchList(area: 'wynberg' | 'main'): string[] {
@@ -52,6 +58,7 @@ export class WatchListService {
     
     this.watchListByArea.set(area, list);
     this.saveToStorage();
+    this.watchListChanged$.next(area);
     console.log(`[WatchListService] Match added successfully. New count: ${list.length}`);
     return true;
   }
@@ -61,11 +68,13 @@ export class WatchListService {
     const filtered = list.filter(m => m.gameId !== gameId);
     this.watchListByArea.set(area, filtered);
     this.saveToStorage();
+    this.watchListChanged$.next(area);
   }
 
   clearAll(area: 'wynberg' | 'main'): void {
     this.watchListByArea.set(area, []);
     this.saveToStorage();
+    this.watchListChanged$.next(area);
   }
 
   isWatching(area: 'wynberg' | 'main', gameId: string): boolean {

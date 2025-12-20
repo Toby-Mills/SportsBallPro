@@ -3,8 +3,14 @@
           [class.hidden]="isScrollingDown && !isMenuOpen" 
           (click)="toggleMenu()" 
           aria-label="Toggle menu">
-    <span class="material-icons">menu</span>
+    <span class="material-icons">add</span>
   </button>
+
+  <!-- Callout when no matches are being watched -->
+  <div class="menu-callout" *ngIf="showCallout && !isMenuOpen">
+    <p class="callout-text">Use the <strong>+</strong> menu to add a match</p>
+    <span class="material-icons callout-icon">arrow_forward</span>
+  </div>
 
   <div class="menu-overlay" *ngIf="isMenuOpen" (click)="closeMenu()"></div>
   
@@ -16,10 +22,6 @@
     <a routerLink="./fixtures" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
       <span class="material-icons">add</span>
       <span>Add a Match to Watch</span>
-    </a>
-    <a routerLink="./matches" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
-      <span class="material-icons">visibility</span>
-      <span>Watch Matches</span>
     </a>
     <a routerLink="./stats" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
       <span class="material-icons">bar_chart</span>

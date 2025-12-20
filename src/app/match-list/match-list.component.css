@@ -116,9 +116,10 @@
 }
 
 .large-icon {
-  font-size: 80px !important;
-  color: #ccc;
+  width: 120px;
+  height: 120px;
   margin-bottom: 1em;
+  opacity: 0.7;
 }
 
 .empty-state h2 {
@@ -170,6 +171,7 @@
   gap: 1.5em;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
+  align-items: flex-start;
 }
 
 .carousel-track > .match-card {
@@ -185,6 +187,8 @@
   overflow: hidden;
   margin: 1em;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .match-card-header {
@@ -285,17 +289,14 @@
   .match-card {
     margin: 0;
   }
-}
-
 /* Ensure match details component fits in card */
 .match-card app-match-details {
   display: block;
+  flex: 0 0 auto;
 }
 
-/* In carousel view, limit height for mobile */
-@media (max-width: 767px) {
-  .matches-carousel .match-card app-match-details {
-    max-height: 80vh;
-    overflow-y: auto;
-  }
+.match-card app-match-details ::ng-deep .container {
+  margin: 0;
+}match-card app-match-details {
+  display: block;
 }
