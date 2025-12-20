@@ -35,9 +35,9 @@
   <!-- Carousel View (Mobile or Desktop with 4+ matches) -->
   <div class="matches-carousel" *ngIf="watchedMatches.length > 0 && useCarouselView" 
        [style.--visible-count]="visibleMatchCount">
-    <div class="carousel-track" 
-         [style.transform]="'translateX(calc(-' + currentScrollIndex + ' * (100% / ' + visibleMatchCount + ' + 1.5em)))'">
-      <div class="match-card" *ngFor="let gameId of watchedMatches; let i = index">
+      <div class="carousel-track" 
+           [style.transform]="'translateX(calc(-' + currentScrollIndex + ' * (100% / ' + visibleMatchCount + ' + 12px)))'">
+        <div class="match-card" *ngFor="let gameId of watchedMatches; let i = index">
         <div class="match-card-header">
           <button class="icon-btn share-btn" (click)="shareMatch(gameId)" title="Share match">
             <span class="material-icons">share</span>
