@@ -57,6 +57,7 @@
 
 .view-innings {
     padding-left: 2.5em;
+    text-align: center;
 }
 
 .view-innings:hover {

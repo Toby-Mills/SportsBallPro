@@ -154,6 +154,12 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.currentScrollIndex + this.visibleMatchCount < this.watchedMatches.length;
   }
 
+  get carouselGap(): string {
+    // Return gap that matches CSS: 1em for mobile, 1.5em for desktop
+    // Using base font size of 14px for desktop, 12px for mobile
+    return this.isMobileView ? '12px' : '36px'; // 1em = 12px mobile, 1.5em = 21px desktop
+  }
+
   scrollLeft() {
     if (this.canScrollLeft) {
       this.currentScrollIndex--;

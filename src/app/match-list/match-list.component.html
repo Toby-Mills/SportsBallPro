@@ -33,7 +33,7 @@
   <div class="matches-carousel" *ngIf="watchedMatches.length > 0 && useCarouselView" 
        [style.--visible-count]="visibleMatchCount">
       <div class="carousel-track" 
-           [style.transform]="'translateX(calc(-' + currentScrollIndex + ' * (100% / ' + visibleMatchCount + ' + 12px)))'">
+           [style.transform]="'translateX(calc(-' + currentScrollIndex + ' * (100% / ' + visibleMatchCount + ' + ' + carouselGap + ')))'">
         <div class="match-card" 
              [class.highlight]="gameId === highlightedMatchId"
              *ngFor="let gameId of watchedMatches; let i = index">
