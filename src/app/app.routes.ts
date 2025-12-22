@@ -7,10 +7,18 @@ import { StatsContainerComponent } from './stats/stats-container/stats-container
 import { WynbergStatsContainerComponent } from './stats/wynberg-stats-container/wynberg-stats-container.component';
 import { WynbergLayoutComponent } from './layouts/wynberg-layout/wynberg-layout.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+import { MinimalLayoutComponent } from './layouts/minimal-layout/minimal-layout.component';
 import { MatchListComponent } from './match-list/match-list.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/main', pathMatch: 'full' },
+    {
+        path: 'match/:id',
+        component: MinimalLayoutComponent,
+        children: [
+            { path: '', component: MatchDetailsComponent }
+        ]
+    },
     {
         path: 'wynberg',
         component: WynbergLayoutComponent,

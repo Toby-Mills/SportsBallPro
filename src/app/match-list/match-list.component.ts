@@ -221,9 +221,9 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   shareMatch(gameId: string) {
-    // Generate the match key from the gameId
+    // Generate the match key from the gameId for the minimal layout route
     const matchKey = this.matchKeyService.generateKey(gameId);
-    const matchUrl = `${window.location.origin}/${this.area}/match/${matchKey}`;
+    const matchUrl = `${window.location.origin}/match/${matchKey}`;
     
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(matchUrl).then(() => {
