@@ -27,6 +27,7 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   currentScrollIndex = 0; // Which match is at the left edge
   visibleMatchCount = 2; // How many matches visible in carousel (responsive)
   private destroy$ = new Subject<void>();
+  highlightedMatchId: string | null = null; // Track which match to highlight
   
   @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
@@ -44,9 +45,7 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     // Detect area from parent route
     this.area = this.route.parent?.snapshot.data['area'] || 'main';
-    
-    console.log(`[MatchListComponent] Initialized for area: ${this.area}`);
-    
+        
     // Clean any invalid entries first
     this.watchList.cleanInvalidEntries(this.area);
     
@@ -56,13 +55,25 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     // Load watch list
     this.refreshWatchList();
     
+    // Check if we should scroll to a specific match on initial load
+    const state = history.state;
+    if (state?.scrollToGameId) {
+      // Use setTimeout to ensure the view is rendered first
+      setTimeout(() => this.scrollToGameId(state.scrollToGameId), 100);
+    }
+    
     // Refresh watch list whenever we navigate back to this component
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      console.log('[MatchListComponent] Navigation detected, refreshing watch list');
       this.refreshWatchList();
+      
+      // Check if we should scroll to a specific match
+      const state = history.state;
+      if (state?.scrollToGameId) {
+        setTimeout(() => this.scrollToGameId(state.scrollToGameId), 100);
+      }
     });
   }
   
@@ -81,7 +92,6 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.watchedMatches.length > 0 && this.refreshTimer) {
       // Check if timer already has an interval set by checking if it has a timer property
       if (!this.refreshTimer.timer) {
-        console.log('[MatchListComponent] Starting refresh timer');
         this.refreshTimer.setTimer(30000); // 30 seconds
       }
     }
@@ -105,7 +115,6 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private refreshWatchList() {
     this.watchedMatches = this.watchList.getWatchList(this.area);
-    console.log(`[MatchListComponent] Refreshed watch list for ${this.area}: ${this.watchedMatches.length} matches`, this.watchedMatches);
     
     // Update view mode based on number of matches
     this.updateViewMode();
@@ -165,6 +174,24 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentScrollIndex = index;
     } else if (index >= this.currentScrollIndex + this.visibleMatchCount) {
       this.currentScrollIndex = Math.max(0, index - this.visibleMatchCount + 1);
+    } else {
+    }
+  }
+
+  scrollToGameId(gameId: string) {
+    // Find the index of the gameId in watchedMatches
+    const index = this.watchedMatches.indexOf(gameId);
+    if (index !== -1) {
+      this.scrollToMatch(index);
+      
+      // Highlight the match card
+      this.highlightedMatchId = gameId;
+      // Remove highlight after 2 seconds
+      setTimeout(() => {
+        this.highlightedMatchId = null;
+      }, 2000);
+    } else {
+      console.log(`[MatchListComponent] GameId ${gameId} not found in watch list`);
     }
   }
 
@@ -200,15 +227,12 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(matchUrl).then(() => {
-        console.log('Match link copied to clipboard');
         this.toasterMessage.showMessage('Match link copied to clipboard');
       }).catch(err => {
-        console.error('Failed to copy link:', err);
         this.toasterMessage.showMessage('Failed to copy link to clipboard');
       });
     } else {
       // Fallback for non-secure contexts
-      console.log('Share link:', matchUrl);
       this.toasterMessage.showMessage('Clipboard not available in this context');
     }
   }

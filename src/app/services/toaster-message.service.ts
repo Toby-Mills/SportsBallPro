@@ -12,6 +12,7 @@ export class ToasterMessageService {
   constructor() {}
 
   showMessage(message: string, type: 'success' | 'error' = 'success'): void {
+    console.log('[ToasterMessageService] showMessage called:', message, type);
     this.messageSubject.next({ message, type });
   }
 }

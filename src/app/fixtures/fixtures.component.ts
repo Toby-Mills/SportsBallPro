@@ -8,6 +8,7 @@ import { environment } from '../../../src/environments/environment';
 import { FixtureSearchService } from '../services/fixture-search.service';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { WatchListService } from '../services/watch-list.service';
+import { ToasterMessageService } from '../services/toaster-message.service';
 
 @Component({
     selector: 'app-fixtures',
@@ -34,7 +35,8 @@ export class FixturesComponent implements OnInit {
     private matchKey: MatchKeyService,
     private fixtureSearchService: FixtureSearchService,
     private watchList: WatchListService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toasterMessage: ToasterMessageService
   ) { }
 
   ngOnInit() {
@@ -54,7 +56,7 @@ export class FixturesComponent implements OnInit {
       if (added) {
         console.log(`Match ${gameId} added to ${this.area} watch list`);
       } else {
-        console.log(`Could not add match (limit reached)`);
+        this.toasterMessage.showMessage('Cannot add more than 10 matches to watch list', 'error');
       }
     }
   }

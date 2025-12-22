@@ -34,7 +34,9 @@
        [style.--visible-count]="visibleMatchCount">
       <div class="carousel-track" 
            [style.transform]="'translateX(calc(-' + currentScrollIndex + ' * (100% / ' + visibleMatchCount + ' + 12px)))'">
-        <div class="match-card" *ngFor="let gameId of watchedMatches; let i = index">
+        <div class="match-card" 
+             [class.highlight]="gameId === highlightedMatchId"
+             *ngFor="let gameId of watchedMatches; let i = index">
         <div class="match-card-header">
           <button class="icon-btn share-btn" (click)="shareMatch(gameId)" title="Share match">
             <span class="material-icons">share</span>
@@ -54,7 +56,9 @@
 
   <!-- Grid View: Multiple Matches Side-by-Side (Desktop with 1-3 matches) -->
   <div class="matches-grid" *ngIf="watchedMatches.length > 0 && !useCarouselView">
-    <div class="match-card" *ngFor="let gameId of watchedMatches; let i = index">
+    <div class="match-card" 
+         [class.highlight]="gameId === highlightedMatchId"
+         *ngFor="let gameId of watchedMatches; let i = index">
       <div class="match-card-header">
         <button class="icon-btn" (click)="shareMatch(gameId)" aria-label="Share match">
           <span class="material-icons">share</span>

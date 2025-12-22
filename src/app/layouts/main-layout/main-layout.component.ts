@@ -16,6 +16,8 @@ export class MainLayoutComponent {
   private lastScrollTop = 0;
   isScrollingDown = false;
   showCallout = false;
+  private openedByHover = false;
+  private closeTimeout: any = null;
 
   constructor(
     private watchListService: WatchListService,
@@ -68,9 +70,38 @@ export class MainLayoutComponent {
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+    this.openedByHover = false; // Click opens/closes, not hover
   }
 
-  closeMenu() {
+  openMenu() {
+    this.cancelClose(); // Cancel any pending close
+    if (!this.isMenuOpen) {
+      this.openedByHover = true;
+    }
+    this.isMenuOpen = true;
+  }
+
+  scheduleClose() {
+    // Give user 300ms to move from button to menu
+    if (this.openedByHover) {
+      this.closeTimeout = setTimeout(() => {
+        this.isMenuOpen = false;
+        this.openedByHover = false;
+      }, 300);
+    }
+  }
+
+  cancelClose() {
+    // Cancel scheduled close when entering menu
+    if (this.closeTimeout) {
+      clearTimeout(this.closeTimeout);
+      this.closeTimeout = null;
+    }
+  }
+
+  forceCloseMenu() {
+    // Force close (used for overlay click and menu item clicks)
     this.isMenuOpen = false;
+    this.openedByHover = false;
   }
 }

@@ -1,7 +1,9 @@
 <div class="wynberg-layout">
   <button class="hamburger" 
           [class.hidden]="isScrollingDown && !isMenuOpen" 
-          (click)="toggleMenu()" 
+          (click)="toggleMenu()"
+          (mouseenter)="openMenu()"
+          (mouseleave)="scheduleClose()"
           aria-label="Toggle menu">
     <span class="material-icons">add</span>
   </button>
@@ -12,18 +14,18 @@
     <span class="material-icons callout-icon">arrow_forward</span>
   </div>
 
-  <div class="menu-overlay" *ngIf="isMenuOpen" (click)="closeMenu()"></div>
+  <div class="menu-overlay" *ngIf="isMenuOpen" (click)="forceCloseMenu()"></div>
   
-  <nav class="popup-menu" [class.open]="isMenuOpen">
+  <nav class="popup-menu" [class.open]="isMenuOpen" (mouseenter)="cancelClose()" (mouseleave)="scheduleClose()">
     <div class="menu-header">
       <img src="https://www.websports.co.za/images/logos/small_wynberg.png" alt="Wynberg Logo" class="menu-logo">
       <span>Wynberg BHS</span>
     </div>
-    <a routerLink="./fixtures" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
+    <a routerLink="./fixtures" routerLinkActive="active" class="menu-item" (click)="forceCloseMenu()">
       <span class="material-icons">add</span>
       <span>Add a Match to Watch</span>
     </a>
-    <a routerLink="./stats" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
+    <a routerLink="./stats" routerLinkActive="active" class="menu-item" (click)="forceCloseMenu()">
       <span class="material-icons">bar_chart</span>
       <span>Stats</span>
     </a>

@@ -57,7 +57,7 @@ export class MatchDetailsComponent {
     private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
   ) { }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     // Use input gameId if provided (modal usage), otherwise use route param
     if (this.gameId) {
       this.actualGameId = this.gameId;
@@ -85,8 +85,8 @@ export class MatchDetailsComponent {
     }
   }
 
-  ngOnInit() {
-    // Initialization happens in ngAfterViewInit
+  ngAfterViewInit() {
+    // View initialization complete
   }
 
   async toggleWakeLock() {

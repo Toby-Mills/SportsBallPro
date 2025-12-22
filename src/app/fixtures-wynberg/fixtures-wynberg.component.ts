@@ -12,6 +12,7 @@ import { FixtureSearchService } from '../services/fixture-search.service';
 import { FixtureDetailsService } from '../services/fixture-details.service';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { WatchListService } from '../services/watch-list.service';
+import { ToasterMessageService } from '../services/toaster-message.service';
 
 @Component({
     selector: 'app-fixtures-wynberg',
@@ -38,7 +39,8 @@ export class FixturesWynbergComponent implements OnInit {
     private fixtureSearchService: FixtureSearchService,
     private fixtureDetailsService: FixtureDetailsService,
     private watchList: WatchListService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toasterMessage: ToasterMessageService
   ) { }
 
   public ngOnInit(): void {
@@ -59,7 +61,7 @@ export class FixturesWynbergComponent implements OnInit {
       if (added) {
         console.log(`Match ${gameId} added to ${this.area} watch list`);
       } else {
-        console.log(`Could not add match (limit reached)`);
+        this.toasterMessage.showMessage('Cannot add more than 10 matches to watch list', 'error');
       }
     }
   }

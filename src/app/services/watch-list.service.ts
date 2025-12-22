@@ -11,7 +11,7 @@ interface WatchedMatch {
 })
 export class WatchListService {
   private readonly STORAGE_KEY = 'sportsBallPro_watchList';
-  private readonly MAX_MATCHES = 5;
+  private readonly MAX_MATCHES = 10;
   private watchListByArea = new Map<'wynberg' | 'main', WatchedMatch[]>();
   private watchListChanged$ = new Subject<'wynberg' | 'main'>();
 
