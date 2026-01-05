@@ -24,7 +24,7 @@ export const routes: Routes = [
         component: WynbergLayoutComponent,
         data: { area: 'wynberg' },
         children: [
-            { path: '', redirectTo: 'fixtures', pathMatch: 'full' },
+            { path: '', redirectTo: 'matches', pathMatch: 'full' },
             { path: 'fixtures', component: FixturesWynbergComponent },
             { path: 'stats', component: WynbergStatsContainerComponent },
             { path: 'matches', component: MatchListComponent },
