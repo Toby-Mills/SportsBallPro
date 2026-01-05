@@ -190,6 +190,9 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     if (index !== -1) {
       this.scrollToMatch(index);
       
+      // Scroll to top of page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
       // Highlight the match card
       this.highlightedMatchId = gameId;
       // Remove highlight after 2 seconds
@@ -227,9 +230,12 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   shareMatch(gameId: string) {
-    // Generate the match key from the gameId for the minimal layout route
+    // Generate the match key from the gameId
     const matchKey = this.matchKeyService.generateKey(gameId);
-    const matchUrl = `${window.location.origin}/match/${matchKey}`;
+    // Use area-specific route for wynberg, minimal layout for main
+    const matchUrl = this.area === 'wynberg' 
+      ? `${window.location.origin}/wynberg/match/${matchKey}`
+      : `${window.location.origin}/match/${matchKey}`;
     
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(matchUrl).then(() => {

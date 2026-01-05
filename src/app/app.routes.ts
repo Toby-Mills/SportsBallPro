@@ -11,7 +11,7 @@ import { MinimalLayoutComponent } from './layouts/minimal-layout/minimal-layout.
 import { MatchListComponent } from './match-list/match-list.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/main', pathMatch: 'full' },
+    { path: '', redirectTo: '/wynberg', pathMatch: 'full' },
     {
         path: 'match/:id',
         component: MinimalLayoutComponent,
