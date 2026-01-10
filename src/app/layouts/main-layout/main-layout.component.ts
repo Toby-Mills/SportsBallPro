@@ -12,7 +12,6 @@ import { filter } from 'rxjs';
   styleUrl: './main-layout.component.css'
 })
 export class MainLayoutComponent {
-  isMenuOpen = false;
   private lastScrollTop = 0;
   isScrollingDown = false;
   showCallout = false;
@@ -50,27 +49,5 @@ export class MainLayoutComponent {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     this.isScrollingDown = scrollTop > this.lastScrollTop && scrollTop > 100;
     this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const hamburger = document.querySelector('.hamburger');
-    const menu = document.querySelector('.popup-menu');
-    
-    // Close menu if click is outside both hamburger and menu
-    if (this.isMenuOpen && 
-        hamburger && !hamburger.contains(target) && 
-        menu && !menu.contains(target)) {
-      this.isMenuOpen = false;
-    }
-  }
-
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-  }
-
-  closeMenu() {
-    this.isMenuOpen = false;
   }
 }

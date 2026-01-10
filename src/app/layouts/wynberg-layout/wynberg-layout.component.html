@@ -1,33 +1,16 @@
 <div class="wynberg-layout">
-  <button class="hamburger" 
-          [class.hidden]="isScrollingDown && !isMenuOpen" 
-          (click)="toggleMenu()"
-          aria-label="Toggle menu">
+  <a routerLink="./fixtures" 
+     class="hamburger" 
+     [class.hidden]="isScrollingDown"
+     aria-label="Add a match">
     <span class="material-icons">add</span>
-  </button>
+  </a>
 
   <!-- Callout when no matches are being watched -->
-  <div class="menu-callout" *ngIf="showCallout && !isMenuOpen">
-    <p class="callout-text">Use the <strong>+</strong> menu to add a match</p>
+  <div class="menu-callout" *ngIf="showCallout">
+    <p class="callout-text">Use the <strong>+</strong> button to add a match</p>
     <span class="material-icons callout-icon">arrow_forward</span>
   </div>
-
-  <div class="menu-overlay" *ngIf="isMenuOpen" (click)="closeMenu()"></div>
-  
-  <nav class="popup-menu" [class.open]="isMenuOpen">
-    <div class="menu-header">
-      <img src="https://www.websports.co.za/images/logos/small_wynberg.png" alt="Wynberg Logo" class="menu-logo">
-      <span>Wynberg BHS</span>
-    </div>
-    <a routerLink="./fixtures" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
-      <span class="material-icons">add</span>
-      <span>Add a Match to Watch</span>
-    </a>
-    <a routerLink="./stats" routerLinkActive="active" class="menu-item" (click)="closeMenu()">
-      <span class="material-icons">bar_chart</span>
-      <span>Stats</span>
-    </a>
-  </nav>
 
   <div class="content">
     <router-outlet></router-outlet>
