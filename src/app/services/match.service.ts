@@ -11,6 +11,7 @@ import { FallOfWickets } from '../models/fall-of-wickets';
 import { WagonWheel } from '../models/wagon-wheel';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToasterMessageService } from './toaster-message.service';
+import { isApiErrorResponse } from '../models/api-response';
 
 @Injectable({
   providedIn: 'root'
@@ -261,7 +262,12 @@ export class MatchService {
     if (error.error instanceof ProgressEvent && error.status === 0) {
       message = 'Network error or timeout occurred while loading data from WebSports.';
     } else if (error.status === 400) {
-      message = 'Error 404: WebSports API could not find the requested resource';
+      // Check if this is an API error response (intercepted from 200 OK)
+      if (isApiErrorResponse(error.error)) {
+        message = `WebSports Error: ${error.error.Message || error.error.err || 'Unknown error occurred'}`;
+      } else {
+        message = 'WebSports API could not find the requested resource';
+      }
     } else {
       message = (`Error ${error.status}: ${error.statusText || 'Unknown error'}: ${error.message}`);
     }
