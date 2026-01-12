@@ -13,7 +13,8 @@ import { filter } from 'rxjs';
 })
 export class MainLayoutComponent {
   private lastScrollTop = 0;
-  isScrollingDown = false;
+  isScrollingUp = false;
+  private highlightTimeout: any = null;
   showCallout = false;
 
   constructor(
@@ -47,7 +48,22 @@ export class MainLayoutComponent {
   @HostListener('window:scroll', [])
   onScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    this.isScrollingDown = scrollTop > this.lastScrollTop && scrollTop > 100;
+    const scrollingUp = scrollTop < this.lastScrollTop && scrollTop > 100;
+    
+    if (scrollingUp && !this.isScrollingUp) {
+      this.isScrollingUp = true;
+      
+      // Clear any existing timeout
+      if (this.highlightTimeout) {
+        clearTimeout(this.highlightTimeout);
+      }
+      
+      // Remove highlight after 1 second
+      this.highlightTimeout = setTimeout(() => {
+        this.isScrollingUp = false;
+      }, 1000);
+    }
+    
     this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
   }
 }
