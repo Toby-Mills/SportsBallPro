@@ -9,6 +9,5 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The appli
 
 ## Deploy for hosting on GitHub pages
 
-Run `ng build --configuration production` to build the project. The build artifacts will be stored in the `docs/browser` directory.
-Move artifacts out of 'browser' and into 'docs'
+Run `npm run build` to build the project. The build artifacts should be automatically moved fromthe `docs/browser` directory to the 'docs' directory. If not, move them manually.
 Make a duplicate of 'index.html' and rename it to '404.html'
