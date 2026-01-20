@@ -1,7 +1,13 @@
-import { Scorecard } from './scorecard';
+import { BattingScorecard, BowlingScorecard } from './scorecard';
 
-describe('Scorecard', () => {
+describe('BattingScorecard', () => {
   it('should create an instance', () => {
-    expect(new Scorecard()).toBeTruthy();
+    expect(new BattingScorecard()).toBeTruthy();
+  });
+});
+
+describe('BowlingScorecard', () => {
+  it('should create an instance', () => {
+    expect(new BowlingScorecard()).toBeTruthy();
   });
 });
