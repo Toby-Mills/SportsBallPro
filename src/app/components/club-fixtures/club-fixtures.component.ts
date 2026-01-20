@@ -1,8 +1,7 @@
 import { CommonModule, NgFor } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FixtureSummaries } from '../../models/fixture-summary';
 import { MatchKeyService } from '../../services/match-key.service';
-import { SortFixturesPipe } from '../../pipes/sort-fixtures.pipe';
 import { HomeTeamPipe } from '../../pipes/home-team.pipe';
 import { OpponentTeamPipe } from '../../pipes/opponent-team.pipe';
 import { GroupFixturesPipe } from '../../pipes/group-fixtures.pipe';
@@ -15,7 +14,7 @@ import { WatchListService } from '../../services/watch-list.service';
 import { ToasterMessageService } from '../../services/toaster-message.service';
 
 @Component({
-    selector: 'app-fixtures-wynberg',
+    selector: 'app-club-fixtures',
     imports: [
         CommonModule,
         NgFor,
@@ -25,13 +24,16 @@ import { ToasterMessageService } from '../../services/toaster-message.service';
         GroupFixturesPipe,
         RouterLink
     ],
-    templateUrl: './fixtures-wynberg.component.html',
-    styleUrl: './fixtures-wynberg.component.css',
+    templateUrl: './club-fixtures.component.html',
+    styleUrl: './club-fixtures.component.css',
     standalone: true
 })
-export class FixturesWynbergComponent implements OnInit {
-  public club: string = 'Wynberg BHS';
-  public area: 'wynberg' | 'main' = 'wynberg';
+export class ClubFixturesComponent implements OnInit {
+  @Input() clubName: string = '';
+  @Input() logoUrl: string = '';
+  @Input() title: string = '';
+  
+  public area: 'wynberg' | 'main' = 'main';
   public fixtures: FixtureSummaries = new FixtureSummaries;
   public isReloading: boolean = false;
 
@@ -45,8 +47,22 @@ export class FixturesWynbergComponent implements OnInit {
   ) { }
 
   public ngOnInit(): void {
-    this.area = this.route.parent?.snapshot.data['area'] || 'wynberg';
-    this.loadFixtures();
+    this.area = this.route.parent?.snapshot.data['area'] || 'main';
+    
+    // If no inputs provided, try to get from route data
+    if (!this.clubName) {
+      this.clubName = this.route.snapshot.data['clubName'] || '';
+    }
+    if (!this.logoUrl) {
+      this.logoUrl = this.route.snapshot.data['logoUrl'] || '';
+    }
+    if (!this.title) {
+      this.title = this.route.snapshot.data['title'] || `${this.clubName} Cricket Matches`;
+    }
+    
+    if (this.clubName) {
+      this.loadFixtures();
+    }
   }
 
   public addToWatchList(gameId: string, event: Event): void {
@@ -73,13 +89,13 @@ export class FixturesWynbergComponent implements OnInit {
 
   public onReloadFixtures(): void {
     this.isReloading = true;
-    this.fixtureSearchService.clearCache(this.club);
+    this.fixtureSearchService.clearCache(this.clubName);
     this.fixtureDetailsService.clearAllFixtureDetails();
     this.loadFixtures();
   }
 
   public loadFixtures() {
-    this.fixtureSearchService.searchByTerm(this.club).subscribe(
+    this.fixtureSearchService.searchByTerm(this.clubName).subscribe(
       fixtureArray => {
         this.fixtures = new FixtureSummaries;
         // Wrap Fixture[] in Fixtures format expected by loadFixtures

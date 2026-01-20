@@ -1,6 +1,6 @@
 <div class="header">
-	<img src="https://www.websports.co.za/images/logos/small_wynberg.png" alt="Logo" class="logo">
-	<h1>Wynberg BHS Cricket Matches</h1>
+	<img [src]="logoUrl" [alt]="clubName + ' Logo'" class="logo" *ngIf="logoUrl">
+	<h1>{{ title }}</h1>
 </div>
 <div class="container">
 	<div class="searching"><span *ngIf="!fixtures || fixtures.fixtureSummaries.length == 0">searching for fixtures...</span>
@@ -15,16 +15,16 @@
 		<h2>{{ group.date | date: 'fullDate' }}</h2>
 		<table>
 			<tbody>
-				<ng-container *ngFor="let fixture of group.fixtures | sortFixturesByTeam:this.club">
+				<ng-container *ngFor="let fixture of group.fixtures | sortFixturesByTeam:clubName">
 				<tr>
 					<td colspan="2">
-						<a [routerLink]="['../match', fixture.matchKey]">{{fixture | homeTeam:this.club}}</a>
+						<a [routerLink]="['../match', fixture.matchKey]">{{fixture | homeTeam:clubName}}</a>
 					</td>
 					<td>
 						vs
 					</td>
 					<td>
-						{{fixture | opponentTeam:this.club}}
+						{{fixture | opponentTeam:clubName}}
 					</td>
 					<td>
 						<span class="watch-icon" 

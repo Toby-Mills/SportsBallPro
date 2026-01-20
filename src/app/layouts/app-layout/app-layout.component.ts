@@ -1,26 +1,33 @@
 import { Component, HostListener } from '@angular/core';
-import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { WatchListService } from '../../services/watch-list.service';
 import { filter } from 'rxjs';
 
 @Component({
-  selector: 'app-wynberg-layout',
+  selector: 'app-layout',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink],
-  templateUrl: './wynberg-layout.component.html',
-  styleUrl: './wynberg-layout.component.css'
+  templateUrl: './app-layout.component.html',
+  styleUrl: './app-layout.component.css'
 })
-export class WynbergLayoutComponent {
+export class AppLayoutComponent {
   private lastScrollTop = 0;
   isScrollingUp = false;
   private highlightTimeout: any = null;
   showCallout = false;
+  area: 'wynberg' | 'main' = 'main';
 
   constructor(
     private watchListService: WatchListService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
+    // Get area from route data
+    this.route.data.subscribe(data => {
+      this.area = data['area'] || 'main';
+    });
+
     // Check if we should show callout when navigating to matches route
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -39,10 +46,8 @@ export class WynbergLayoutComponent {
   }
 
   private updateCalloutVisibility(url: string) {
-    // Determine area from URL
-    const area: 'wynberg' | 'main' = url.includes('/wynberg') ? 'wynberg' : 'main';
     // Only show callout on the matches route when there are no watched matches
-    this.showCallout = url.includes('/matches') && this.watchListService.getWatchList(area).length === 0;
+    this.showCallout = url.includes('/matches') && this.watchListService.getWatchList(this.area).length === 0;
   }
 
   @HostListener('window:scroll', [])

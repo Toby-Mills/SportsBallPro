@@ -1,4 +1,4 @@
-.wynberg-layout {
+.app-layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -99,75 +99,74 @@
   right: 1.5em;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  min-width: 220px;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  padding: 0.5em 0;
   z-index: 999;
-  overflow: hidden;
+  min-width: 200px;
 }
 
-.popup-menu.open {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.menu-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-  font-weight: 500;
-  font-size: 0.9em;
-  color: #666;
-}
-
-.menu-logo {
-  height: 24px;
-  width: auto;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+.popup-menu a {
+  display: block;
+  padding: 0.75em 1.25em;
   color: #333;
   text-decoration: none;
-  font-size: 0.95em;
-  transition: background-color 0.15s ease;
-  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.menu-item:hover {
-  background-color: #f8f9fa;
+.popup-menu a:hover {
+  background-color: #f5f5f5;
 }
 
-.menu-item.active {
+.popup-menu .active-route {
   background-color: #e3f2fd;
   color: #1976d2;
+  font-weight: 500;
 }
 
-.menu-item .material-icons {
-  font-size: 20px;
-  color: #666;
-}
-
-.menu-item.active .material-icons {
-  color: #1976d2;
-}
-
-.menu-divider {
+.popup-menu .separator {
   height: 1px;
-  background-color: #e9ecef;
-  margin: 4px 0;
+  background-color: #e0e0e0;
+  margin: 0.5em 0;
 }
 
 .content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Area-specific styles can be added here if needed */
+.app-layout.wynberg-area {
+  /* Wynberg-specific styles if needed in the future */
+}
+
+.app-layout.main-area {
+  /* Main-specific styles if needed in the future */
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    width: 44px;
+    height: 44px;
+  }
+
+  .menu-callout {
+    right: 4.5em;
+    bottom: calc(1.5em + 22px);
+  }
+
+  .callout-text {
+    font-size: 0.9em;
+    padding: 0.4em 0.8em;
+  }
+
+  .callout-icon {
+    font-size: 28px;
+  }
+
+  .popup-menu {
+    right: 1em;
+    bottom: 5em;
+    min-width: 180px;
+  }
 }
