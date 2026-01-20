@@ -1,0 +1,62 @@
+import { Component, Input, Pipe, PipeTransform } from '@angular/core';
+import { BattingScorecard, BattingScorecardEntry } from '../../models/scorecard';
+import { CommonModule, NgFor } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatchService } from '../../services/match.service';
+
+
+@Pipe({
+  name: 'visible',
+  standalone: true,
+})
+export class VisibleBatter implements PipeTransform {
+  transform(batters: BattingScorecardEntry[], allBatters: boolean): BattingScorecardEntry[] {
+    return batters.filter(batter => {
+      switch (batter.howOutFull) {
+        case '':
+        case 'dnb': return false;
+          break;
+        case 'n/o': return true;
+          break;
+        default:
+          return allBatters;
+      }
+    })
+  }
+}
+
+@Component({
+    selector: 'app-batting-scorecard',
+    imports: [
+        CommonModule,
+        FormsModule,
+        NgFor,
+        VisibleBatter,
+    ],
+    templateUrl: './batting-scorecard.component.html',
+    styleUrl: './batting-scorecard.component.css'
+})
+export class BattingScorecardComponent {
+  @Input() teamNumber: 1 | 2 = 1;
+  @Input() gameId: string = '';
+  public scorecard: BattingScorecard = new BattingScorecard;
+  public allBatters: boolean = false;
+
+  constructor(public matchService: MatchService) { }
+
+  ngOnInit() {
+    this.matchService.getTeamABattingScorecardUpdates(this.gameId).subscribe(
+      scorecard => {
+        if (this.teamNumber == 1) {
+          this.scorecard = scorecard;
+        }
+      }
+    )
+    this.matchService.getTeamBBattingScorecardUpdates(this.gameId).subscribe(
+      scorecard => {
+        if (this.teamNumber == 2) { this.scorecard = scorecard; }
+      }
+    )
+  }
+}
+

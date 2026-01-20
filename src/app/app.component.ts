@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { ToasterComponent } from './toaster/toaster.component';
+import { ToasterComponent } from './components/toaster/toaster.component';
 
 
 @Component({
