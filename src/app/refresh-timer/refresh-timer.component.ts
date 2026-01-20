@@ -5,7 +5,8 @@ import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core
     selector: 'app-refresh-timer',
     imports: [CommonModule],
     templateUrl: './refresh-timer.component.html',
-    styleUrl: './refresh-timer.component.css'
+    styleUrl: './refresh-timer.component.css',
+    standalone: true
 })
 export class RefreshTimerComponent implements OnDestroy {
   @Output() timerTriggered: EventEmitter<number> = new EventEmitter<number>();

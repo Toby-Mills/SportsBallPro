@@ -7,58 +7,8 @@ import { FixtureSearchService } from '../../services/fixture-search.service';
   selector: 'app-team-search',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <div class="container" *ngIf="showSearchBox">
-      <label for="teamName">Enter Team Name:</label>
-      <input 
-        type="text" 
-        id="teamName" 
-        name="teamName" 
-        placeholder="Type team name here" 
-        [(ngModel)]="teamNameSearch"
-        (keyup)="onSearchInput()">
-      <button (click)="searchTeam()">Search</button>
-    </div>
-    <div class="container" *ngIf="teamNamesFromSearch.length > 0">
-      <label for="uniqueTeams">Select Team:</label>
-      <select 
-        id="uniqueTeams" 
-        [(ngModel)]="selectedTeamName" 
-        (change)="onTeamSelect()">
-        <option value="">-- Choose a team --</option>
-        <option *ngFor="let team of teamNamesFromSearch" [value]="team">
-          {{ team }}
-        </option>
-      </select>
-    </div>
-  `,
-  styles: [`
-    .container {
-      margin: 20px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
-    input, select, button {
-      padding: 8px;
-      margin-right: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-  `]
+  templateUrl: './team-search.component.html',
+  styleUrl: './team-search.component.css'
 })
 export class TeamSearchComponent implements OnInit {
   @Output() teamSelected = new EventEmitter<string>();

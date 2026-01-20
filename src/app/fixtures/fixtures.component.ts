@@ -19,7 +19,8 @@ import { ToasterMessageService } from '../services/toaster-message.service';
         RouterLink
     ],
     templateUrl: './fixtures.component.html',
-    styleUrl: './fixtures.component.css'
+    styleUrl: './fixtures.component.css',
+    standalone: true
 })
 export class FixturesComponent implements OnInit {
   public gameId: string = '';

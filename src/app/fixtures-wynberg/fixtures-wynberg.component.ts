@@ -26,7 +26,8 @@ import { ToasterMessageService } from '../services/toaster-message.service';
         RouterLink
     ],
     templateUrl: './fixtures-wynberg.component.html',
-    styleUrl: './fixtures-wynberg.component.css'
+    styleUrl: './fixtures-wynberg.component.css',
+    standalone: true
 })
 export class FixturesWynbergComponent implements OnInit {
   public club: string = 'Wynberg BHS';

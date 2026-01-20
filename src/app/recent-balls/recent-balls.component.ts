@@ -7,7 +7,8 @@ import { MatchService } from '../services/match.service';
     selector: 'app-recent-balls',
     imports: [CommonModule, NgFor],
     templateUrl: './recent-balls.component.html',
-    styleUrl: './recent-balls.component.css'
+    styleUrl: './recent-balls.component.css',
+    standalone: true
 })
 export class RecentBallsComponent {
   @Input() inningsNumber: 1 | 2 = 1;

@@ -16,7 +16,8 @@ import { ToasterComponent } from './toaster/toaster.component';
     ],
     providers: [HttpClient,],
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css']
+    styleUrls: ['./app.component.css'],
+    standalone: true
 })
 export class AppComponent {
 

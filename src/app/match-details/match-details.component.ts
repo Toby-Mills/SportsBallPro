@@ -30,7 +30,8 @@ import { ToasterMessageService } from '../services/toaster-message.service';
     ],
     providers: [HttpClient,],
     templateUrl: './match-details.component.html',
-    styleUrl: './match-details.component.css'
+    styleUrl: './match-details.component.css',
+    standalone: true
 })
 export class MatchDetailsComponent {
   @Input() gameId?: string; // Optional: pass gameId directly for modal usage

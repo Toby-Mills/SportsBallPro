@@ -7,7 +7,8 @@ import { MatchService } from '../services/match.service';
     selector: 'app-fall-of-wickets',
     imports: [CommonModule],
     templateUrl: './fall-of-wickets.component.html',
-    styleUrl: './fall-of-wickets.component.css'
+    styleUrl: './fall-of-wickets.component.css',
+    standalone: true
 })
 export class FallOfWicketsComponent {
 @Input() innings: 1 | 2 = 1;

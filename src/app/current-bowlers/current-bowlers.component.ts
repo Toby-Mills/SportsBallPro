@@ -7,7 +7,8 @@ import { CurrentBowlers } from '../models/current-bowlers';
     selector: 'app-current-bowlers',
     imports: [CommonModule, NgIf, NgFor],
     templateUrl: './current-bowlers.component.html',
-    styleUrl: './current-bowlers.component.css'
+    styleUrl: './current-bowlers.component.css',
+    standalone: true
 })
 export class CurrentBowlersComponent {
   @Input() currentBowlers:CurrentBowlers = new CurrentBowlers;

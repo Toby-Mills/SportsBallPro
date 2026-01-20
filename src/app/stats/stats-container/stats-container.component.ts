@@ -22,73 +22,8 @@ import { PlayerStatsTableComponent } from '../player-stats-table/player-stats-ta
 		FixtureSelectorComponent,
 		PlayerStatsTableComponent
 	],
-	template: `
-    <app-team-search 
-      [prefilterTeam]="prefilterTeam"
-      [showSearchBox]="showTeamSearch"
-      (teamSelected)="onTeamSelected($event)">
-    </app-team-search>
-    
-    <app-year-filter 
-      *ngIf="selectedTeam"
-      [team]="selectedTeam"
-      (yearSelected)="onYearSelected($event)">
-    </app-year-filter>
-    
-    <app-fixture-selector
-      *ngIf="selectedTeam && selectedYear"
-      [team]="selectedTeam"
-      [year]="selectedYear"
-      [fixtures]="selectedYearFixtures"
-      [selectedFixtures]="selectedFixtures"
-      (fixturesSelected)="onFixturesSelected($event)">
-
-    </app-fixture-selector>
-    
-    <div class="analyze-container" *ngIf="selectedTeam && selectedYear">
-      <button 
-        class="analyze-button"
-        [disabled]="selectedFixtures.length === 0"
-        (click)="onAnalyzeRequested()">
-        Analyze Selected Fixtures
-      </button>
-    </div>
-    
-    <app-player-stats-table
-      *ngIf="aggregatedPlayers.length > 0"
-      [players]="aggregatedPlayers">
-    </app-player-stats-table>
-  `,
-	styles: [`
-    .analyze-container {
-      margin: 20px 0;
-      padding: 0 20px;
-    }
-    
-    .analyze-button {
-      padding: 10px 20px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
-      font-weight: bold;
-      display: block;
-      width: 100%;
-      max-width: 300px;
-    }
-    
-    .analyze-button:hover:not(:disabled) {
-      background-color: #218838;
-    }
-    
-    .analyze-button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }`
-	]
+	templateUrl: './stats-container.component.html',
+	styleUrl: './stats-container.component.css'
 })
 export class StatsContainerComponent implements OnInit, OnDestroy {
 	@Input() prefilterTeam?: string;

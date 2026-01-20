@@ -12,7 +12,8 @@ import { MatchService } from '../services/match.service';
         BaseChartDirective,
     ],
     styleUrl: './run-comparison.component.css',
-    templateUrl: './run-comparison.component.html'
+    templateUrl: './run-comparison.component.html',
+    standalone: true
 })
 export class RunComparisonComponent {
   @Input() gameId: string = '';

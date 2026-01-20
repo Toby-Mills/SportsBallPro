@@ -8,7 +8,8 @@ import { WebSportsAPIService } from '../services/web-sports-api.service';
     selector: 'app-team-score',
     imports: [CommonModule, NgClass],
     templateUrl: './team-score.component.html',
-    styleUrl: './team-score.component.css'
+    styleUrl: './team-score.component.css',
+    standalone: true
 })
 export class TeamScoreComponent {
   @Input() teamNumber: 1 | 2 = 1;

@@ -1,0 +1,40 @@
+<div class="container" *ngIf="fixtures.length > 0">
+  <label>Select Fixtures:</label>
+  <div class="fixtures-list">
+    <div *ngFor="let fixture of getSortedFixtures()" 
+         class="fixture-row" 
+         [ngClass]="'status-' + getStatusClass(fixture)"
+         (click)="onFixtureRowClick(fixture, $event)">
+      <input 
+        type="checkbox" 
+        [checked]="isSelected(fixture)" 
+        (change)="onFixtureToggle(fixture, $event)"
+        (click)="$event.stopPropagation()"
+        [attr.id]="'fixture-' + fixture.gameID">
+      <div class="fixture-label">
+        <div class="fixture-info">
+          <span class="fixture-teams">
+            {{ fixture.aTeam }} vs {{ fixture.bTeam }} on {{ fixture.datePlayed | date:'mediumDate' }}
+          </span>
+          <span class="fixture-status" [ngClass]="getStatusClass(fixture)">
+            {{ getFixtureStatus(fixture) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="selection-summary">
+    {{ selectedFixtures.length }} of {{ fixtures.length }} fixtures selected
+  </div>
+</div>
+
+<app-modal-dialog 
+  [isVisible]="showMatchModal"
+  [title]="'Match Details'"
+  (close)="closeMatchModal()">
+  <app-match-details 
+    [gameId]="selectedMatchGameId"
+    [showWakeLock]="false"
+    *ngIf="showMatchModal">
+  </app-match-details>
+</app-modal-dialog>

@@ -7,7 +7,8 @@ import { CurrentBatters } from '../models/current-batters';
     selector: 'app-current-batters',
     imports: [CommonModule],
     templateUrl: './current-batters.component.html',
-    styleUrl: './current-batters.component.css'
+    styleUrl: './current-batters.component.css',
+    standalone: true
 })
 export class CurrentBattersComponent {
   @Input()currentBatters: CurrentBatters = new CurrentBatters;

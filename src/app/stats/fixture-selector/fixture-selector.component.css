@@ -1,0 +1,104 @@
+.container {
+  margin: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.fixtures-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.fixture-row {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.fixture-row:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.fixture-row:last-child {
+  border-bottom: none;
+}
+
+.fixture-row.status-completed {
+  background-color: rgba(232, 245, 233, 0.7);
+}
+
+.fixture-row.status-live {
+  background-color: rgba(255, 243, 224, 0.7);
+}
+
+.fixture-row.status-upcoming {
+  background-color: rgba(227, 242, 253, 0.7);
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.fixture-label {
+  font-weight: normal;
+  cursor: pointer;
+  flex: 1;
+  margin: 0;
+}
+
+.fixture-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.fixture-teams {
+  flex: 1;
+  color: #333;
+}
+
+.selection-summary {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.fixture-status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fixture-status.completed {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.fixture-status.live {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.fixture-status.upcoming {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}

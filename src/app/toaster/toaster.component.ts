@@ -6,7 +6,8 @@ import { CommonModule } from '@angular/common';
     selector: 'app-toaster',
     imports: [CommonModule],
     templateUrl: './toaster.component.html',
-    styleUrl: './toaster.component.css'
+    styleUrl: './toaster.component.css',
+    standalone: true
 })
 export class ToasterComponent {
   message: string | null = null;

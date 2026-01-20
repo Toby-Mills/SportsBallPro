@@ -11,7 +11,8 @@ import { WebSportsAPIService } from '../services/web-sports-api.service';
     selector: 'app-wagon-wheel',
     imports: [ModalDialogComponent, CommonModule],
     templateUrl: './wagon-wheel.component.html',
-    styleUrl: './wagon-wheel.component.css'
+    styleUrl: './wagon-wheel.component.css',
+    standalone: true
 })
 export class WagonWheelComponent {
   @Input() gameId: string = '';
