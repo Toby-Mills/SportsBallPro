@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 
 import { WynbergLayoutComponent } from './wynberg-layout.component';
@@ -15,10 +15,12 @@ describe('WynbergLayoutComponent', () => {
     mockWatchListService = jasmine.createSpyObj('WatchListService', ['getWatchList'], {
       watchListChanged: of()
     });
-    mockRouter = jasmine.createSpyObj('Router', ['navigate'], {
+    mockRouter = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree', 'serializeUrl'], {
       events: of(),
       url: '/wynberg/matches'
     });
+    mockRouter.createUrlTree.and.returnValue({} as any);
+    mockRouter.serializeUrl.and.returnValue('/');
 
     mockWatchListService.getWatchList.and.returnValue([]);
 
@@ -26,7 +28,15 @@ describe('WynbergLayoutComponent', () => {
       imports: [WynbergLayoutComponent],
       providers: [
         { provide: WatchListService, useValue: mockWatchListService },
-        { provide: Router, useValue: mockRouter }
+        { provide: Router, useValue: mockRouter },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { params: {}, queryParams: {} },
+            params: of({}),
+            queryParams: of({})
+          }
+        }
       ]
     })
     .compileComponents();
