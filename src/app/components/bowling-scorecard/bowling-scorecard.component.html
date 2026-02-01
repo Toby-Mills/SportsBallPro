@@ -20,7 +20,11 @@
                 <tr *ngIf="bowler.bowlerNumber > 0"
                     [ngClass]="{'highlighted': bowler.strikeBowler || bowler.nonStrikeBowler, 'secondary': bowler.nonStrikeBowler}">
                     <td class="number">{{bowler.bowlerNumber}}</td>
-                    <td>{{bowler.firstname}} {{bowler.surname}}</td>
+                    <td>
+                        <span class="player-name clickable" (click)="onPlayerClick(bowler.serverPlayerID, bowler.firstname + ' ' + bowler.surname)">
+                            {{bowler.firstname}} {{bowler.surname}}
+                        </span>
+                    </td>
                     <td class="number">{{bowler.overs}}</td>
                     <td class="number">{{bowler.maidens}}</td>
                     <td class="number">{{bowler.runs}}</td>
@@ -42,3 +46,18 @@
     </ng-template>
 
 </table>
+
+<!-- Wagon Wheel Modal -->
+<app-modal-dialog #wagonWheelModal [isVisible]="showWagonWheel" [title]="'Wagon Wheel - ' + selectedPlayerName" (close)="onCloseWagonWheel()">
+    <app-wagon-wheel 
+        [gameId]="gameId" 
+        [playerId]="selectedPlayerId" 
+        [playerName]="selectedPlayerName"
+        [matchInnings]="inningsNumber"
+        [teamNumber]="teamNumber"
+        [type]="'bowling'">
+    </app-wagon-wheel>
+    <div modal-footer>
+        <button (click)="onCloseWagonWheel()">Close</button>
+    </div>
+</app-modal-dialog>

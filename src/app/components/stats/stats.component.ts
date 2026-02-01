@@ -147,7 +147,7 @@ export class StatsComponent implements OnInit {
   }
 
   getPlayersForFixture(fixture: Fixture) {
-    this.webSportsAPI.getFixtures(fixture.gameID).subscribe(
+    this.webSportsAPI.getFixtures(fixture.gameID, 1).subscribe(
       fixtureDetails => {
         const teamAId = fixtureDetails.fixtures[0].aTeamID;
         const teamBId = fixtureDetails.fixtures[0].bTeamID;

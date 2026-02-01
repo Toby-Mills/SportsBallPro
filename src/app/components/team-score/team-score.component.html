@@ -1,13 +1,15 @@
-<div [ngClass]="{'a':teamNumber==1, 'b':teamNumber ==2}">
+<div [ngClass]="{'a':teamNumber==1, 'b':teamNumber ==2}" (click)="onCardClick()">
     <img class="team-logo" [src]="this.logoUrl" (error)="onImageError()">
     <div class="score">
         <div class="team-name"><span>{{teamScore.teamName}}</span></div>
         <div class="runs">{{teamScore.runs}} / {{teamScore.wickets}}</div>
     </div>
     <div class="detail">
-        <div>Overs: {{teamScore.overs}}</div>
-        <div>Extras: {{teamScore.extras}}</div>
-        <div>Run Rate: {{teamScore.runRate | number:"1.2-2"}}</div>
+        <div class="detail-row">
+            <div class="detail-left">Overs: {{teamScore.overs}}</div>
+            <div class="detail-center">Extras: {{teamScore.extras}}</div>
+            <div class="detail-right">Run Rate: {{teamScore.runRate | number:"1.2-2"}}</div>
+        </div>
     </div>
 </div>
 <!--<pre>{{teamScore|json}}</pre>-->

@@ -46,14 +46,14 @@ export class PlayerAggregationService {
         return [];
       }
 
-      // Get both batting and bowling scorecards for this fixture
+      // Get both batting and bowling scorecards for this fixture (use innings 1 for aggregation)
       return [
-        this.webSportsAPI.getBattingScorecard(fixture.gameID, teamId).pipe(
+        this.webSportsAPI.getBattingScorecard(fixture.gameID, teamId, 1).pipe(
           mergeMap((battingScorecard: any) => {
             return of({ fixture, teamId, players: battingScorecard.scorecard, isBatter: true });
           })
         ),
-        this.webSportsAPI.getBowlingScorecard(fixture.gameID, teamId).pipe(
+        this.webSportsAPI.getBowlingScorecard(fixture.gameID, teamId, 1).pipe(
           mergeMap((bowlingScorecard: any) => {
             return of({ fixture, teamId, players: bowlingScorecard.scorecard, isBatter: false });
           })

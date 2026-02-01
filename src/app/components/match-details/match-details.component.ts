@@ -11,7 +11,6 @@ import { BowlingScorecardComponent } from '../bowling-scorecard/bowling-scorecar
 import { ActivatedRoute } from '@angular/router';
 import { MatchKeyService } from '../../services/match-key.service';
 import { RunComparisonComponent } from "../run-comparison/run-comparison.component";
-import { WagonWheelComponent } from "../wagon-wheel/wagon-wheel.component";
 import { MatchService } from '../../services/match.service';
 import { ToasterMessageService } from '../../services/toaster-message.service';
 
@@ -25,8 +24,7 @@ import { ToasterMessageService } from '../../services/toaster-message.service';
         FallOfWicketsComponent,
         BattingScorecardComponent,
         BowlingScorecardComponent,
-        RunComparisonComponent,
-        WagonWheelComponent
+        RunComparisonComponent
     ],
     providers: [HttpClient,],
     templateUrl: './match-details.component.html',
@@ -42,11 +40,21 @@ export class MatchDetailsComponent {
   title = 'SportsBallPro';
   fixture: Fixture = new Fixture;
   status: Status = new Status;
-  viewingInnings: number = 1;
+  viewingBattingInnings: string = '1-1'; // Format: "inningsNumber-teamNumber"
   private wakeLock: any = null;
   public isWakeLockActive: boolean = false;
   public actualGameId: string = ''; // Store the resolved gameId
   public componentId: string = Math.random().toString(36).substring(7); // Unique ID for this instance
+  public hasSecondInnings: boolean = false;
+
+  // Parsed values from viewingBattingInnings
+  get currentInningsNumber(): 1 | 2 {
+    return parseInt(this.viewingBattingInnings.split('-')[0]) as 1 | 2;
+  }
+
+  get currentTeamNumber(): 1 | 2 {
+    return parseInt(this.viewingBattingInnings.split('-')[1]) as 1 | 2;
+  }
 
 
   constructor(
@@ -71,19 +79,66 @@ export class MatchDetailsComponent {
 
     // Now that we have actualGameId, set up subscriptions
     if (this.actualGameId) {
-      this.matchService.getInningsChangeUpdates(this.actualGameId).subscribe(
-        inningsNumber => this.viewingInnings = inningsNumber
-      )
+      // Note: Not subscribing to getInningsChangeUpdates because detectSecondInnings
+      // handles the auto-selection logic correctly for both single and multi-innings matches
+      
       this.matchService.getFixtureUpdates(this.actualGameId).subscribe(
-        fixture => this.fixture = fixture
+        fixture => {
+          this.fixture = fixture;
+        }
       )
       this.matchService.getStatusUpdates(this.actualGameId).subscribe(
-        status => this.status = status
+        status => {
+          this.status = status;
+        }
+      )
+      
+      // Check if second innings exists by looking for lineup data in innings 2, team 1
+      this.matchService.getBattingLineupUpdates(this.actualGameId, 2, 1).subscribe(
+        lineup => {
+          const hadSecondInnings = this.hasSecondInnings;
+          this.hasSecondInnings = lineup.lineup.length > 0;
+          
+          // Auto-select appropriate innings when data loads or changes
+          if (!hadSecondInnings && this.hasSecondInnings) {
+            // Second innings just became available
+            this.autoSelectInnings();
+          } else if (this.viewingBattingInnings === '1-1') {
+            // Initial load - auto select
+            this.autoSelectInnings();
+          }
+        }
       )
 
       // Load the match data
       this.matchService.loadMatch(this.actualGameId);
     }
+  }
+
+  /**
+   * Auto-select the appropriate innings to view based on match status
+   */
+  private autoSelectInnings() {
+    // For multi-innings matches, default to second match innings
+    // For single innings matches, default to the second team to bat
+    let matchInnings: 1 | 2 = 1;
+    let team: 1 | 2 = 1;
+    
+    if (this.hasSecondInnings) {
+      // Multi-innings match - show second match innings
+      matchInnings = 2;
+      team = this.status.currentTeam || 2;
+    } else if (this.status.currentInnings === 2) {
+      // Single innings match, second team batting
+      matchInnings = 1;
+      team = this.status.currentTeam || 2;
+    } else {
+      // Default to first team in first innings
+      matchInnings = 1;
+      team = 1;
+    }
+    
+    this.viewingBattingInnings = `${matchInnings}-${team}`;
   }
 
   ngAfterViewInit() {
@@ -110,6 +165,10 @@ export class MatchDetailsComponent {
         this.toasterMessageService.showMessage('An unknown error occurred while requesting a Wake Lock');
       }
     }
+  }
+
+  public onTeamScoreClick(battingInnings: string): void {
+    this.viewingBattingInnings = battingInnings;
   }
 
 }

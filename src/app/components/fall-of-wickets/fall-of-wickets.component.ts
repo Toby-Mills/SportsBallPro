@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { FallOfWickets } from '../../models/fall-of-wickets';
 import { CommonModule } from '@angular/common';
 import { MatchService } from '../../services/match.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-fall-of-wickets',
@@ -10,26 +11,31 @@ import { MatchService } from '../../services/match.service';
     styleUrl: './fall-of-wickets.component.css',
     standalone: true
 })
-export class FallOfWicketsComponent {
-@Input() innings: 1 | 2 = 1;
+export class FallOfWicketsComponent implements OnChanges, OnDestroy {
+  @Input() inningsNumber: 1 | 2 = 1;
+  @Input() teamNumber: 1 | 2 = 1;
   @Input() gameId: string = '';
   public fallOfWickets:FallOfWickets = new FallOfWickets;
+  private subscription?: Subscription;
 
   constructor (public matchService: MatchService){}
 
-  ngOnInit(){
-    if(this.innings ==1){
-      this.matchService.getInnings1FallOfWicketsUpdates(this.gameId).subscribe(
-        fallOfWickets => {
-          this.fallOfWickets = fallOfWickets;
-        }
-      )
-    }else{
-      this.matchService.getInnings2FallOfWicketsUpdates(this.gameId).subscribe(
-        fallOfWickets => {
-          this.fallOfWickets = fallOfWickets;
-        }
-      )
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['inningsNumber'] || changes['teamNumber'] || changes['gameId']) {
+      this.subscribe();
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
+  }
+
+  private subscribe() {
+    this.subscription?.unsubscribe();
+    this.subscription = this.matchService.getFallOfWicketsUpdates(this.gameId, this.inningsNumber, this.teamNumber).subscribe(
+      fallOfWickets => {
+        this.fallOfWickets = fallOfWickets;
+      }
+    );
   }
 }

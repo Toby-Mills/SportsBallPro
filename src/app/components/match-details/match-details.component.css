@@ -20,6 +20,23 @@
     flex: 1 1 400px;
 }
 
+.card.team-score-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.card.team-score-card:hover:not(.selected) {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+
+.card.selected {
+    outline: 3px solid #396157;
+    outline-offset: -3px;
+    box-shadow: 0 8px 24px rgb(19, 34, 31);
+    background-color: #fff;
+}
+
 @media only screen and (max-width: 860px) {
     .container {
         max-width: 400px;
@@ -55,24 +72,11 @@
     text-align: center;
 }
 
-.view-innings {
-    padding-left: 2.5em;
+.innings-detail-label {
     text-align: center;
-}
-
-.view-innings:hover {
-    cursor: pointer;
-}
-
-.view-innings.selected {
-    color: black;
-    border: 1pt solid black;
-    background-color: white;
-    font-weight: bold;
-}
-
-.view-innings.selected:hover {
-    cursor: default;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #203f38;
 }
 
 .no-match {

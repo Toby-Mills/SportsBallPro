@@ -1,123 +1,64 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MatchService } from '../../services/match.service';
-import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { CommonModule } from '@angular/common';
-import { PlayerLineup } from '../../models/match';
 import { WagonWheel } from '../../models/wagon-wheel';
-import { WebSportsAPIService } from '../../services/web-sports-api.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-wagon-wheel',
-    imports: [ModalDialogComponent, CommonModule],
+    imports: [CommonModule],
     templateUrl: './wagon-wheel.component.html',
     styleUrl: './wagon-wheel.component.css',
     standalone: true
 })
-export class WagonWheelComponent {
+export class WagonWheelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() gameId: string = '';
-  public teamAId: string = '';
-  public teamAName: string = '';
-  public teamALogoName: string = '';
-  public teamALogoUrl: string = '';
-  public teamBId: string = '';
-  public teamBName: string = '';
-  public teamBLogoName: string = '';
-  public teamBLogoUrl: string = '';
+  @Input() playerId: string = '';
+  @Input() playerName: string = '';
+  @Input() matchInnings: 1 | 2 = 1;
+  @Input() teamNumber: 1 | 2 = 1;
+  @Input() type: 'batting' | 'bowling' = 'batting';
 
   public wagonWheelData: WagonWheel = new WagonWheel();
-  public teamABattingLineup: PlayerLineup = new PlayerLineup();
-  public teamBBattingLineup: PlayerLineup = new PlayerLineup();
-  public teamABowlingLineup: PlayerLineup = new PlayerLineup();
-  public teamBBowlingLineup: PlayerLineup = new PlayerLineup();
-  public playerId: number = 0;
-  public playerNumber: number = 0;
-  public playerName: string = '';
-
   public svgContent: SafeHtml = '';
+  public teamName: string = '';
+  private subscription?: Subscription;
+  private fixtureSubscription?: Subscription;
 
-  public showPlayerSelector = false;
-  public playerSelectorTeamId = '';
-  public playerSelectorTeamName = '';
-  public playerSelectorType: 'Batting' | 'Bowling' = 'Batting';
-  public playerSelectorLineup: PlayerLineup = new PlayerLineup();
-
-  onClosePlayerSelector() {
-    this.showPlayerSelector = false;
-  }
-
-  constructor(private sanitizer: DomSanitizer, private matchService: MatchService, private webSportsAPI: WebSportsAPIService) { }
+  constructor(private sanitizer: DomSanitizer, private matchService: MatchService) { }
 
   ngOnInit() {
-    this.matchService.getFixtureUpdates(this.gameId).subscribe(
-      fixture => {
-        this.teamAId = fixture.teamAId;
-        this.teamAName = fixture.teamAName;
-        this.teamALogoName = fixture.teamALogoName;
-        this.teamBId = fixture.teamBId;
-        this.teamBName = fixture.teamBName;
-        this.teamBLogoName = fixture.teamBLogoName;
-        
-        this.teamALogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamALogoName, 1);
-        this.teamBLogoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamBLogoName, 2);
-        
-        if (this.playerSelectorTeamId == '') {
-          this.playerSelectorTeamId = this.teamAId;
-          this.playerSelectorTeamName = this.teamAName;
-          this.playerSelectorType = 'Batting';
-        };
-      }
-    )
-    this.matchService.getWagonWheelUpdates(this.gameId).subscribe(
+    // Subscribe to wagon wheel updates
+    // Note: Data loading is triggered by the parent component before the modal opens
+    this.subscription = this.matchService.getWagonWheelUpdates(this.gameId).subscribe(
       wagonWheel => {
         this.wagonWheelData = wagonWheel;
-        let player = undefined;
-        if (wagonWheel.type == 'Batting' && wagonWheel.teamId == this.teamAId) { player = this.teamABattingLineup.lineup.find(player => player.playerId == wagonWheel.playerId) }
-        else if (wagonWheel.type == 'Batting' && wagonWheel.teamId == this.teamBId) { player = this.teamBBattingLineup.lineup.find(player => player.playerId == wagonWheel.playerId) }
-        else if (wagonWheel.type == 'Bowling' && wagonWheel.teamId == this.teamAId) { player = this.teamABowlingLineup.lineup.find(player => player.playerId == wagonWheel.playerId) }
-        else if (wagonWheel.type == 'Bowling' && wagonWheel.teamId == this.teamBId) { player = this.teamBBowlingLineup.lineup.find(player => player.playerId == wagonWheel.playerId) }
-        if (player) {
-          this.playerName = player.firstName + ' ' + player.surname;
-          this.playerNumber = player.number;
-          this.playerId = player.playerId;
-        } else {
-          this.playerName = 'choose a player...';
-          this.playerNumber = 0;
-          this.playerId = 0;
-        }
         this.svgContent = this.sanitizer.bypassSecurityTrustHtml(this.generateCricketFieldSvg(3));
       }
-    )
-    this.matchService.getTeamABattingLineupUpdates(this.gameId).subscribe(
-      battingLineup => {
-        this.teamABattingLineup = battingLineup;
-        this.loadPlayerSelectorLineup();
-      }
-    )
-    this.matchService.getTeamBBattingLineupUpdates(this.gameId).subscribe(
-      battingLineup => {
-        this.teamBBattingLineup = battingLineup;
-        this.loadPlayerSelectorLineup();
-      }
-    )
-    this.matchService.getTeamABowlingLineupUpdates(this.gameId).subscribe(
-      bowlingLineup => {
-        this.teamABowlingLineup = bowlingLineup;
-        this.loadPlayerSelectorLineup();
-      }
-    )
-    this.matchService.getTeamBBowlingLineupUpdates(this.gameId).subscribe(
-      bowlingLineup => {
-        this.teamBBowlingLineup = bowlingLineup;
-        this.loadPlayerSelectorLineup();
-      }
-    )
-
+    );
   }
 
-  public onPlayerClick(playerId: number) {
-    this.showPlayerSelector = false;
-    this.matchService.setWagonWheelPlayer(this.gameId, this.playerSelectorTeamId, playerId, this.playerSelectorType);
+  ngOnChanges(changes: SimpleChanges) {
+    // React when inputs change (they are set after constructor)
+    if (changes['teamNumber'] || changes['gameId']) {
+      this.updateTeamName();
+    }
+  }
+
+  private updateTeamName() {
+    // Subscribe to fixture to get team names
+    this.fixtureSubscription?.unsubscribe();
+    this.fixtureSubscription = this.matchService.getFixtureUpdates(this.gameId).subscribe(
+      fixture => {
+        this.teamName = this.teamNumber === 1 ? fixture.teamAName : fixture.teamBName;
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscription?.unsubscribe();
+    this.fixtureSubscription?.unsubscribe();
   }
 
   generateCricketFieldSvg(scale: number): string {
@@ -255,46 +196,5 @@ export class WagonWheelComponent {
       default:
         return 'gray';
     }
-  }
-
-  public onPlayerSelectorTypeClick(mode: 'Batting' | 'Bowling') {
-    this.playerSelectorType = mode;
-    this.loadPlayerSelectorLineup();
-  }
-
-  public onPlayerSelectorTeamClick(teamId: string) {
-    this.playerSelectorTeamId = teamId;
-    this.loadPlayerSelectorLineup();
-  }
-
-  private loadPlayerSelectorLineup() {
-    if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'Batting') { this.playerSelectorLineup = this.teamABattingLineup };
-    if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'Batting') { this.playerSelectorLineup = this.teamBBattingLineup };
-    if (this.playerSelectorTeamId == this.teamAId && this.playerSelectorType == 'Bowling') { this.playerSelectorLineup = this.teamABowlingLineup };
-    if (this.playerSelectorTeamId == this.teamBId && this.playerSelectorType == 'Bowling') { this.playerSelectorLineup = this.teamBBowlingLineup };
-  }
-
-  public onNextPlayerClick() {
-    let index = this.playerSelectorLineup.lineup.findIndex(player => player.playerId == this.wagonWheelData.playerId);
-
-    if ((index || 0) < this.playerSelectorLineup.lineup.length - 1) {
-      index++;
-    } else { index = 0 }
-
-    let newPlayerId = this.playerSelectorLineup.lineup[index].playerId;
-
-    this.onPlayerClick(newPlayerId);
-  }
-
-  public onPreviousPlayerClick() {
-    let index = this.playerSelectorLineup.lineup.findIndex(player => player.playerId == this.wagonWheelData.playerId);
-
-    if ((index || 0) > 0) {
-      index--;
-    } else { index = this.playerSelectorLineup.lineup.length - 1 }
-
-    let newPlayerId = this.playerSelectorLineup.lineup[index].playerId;
-
-    this.onPlayerClick(newPlayerId);
   }
 }

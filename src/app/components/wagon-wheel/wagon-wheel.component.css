@@ -73,3 +73,22 @@ button.player-change {
 	background-color:  rgb(222, 233, 243) ;
 	width: 85px;
   }
+
+  /* SVG responsive scaling */
+  .wagon-wheel-svg {
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .wagon-wheel-svg ::ng-deep svg {
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+  }
+  
+  @media only screen and (max-width: 860px) {
+    .wagon-wheel-svg ::ng-deep svg {
+      max-width: 85vw;
+    }
+  }

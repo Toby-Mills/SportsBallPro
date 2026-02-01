@@ -16,8 +16,8 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
-  public getFixtures(gameId: string): Observable<Fixtures> {
-    const url: string = `https://www.websports.co.za/api/live/getfixture/${gameId}/1`;
+  public getFixtures(gameId: string, innings: 1 | 2 = 1): Observable<Fixtures> {
+    const url: string = `https://www.websports.co.za/api/live/getfixture/${gameId}/${innings}`;
     return this.http.get<any>(url, {})
   }
 
@@ -26,34 +26,34 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
-  public getBallCountdown(gameId: string, teamId: string, innings: 1 | 2): Observable<BallCountdown> {
-    const url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${gameId}/${teamId}/${innings}`;
+  public getBallCountdown(gameId: string, teamId: string, battingInnings: 1 | 2 | 3 | 4): Observable<BallCountdown> {
+    const url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${gameId}/${teamId}/${battingInnings}`;
     return this.http.get<any>(url, {})
   }
 
-  public getBatsmen(gameId: string, teamId: string): Observable<Batsmen> {
+  public getBatsmen(gameId: string, teamId: string, innings: 1 | 2): Observable<Batsmen> {
     //Return an object with an array of the Current Batsmen at the crease (striker & non-stiker)
-    const url: string = `https://www.websports.co.za/api/live/fixture/batsmen/${gameId}/${teamId}/1`;
+    const url: string = `https://www.websports.co.za/api/live/fixture/batsmen/${gameId}/${teamId}/${innings}`;
     return this.http.get<any>(url, {})
   }
 
-  public getFallOfWickets(gameId: string, teamId: string): Observable<FallOfWickets> {
-    const url = `https://www.websports.co.za/api/live/fixture/scorecard/fownew/${gameId}/${teamId}/1`;
+  public getFallOfWickets(gameId: string, teamId: string, innings: 1 | 2): Observable<FallOfWickets> {
+    const url = `https://www.websports.co.za/api/live/fixture/scorecard/fownew/${gameId}/${teamId}/${innings}`;
     return this.http.get<any>(url, {})
   }
 
-  public getBattingScorecard(gameId: string, teamId: string): Observable<BattingScorecard> {
-    const url = `https://www.websports.co.za/api/live/fixture/scorecard/batting/${gameId}/${teamId}/1`;
+  public getBattingScorecard(gameId: string, teamId: string, innings: 1 | 2): Observable<BattingScorecard> {
+    const url = `https://www.websports.co.za/api/live/fixture/scorecard/batting/${gameId}/${teamId}/${innings}`;
     return this.http.get<any>(url, {})
   }
 
-  public getBowlingScorecard(gameId: string, teamId: string): Observable<BowlingScorecard> {
-    const url = `https://www.websports.co.za/api/live/fixture/scorecard/bowling/${gameId}/${teamId}/1`;
+  public getBowlingScorecard(gameId: string, teamId: string, innings: 1 | 2): Observable<BowlingScorecard> {
+    const url = `https://www.websports.co.za/api/live/fixture/scorecard/bowling/${gameId}/${teamId}/${innings}`;
     return this.http.get<any>(url, {})
   }
 
-  public getCurrentBowlers(gameId: string): Observable<Bowlers> {
-    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${gameId}/1`;
+  public getCurrentBowlers(gameId: string, battingInnings: 1 | 2 | 3 | 4): Observable<Bowlers> {
+    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${gameId}/${battingInnings}`;
     return this.http.get<any>(url, {})
   }
 
@@ -62,18 +62,18 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
-  public getWagonWheel(gameId: string, teamId: string, playerId: string, type: 'Batting' | 'Bowling'): Observable<WagonWheel> {
-    const url = `https://www.websports.co.za/api/live/fixture/wagonwheellines/${gameId}/1/${teamId}/${playerId}/${type}`;
+  public getWagonWheel(gameId: string, matchInnings: 1 | 2, teamId: string, playerId: string, type: 'batting' | 'bowling'): Observable<WagonWheel> {
+    const url = `https://www.websports.co.za/api/live/fixture/wagonwheellines/${gameId}/${matchInnings}/${teamId}/${playerId}/${type}`;
     return this.http.get<any>(url, {});
   }
 
-  public getBattingLineup(gameId: string, teamId: string): Observable<BattingLineup> {
-    const url = `https://www.websports.co.za/api/live/fixture/team/${gameId}/${teamId}/1/batting`;
+  public getBattingLineup(gameId: string, teamId: string, innings: 1 | 2): Observable<BattingLineup> {
+    const url = `https://www.websports.co.za/api/live/fixture/team/${gameId}/${teamId}/${innings}/batting`;
     return this.http.get<any>(url, {});
   }
 
-  public getBowlingLineup(gameId: string, teamId: string): Observable<BowlingLineup> {
-    const url = `https://www.websports.co.za/api/live/fixture/team/${gameId}/${teamId}/1/bowling`;
+  public getBowlingLineup(gameId: string, teamId: string, innings: 1 | 2): Observable<BowlingLineup> {
+    const url = `https://www.websports.co.za/api/live/fixture/team/${gameId}/${teamId}/${innings}/bowling`;
     return this.http.get<any>(url, {});
   }
 

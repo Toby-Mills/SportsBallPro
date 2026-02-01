@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { TeamScore } from '../../models/team-score';
 import { CommonModule, NgClass } from '@angular/common';
 import { MatchService } from '../../services/match.service';
@@ -14,31 +14,21 @@ import { WebSportsAPIService } from '../../services/web-sports-api.service';
 export class TeamScoreComponent {
   @Input() teamNumber: 1 | 2 = 1;
   @Input() gameId: string = '';
+  @Input() inningsNumber: 1 | 2 = 1;
+  @Input() isSelected: boolean = false;
+  @Output() cardClicked = new EventEmitter<string>();
   public teamScore: TeamScore = new TeamScore;
   public logoUrl: string = '';
 
   constructor(private matchService: MatchService, private webSportsAPI: WebSportsAPIService) { }
 
   ngOnInit() {
-  
-    if (this.teamNumber == 1) {
-      this.matchService.getTeamAScoreUpdates(this.gameId).subscribe(
-        teamScore => {
-          this.teamScore = teamScore;
-          this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);
-        }
-      )
-    }
-
-    if (this.teamNumber == 2) {
-      this.matchService.getTeamBScoreUpdates(this.gameId).subscribe(
-        teamScore => {
-          this.teamScore = teamScore;
-          this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);
-        }
-      )
-    }
-
+    this.matchService.getTeamScoreUpdates(this.gameId, this.inningsNumber, this.teamNumber).subscribe(
+      teamScore => {
+        this.teamScore = teamScore;
+        this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);
+      }
+    );
   }
 
 
@@ -48,5 +38,10 @@ export class TeamScoreComponent {
     } else {
       this.logoUrl = 'assets/logos/small_Team_B.png'; // Default image for team 2
     }
+  }
+
+  public onCardClick(): void {
+    const battingInnings = `${this.inningsNumber}-${this.teamNumber}`;
+    this.cardClicked.emit(battingInnings);
   }
 }

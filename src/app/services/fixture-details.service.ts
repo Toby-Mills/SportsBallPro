@@ -36,7 +36,7 @@ export class FixtureDetailsService {
     const subject = new BehaviorSubject<Fixtures>({ fixtures: [] });
     this.subjectByGameId.set(gameId, subject);
     
-    this.webSportsAPI.getFixtures(gameId).subscribe(
+    this.webSportsAPI.getFixtures(gameId, 1).subscribe(
       (fixtures: Fixtures) => {
         // Cache the fixture details by gameId
         this.cacheByGameId.set(gameId, fixtures);

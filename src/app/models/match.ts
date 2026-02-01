@@ -1,32 +1,43 @@
 import { Fixture as WebsportsFixture, BattingScorecard, BattingLineup } from '../models/web-sports';
 
-import { InningsDetail } from './innings-detail';
+import { BattingInningsDetail } from './innings-detail';
+import { Innings } from './innings';
 import { RunComparison } from './run-comparison';
 import { } from './scorecard';
 import { TeamScore } from './team-score';
 import { WagonWheel } from './wagon-wheel';
 
 export class Match {
+    static readonly STRUCTURE_VERSION = 2;
+    
     fixture: Fixture = new Fixture;
     status: Status = new Status;
     teamAScore: TeamScore = new TeamScore;
     teamBScore: TeamScore = new TeamScore;
-    teamABattingLineup: PlayerLineup = new PlayerLineup;
-    teamBBattingLineup: PlayerLineup = new PlayerLineup;
-    teamABowlingLineup: PlayerLineup = new PlayerLineup;
-    teamBBowlingLineup: PlayerLineup = new PlayerLineup;
-
-    signature: string = '';
-    innings1Detail: InningsDetail = new InningsDetail;
-    innings2Detail: InningsDetail = new InningsDetail;
+    innings: Innings[] = [];
     runComparison: RunComparison = new RunComparison;
     wagonWheel: WagonWheel = new WagonWheel;
+
+    signature: string = '';
 
     public constructor() {
         this.teamAScore.teamNumber = 1;
         this.teamBScore.teamNumber = 2;
-        this.innings1Detail.number = 1;
-        this.innings2Detail.number = 2;
+        
+        // Initialize 2 innings
+        for (let i = 1; i <= 2; i++) {
+            const innings = new Innings();
+            innings.number = i;
+            
+            // Initialize 2 batting innings per innings (one for each team)
+            for (let t = 1; t <= 2; t++) {
+                const battingInnings = new BattingInningsDetail();
+                battingInnings.teamNumber = t;
+                innings.battingInnings.push(battingInnings);
+            }
+            
+            this.innings.push(innings);
+        }
     }
 
     public loadFixture(input: WebsportsFixture): void {
@@ -53,13 +64,9 @@ export class Match {
         this.fixture.teamBId = input.bTeamID;
     }
 
-    public loadLineup(type: 'Batting'|'Bowling', teamNumber: 1|2, input: BattingLineup): void {
-        let lineup: Array<Player> = [];
-
-        if (type == 'Batting' && teamNumber == 1) { lineup = this.teamABattingLineup.lineup }
-        if (type == 'Batting' && teamNumber == 2) { lineup = this.teamBBattingLineup.lineup }
-        if (type == 'Bowling' && teamNumber == 1) { lineup = this.teamABowlingLineup.lineup }
-        if (type == 'Bowling' && teamNumber == 2) { lineup = this.teamBBowlingLineup.lineup }
+    public loadLineup(type: 'Batting'|'Bowling', inningsNumber: 1|2, teamNumber: 1|2, input: BattingLineup): void {
+        const battingInnings = this.innings[inningsNumber - 1].battingInnings[teamNumber - 1];
+        let lineup: Array<Player> = type === 'Batting' ? battingInnings.battingLineup.lineup : battingInnings.bowlingLineup.lineup;
 
         while (lineup.length > 0) { lineup.pop() }
 
@@ -94,6 +101,7 @@ export class Status {
     runsRequired: string = '';
     result: string = '';
     currentInnings: 1 | 2 = 1;
+    currentTeam: 1 | 2 = 1;
 }
 
 export class PlayerLineup {

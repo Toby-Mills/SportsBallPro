@@ -8,41 +8,68 @@
             <div class="result">{{status.result}}</div>
             <div *ngIf="status.runsRequired !='NotOn'" class="runRequired">{{status.runsRequired}}</div>
         </div>
-        <div class="small-box card ">
-            <app-team-score [teamNumber]="1" [gameId]="actualGameId"></app-team-score>
-        </div>
-        <div class="small-box card">
-            <app-team-score [teamNumber]="2" [gameId]="actualGameId"></app-team-score>
-        </div>
+        
         <div *ngIf="status.tossWonByTeam" class="box toss">{{status.tossWonByTeam}} won the toss and decided to
             {{status.decidedTo}}
         </div>
-        <div class="box view-innings">
-            <input type="radio" [name]="'innings-' + componentId" [id]="'innings1-' + componentId" [value]="1" [(ngModel)]="viewingInnings"><label
-                [for]="'innings1-' + componentId"> 1st Innings</label>
-            <input type="radio" [name]="'innings-' + componentId" [id]="'innings2-' + componentId" [value]="2" [(ngModel)]="viewingInnings"><label
-                [for]="'innings2-' + componentId"> 2nd Innings</label>
+        
+        <!-- First Innings Team Scores -->
+        <div class="small-box card team-score-card" [class.selected]="viewingBattingInnings === '1-1'">
+            <app-team-score 
+                [teamNumber]="1" 
+                [gameId]="actualGameId" 
+                [inningsNumber]="1"
+                [isSelected]="viewingBattingInnings === '1-1'"
+                (cardClicked)="onTeamScoreClick($event)">
+            </app-team-score>
+        </div>
+        <div class="small-box card team-score-card" [class.selected]="viewingBattingInnings === '1-2'">
+            <app-team-score 
+                [teamNumber]="2" 
+                [gameId]="actualGameId" 
+                [inningsNumber]="1"
+                [isSelected]="viewingBattingInnings === '1-2'"
+                (cardClicked)="onTeamScoreClick($event)">
+            </app-team-score>
+        </div>
+        
+        <!-- Second Innings Team Scores (if exists) -->
+        <div class="small-box card team-score-card" [class.selected]="viewingBattingInnings === '2-1'" *ngIf="hasSecondInnings">
+            <app-team-score 
+                [teamNumber]="1" 
+                [gameId]="actualGameId" 
+                [inningsNumber]="2"
+                [isSelected]="viewingBattingInnings === '2-1'"
+                (cardClicked)="onTeamScoreClick($event)">
+            </app-team-score>
+        </div>
+        <div class="small-box card team-score-card" [class.selected]="viewingBattingInnings === '2-2'" *ngIf="hasSecondInnings">
+            <app-team-score 
+                [teamNumber]="2" 
+                [gameId]="actualGameId" 
+                [inningsNumber]="2"
+                [isSelected]="viewingBattingInnings === '2-2'"
+                (cardClicked)="onTeamScoreClick($event)">
+            </app-team-score>
+        </div>
+        
+        <div class="box innings-detail-label">Innings Detail</div>
+        
+        <div class="small-box card">
+            <app-batting-scorecard [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber" [gameId]="actualGameId"></app-batting-scorecard>
         </div>
         <div class="small-box card">
-            <app-batting-scorecard *ngIf="viewingInnings==1" [teamNumber]="1" [gameId]="actualGameId"></app-batting-scorecard>
-            <app-batting-scorecard *ngIf="viewingInnings==2" [teamNumber]="2" [gameId]="actualGameId"></app-batting-scorecard>
+            <app-recent-balls [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber" [gameId]="actualGameId"></app-recent-balls>
         </div>
         <div class="small-box card">
-            <app-recent-balls *ngIf="viewingInnings==1" [inningsNumber]="1" [gameId]="actualGameId"></app-recent-balls>
-            <app-recent-balls *ngIf="viewingInnings==2" [inningsNumber]="2" [gameId]="actualGameId"></app-recent-balls>
+            <app-bowling-scorecard [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber === 1 ? 2 : 1" [gameId]="actualGameId"></app-bowling-scorecard>
         </div>
         <div class="small-box card">
-            <app-bowling-scorecard *ngIf="viewingInnings==1" [teamNumber]="2" [gameId]="actualGameId"></app-bowling-scorecard>
-            <app-bowling-scorecard *ngIf="viewingInnings==2" [teamNumber]="1" [gameId]="actualGameId"></app-bowling-scorecard>
-        </div>
-        <div class="small-box card">
-            <app-fall-of-wickets *ngIf="viewingInnings==1" [innings]="1" [gameId]="actualGameId"></app-fall-of-wickets>
-            <app-fall-of-wickets *ngIf="viewingInnings==2" [innings]="2" [gameId]="actualGameId"></app-fall-of-wickets>
+            <app-fall-of-wickets [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber" [gameId]="actualGameId"></app-fall-of-wickets>
         </div>
         <div class="small-box card run-comparison">
             <app-run-comparison [gameId]="actualGameId"></app-run-comparison>
         </div>
-        <div class="small-box card"><app-wagon-wheel [gameId]="actualGameId"></app-wagon-wheel></div>
     </ng-container>
     <ng-template #noMatch>
         <div *ngIf="this.parameterGameKey == '' && !gameId" class="no-match">Please select a Match to load</div>

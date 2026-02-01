@@ -19,3 +19,13 @@
 .nonStrike-bowler {
     background-color: blue;
 }
+
+.player-name.clickable {
+  cursor: pointer;
+  color: #1a73e8;
+  transition: color 0.2s ease;
+}
+
+.player-name.clickable:hover {
+  color: #0d6efd;
+}
