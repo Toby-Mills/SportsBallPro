@@ -9,6 +9,7 @@ import { BattingScorecard, BowlingScorecard } from '../models/scorecard';
 import { RecentBalls } from '../models/recent-balls';
 import { FallOfWickets } from '../models/fall-of-wickets';
 import { WagonWheel } from '../models/wagon-wheel';
+import { BallByBallCommentary } from '../models/ball-commentary';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToasterMessageService } from './toaster-message.service';
 import { isApiErrorResponse } from '../models/api-response';
@@ -30,6 +31,7 @@ export class MatchService {
   private bowlingScorecardSubjects = new Map<string, BehaviorSubject<BowlingScorecard>>();
   private recentOversSubjects = new Map<string, BehaviorSubject<RecentBalls>>();
   private fallOfWicketsSubjects = new Map<string, BehaviorSubject<FallOfWickets>>();
+  private ballByBallCommentarySubjects = new Map<string, BehaviorSubject<BallByBallCommentary>>();
   private battingLineupSubjects = new Map<string, BehaviorSubject<PlayerLineup>>();
   private bowlingLineupSubjects = new Map<string, BehaviorSubject<PlayerLineup>>();
   private runComparisonSubjects = new Map<string, BehaviorSubject<RunComparison>>();
@@ -97,6 +99,11 @@ export class MatchService {
   getFallOfWicketsUpdates(gameId: string, inningsNumber: 1 | 2, teamNumber: 1 | 2): Observable<FallOfWickets> {
     const key = this.getBattingInningsKey(gameId, inningsNumber, teamNumber);
     return this.getOrCreateSubject(this.fallOfWicketsSubjects, key, new FallOfWickets()).asObservable();
+  }
+
+  getBallByBallCommentaryUpdates(gameId: string, inningsNumber: 1 | 2, teamNumber: 1 | 2): Observable<BallByBallCommentary> {
+    const key = this.getBattingInningsKey(gameId, inningsNumber, teamNumber);
+    return this.getOrCreateSubject(this.ballByBallCommentarySubjects, key, new BallByBallCommentary()).asObservable();
   }
 
   getBattingLineupUpdates(gameId: string, inningsNumber: 1 | 2, teamNumber: 1 | 2): Observable<PlayerLineup> {
@@ -254,6 +261,7 @@ export class MatchService {
         this.getOrCreateSubject(this.bowlingScorecardSubjects, key, new BowlingScorecard()).next(battingInnings.bowlingScorecard);
         this.getOrCreateSubject(this.recentOversSubjects, key, new RecentBalls()).next(battingInnings.recentOvers);
         this.getOrCreateSubject(this.fallOfWicketsSubjects, key, new FallOfWickets()).next(battingInnings.fallOfWickets);
+        this.getOrCreateSubject(this.ballByBallCommentarySubjects, key, new BallByBallCommentary()).next(battingInnings.ballByBallCommentary);
         this.getOrCreateSubject(this.battingLineupSubjects, key, new PlayerLineup()).next(battingInnings.battingLineup);
         this.getOrCreateSubject(this.bowlingLineupSubjects, key, new PlayerLineup()).next(battingInnings.bowlingLineup);
       }
@@ -297,6 +305,8 @@ export class MatchService {
       concatMap(x => this.loadRecentOvers(gameId, 1, 2)),
       concatMap(x => this.loadFallOfWickets(gameId, 1, 1)),
       concatMap(x => this.loadFallOfWickets(gameId, 1, 2)),
+      concatMap(x => this.loadBallByBallCommentary(gameId, 1, 1)),
+      concatMap(x => this.loadBallByBallCommentary(gameId, 1, 2)),
       concatMap(x => this.loadBattingScorecard(gameId, 1, 1)),
       concatMap(x => this.loadBattingScorecard(gameId, 1, 2)),
       concatMap(x => this.loadCurrentBatters(gameId, 1, 1)),
@@ -315,6 +325,8 @@ export class MatchService {
       concatMap(x => this.loadRecentOvers(gameId, 2, 2)),
       concatMap(x => this.loadFallOfWickets(gameId, 2, 1)),
       concatMap(x => this.loadFallOfWickets(gameId, 2, 2)),
+      concatMap(x => this.loadBallByBallCommentary(gameId, 2, 1)),
+      concatMap(x => this.loadBallByBallCommentary(gameId, 2, 2)),
       concatMap(x => this.loadBattingScorecard(gameId, 2, 1)),
       concatMap(x => this.loadBattingScorecard(gameId, 2, 2)),
       concatMap(x => this.loadCurrentBatters(gameId, 2, 1)),
@@ -482,6 +494,21 @@ export class MatchService {
       map(fallOfWickets => {
         battingInnings.fallOfWickets.loadFallOfWickets(fallOfWickets);
         this.getOrCreateSubject(this.fallOfWicketsSubjects, key, new FallOfWickets()).next(battingInnings.fallOfWickets);
+      }), catchError((error: HttpErrorResponse) => this.handleError(error))
+    );
+  }
+
+  private loadBallByBallCommentary(gameId: string, inningsNumber: 1 | 2, teamNumber: 1 | 2): Observable<any> {
+    const match = this.getOrCreateMatch(gameId);
+    const teamId = this.getTeamId(match, teamNumber);
+    const battingInnings = this.getBattingInnings(match, inningsNumber, teamNumber);
+    const key = this.getBattingInningsKey(gameId, inningsNumber, teamNumber);
+    const apiBattingInnings = this.getApiBattingInnings(match, inningsNumber, teamNumber);
+
+    return this.webSportsApi.getCommentary(gameId, teamId, apiBattingInnings).pipe(
+      map(commentary => {
+        battingInnings.ballByBallCommentary.loadCommentary(gameId, teamId, inningsNumber, commentary);
+        this.getOrCreateSubject(this.ballByBallCommentarySubjects, key, new BallByBallCommentary()).next(battingInnings.ballByBallCommentary);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     );
   }

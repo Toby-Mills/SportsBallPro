@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BallCountdown, Batsmen, BattingLineup, BattingScorecard, Bowlers, BowlingLineup, BowlingScorecard, FallOfWickets, Fixtures, RunComparison, WagonWheel } from '../models/web-sports'
+import { BallCountdown, Batsmen, BattingLineup, BattingScorecard, Bowlers, BowlingLineup, BowlingScorecard, Commentary, FallOfWickets, Fixtures, RunComparison, WagonWheel } from '../models/web-sports'
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,11 @@ export class WebSportsAPIService {
 
   public getBallCountdown(gameId: string, teamId: string, battingInnings: 1 | 2 | 3 | 4): Observable<BallCountdown> {
     const url: string = `https://www.websports.co.za/api/live/fixture/ballcountdown/${gameId}/${teamId}/${battingInnings}`;
+    return this.http.get<any>(url, {})
+  }
+
+  public getCommentary(gameId: string, teamId: string, innings: 1 | 2 | 3 | 4): Observable<Commentary> {
+    const url: string = `https://www.websports.co.za/api/live/fixture/commentary/${gameId}/${teamId}/${innings}`;
     return this.http.get<any>(url, {})
   }
 

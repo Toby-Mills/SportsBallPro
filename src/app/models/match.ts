@@ -8,7 +8,7 @@ import { TeamScore } from './team-score';
 import { WagonWheel } from './wagon-wheel';
 
 export class Match {
-    static readonly STRUCTURE_VERSION = 2;
+    static readonly STRUCTURE_VERSION = 3;
     
     fixture: Fixture = new Fixture;
     status: Status = new Status;

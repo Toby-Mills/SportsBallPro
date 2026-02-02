@@ -23,13 +23,7 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adjust shadow as needed */
     padding: 1em;
-    max-width: 400px;
-}
-
-@media screen and (max-width: 768px) {
-    .card {
-        max-width: 100%;
-    }
+    width: 100%
 }
 
 .card .card-header {

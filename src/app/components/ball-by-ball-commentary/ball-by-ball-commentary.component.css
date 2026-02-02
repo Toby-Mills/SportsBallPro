@@ -1,0 +1,15 @@
+.commentary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.empty {
+  font-style: italic;
+  color: #6b7280;
+}

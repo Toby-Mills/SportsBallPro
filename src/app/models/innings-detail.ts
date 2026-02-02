@@ -4,6 +4,7 @@ import { FallOfWickets } from "./fall-of-wickets";
 import { RecentBalls } from "./recent-balls";
 import { BattingScorecard, BowlingScorecard } from "./scorecard";
 import { PlayerLineup } from "./match";
+import { BallByBallCommentary } from "./ball-commentary";
 
 export class BattingInningsDetail {
     teamNumber: number = 0;  // 1 or 2
@@ -15,6 +16,7 @@ export class BattingInningsDetail {
     bowlingScorecard: BowlingScorecard = new BowlingScorecard;
     battingLineup: PlayerLineup = new PlayerLineup;
     bowlingLineup: PlayerLineup = new PlayerLineup;
+    ballByBallCommentary: BallByBallCommentary = new BallByBallCommentary;
 }
 
 // Keep old class name for backwards compatibility during transition

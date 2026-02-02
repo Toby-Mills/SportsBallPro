@@ -1,0 +1,97 @@
+.over {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.over-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+.over-title {
+  font-weight: 600;
+}
+
+.over-summary {
+  color: #6b7280;
+}
+
+.over-players {
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.over-toggle {
+  font-weight: 700;
+}
+
+.balls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px 12px;
+}
+
+.ball {
+  display: grid;
+  grid-template-columns: 56px 44px 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 0.9rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.ball:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.ball-over {
+  color: #6b7280;
+}
+
+.ball-outcome {
+  text-align: center;
+  font-weight: 600;
+  background: #e5e7eb;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.ball-outcome.boundary {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.ball-outcome.wicket {
+  background: rgb(250, 105, 105);
+  color: #ffffff;
+}
+
+.ball-note {
+  color: #111827;
+}
+
+.ball-commentary-line {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.player-name {
+  font-weight: 600;
+}
+
+.ball-score {
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+}

@@ -8,6 +8,7 @@ import { TeamScoreComponent } from '../team-score/team-score.component';
 import { FallOfWicketsComponent } from '../fall-of-wickets/fall-of-wickets.component';
 import { BattingScorecardComponent } from '../batting-scorecard/batting-scorecard.component';
 import { BowlingScorecardComponent } from '../bowling-scorecard/bowling-scorecard.component';
+import { BallByBallCommentaryComponent } from '../ball-by-ball-commentary/ball-by-ball-commentary.component';
 import { ActivatedRoute } from '@angular/router';
 import { MatchKeyService } from '../../services/match-key.service';
 import { RunComparisonComponent } from "../run-comparison/run-comparison.component";
@@ -24,7 +25,8 @@ import { ToasterMessageService } from '../../services/toaster-message.service';
         FallOfWicketsComponent,
         BattingScorecardComponent,
         BowlingScorecardComponent,
-        RunComparisonComponent
+        RunComparisonComponent,
+        BallByBallCommentaryComponent
     ],
     providers: [HttpClient,],
     templateUrl: './match-details.component.html',

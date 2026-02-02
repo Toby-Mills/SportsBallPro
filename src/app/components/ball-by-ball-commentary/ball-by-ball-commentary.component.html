@@ -1,0 +1,11 @@
+<div class="commentary">
+  <div class="header">
+    <h3>Ball-by-Ball Commentary</h3>
+  </div>
+
+  <div *ngIf="commentary.overs.length === 0" class="empty">
+    No commentary available.
+  </div>
+
+  <app-over-commentary *ngFor="let over of displayOvers" [over]="over"></app-over-commentary>
+</div>

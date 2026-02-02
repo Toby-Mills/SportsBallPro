@@ -41,6 +41,25 @@ export class Ball {
 	BallDescription: string = ''
 }
 
+export class Commentary {
+	commentary: Array<BallCommentaryAPI> = []
+}
+
+export class BallCommentaryAPI {
+	GameID: string = ''
+	EventID: number = 0
+	currOver: number = 0
+	Over: string = ''
+	BallNote: string = ''
+	BallDescription: string = ''
+	PlayerIDBowling: number = 0
+	TeamTotalRuns: number = 0
+	TeamTotalWickets: number = 0
+	BowlerTotalOvers: number = 0
+	BowlerTotalRuns: number = 0
+	BowlerTotalWickets: number = 0
+}
+
 export class Batsmen {
 	batsmen: Array<Batsman> = []
 }

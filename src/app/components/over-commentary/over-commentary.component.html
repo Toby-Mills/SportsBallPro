@@ -1,0 +1,27 @@
+<div class="over">
+  <div class="over-header">
+    <div class="over-title">Over {{ over.overNumber }}</div>
+    <div class="over-players" *ngIf="over.bowlerName">
+      <span *ngIf="over.bowlerName">{{ over.bowlerName }}</span>
+    </div>
+    <div class="over-summary">{{ over.summary }}</div>
+  </div>
+
+  <div class="balls">
+    <div class="ball" *ngFor="let ball of over.balls">
+      <span class="ball-over">{{ ball.over }}</span>
+      <span class="ball-outcome" [class.wicket]="ball.isWicket" [class.boundary]="ball.runs === 4 || ball.runs === 6">
+        {{ ball.description }}
+      </span>
+      <div class="ball-note">
+        <div class="ball-commentary-line">
+          <span class="player-name">{{ ball.commentary.split(' to ')[0] }}</span>
+          <span> to </span>
+          <span class="player-name" *ngIf="ball.commentary.split(' to ')[1]">{{ ball.commentary.split(' to ')[1].split(':')[0] }}</span>
+        </div>
+        <div *ngIf="ball.commentary.includes(':')" class="ball-note-detail">{{ ball.commentary.split(':')[1] }}</div>
+      </div>
+      <span class="ball-score">{{ ball.teamRuns }}/{{ ball.teamWickets }}</span>
+    </div>
+  </div>
+</div>
