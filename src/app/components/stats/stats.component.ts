@@ -164,13 +164,13 @@ export class StatsComponent implements OnInit {
   }
 
   fetchPlayers(gameId: string, teamId: string) {
-    this.webSportsAPI.getBattingLineup(gameId, teamId).subscribe(
+    this.webSportsAPI.getBattingLineup(gameId, teamId, 1).subscribe(
       (battingLineup: BattingLineup) => {
         battingLineup.team.forEach(player => this.addPlayer(player, gameId, teamId, true));
       }
     );
 
-    this.webSportsAPI.getBowlingLineup(gameId, teamId).subscribe(
+    this.webSportsAPI.getBowlingLineup(gameId, teamId, 1).subscribe(
       (bowlingLineup: BowlingLineup) => {
         bowlingLineup.team.forEach(player => this.addPlayer(player, gameId, teamId, false));
       }
