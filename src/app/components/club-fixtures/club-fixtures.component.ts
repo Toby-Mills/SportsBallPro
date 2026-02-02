@@ -1,5 +1,6 @@
 import { CommonModule, NgFor } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { FixtureSummaries } from '../../models/fixture-summary';
 import { MatchKeyService } from '../../services/match-key.service';
 import { HomeTeamPipe } from '../../pipes/home-team.pipe';
@@ -18,6 +19,7 @@ import { ToasterMessageService } from '../../services/toaster-message.service';
     imports: [
         CommonModule,
         NgFor,
+        FormsModule,
         SortFixturesByTeamPipe,
         HomeTeamPipe,
         OpponentTeamPipe,
@@ -36,6 +38,7 @@ export class ClubFixturesComponent implements OnInit {
   public area: 'wynberg' | 'main' = 'main';
   public fixtures: FixtureSummaries = new FixtureSummaries;
   public isReloading: boolean = false;
+  public showFutureFixtures: boolean = false;
 
   public constructor(
     private matchKey: MatchKeyService,
@@ -85,6 +88,20 @@ export class ClubFixturesComponent implements OnInit {
 
   public isWatching(gameId: string): boolean {
     return this.watchList.isWatching(this.area, gameId);
+  }
+
+  public get filteredFixtures(): FixtureSummaries {
+    if (this.showFutureFixtures) {
+      return this.fixtures;
+    }
+    
+    const filtered = new FixtureSummaries();
+    const now = new Date();
+    filtered.fixtureSummaries = this.fixtures.fixtureSummaries.filter(fixture => {
+      const fixtureDate = new Date(fixture.datePlayed);
+      return fixtureDate <= now;
+    });
+    return filtered;
   }
 
   public onReloadFixtures(): void {

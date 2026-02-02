@@ -11,7 +11,7 @@
     <div class="ball" *ngFor="let ball of over.balls">
       <span class="ball-over">{{ ball.over }}</span>
       <span class="ball-outcome" [class.wicket]="ball.isWicket" [class.boundary]="ball.runs === 4 || ball.runs === 6">
-        {{ ball.description }}
+        {{ ball.description === '0' ? '-' : ball.description }}
       </span>
       <div class="ball-note">
         <div class="ball-commentary-line">

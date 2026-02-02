@@ -3,13 +3,13 @@
         <span [ngClass]="isWakeLockActive ? 'material-icons' : 'material-icons-outlined'">push_pin</span>
     </div>
     <ng-container *ngIf="fixture.gameId; else noMatch">
-        <div class="box fixture">
+        <div class="box wide-box fixture">
             <h1>{{this.fixture.game}}</h1>
             <div class="result">{{status.result}}</div>
             <div *ngIf="status.runsRequired !='NotOn'" class="runRequired">{{status.runsRequired}}</div>
         </div>
         
-        <div *ngIf="status.tossWonByTeam" class="box toss">{{status.tossWonByTeam}} won the toss and decided to
+        <div *ngIf="status.tossWonByTeam" class="box wide-box toss">{{status.tossWonByTeam}} won the toss and decided to
             {{status.decidedTo}}
         </div>
         

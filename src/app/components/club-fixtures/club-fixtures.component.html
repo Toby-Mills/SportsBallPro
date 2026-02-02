@@ -1,42 +1,51 @@
-<div class="header">
-	<img [src]="logoUrl" [alt]="clubName + ' Logo'" class="logo" *ngIf="logoUrl">
-	<h1>{{ title }}</h1>
-</div>
-<div class="container">
-	<div class="searching"><span *ngIf="!fixtures || fixtures.fixtureSummaries.length == 0">searching for fixtures...</span>
+<div class="page-wrapper">
+	<div class="header">
+		<img [src]="logoUrl" [alt]="clubName + ' Logo'" class="logo" *ngIf="logoUrl">
+		<h1>{{ title }}</h1>
+		<div class="subtitle">
+			<span>Select a Match to watch</span>
+			<button class="reload-button" (click)="onReloadFixtures()" [disabled]="isReloading">
+				<span class="material-icons" [class.spinning]="isReloading">sync</span>
+				Reload Fixtures
+			</button>
+		</div>
+		<div class="filter-options">
+			<label>
+				<input type="checkbox" [(ngModel)]="showFutureFixtures">
+				Display fixtures scheduled in the future
+			</label>
+		</div>
 	</div>
-	<div class="reload-section">
-		<button class="reload-button" (click)="onReloadFixtures()" [disabled]="isReloading">
-			<span class="material-icons" [class.spinning]="isReloading">sync</span>
-			Reload Fixtures
-		</button>
-	</div>
-	<div class="card day" *ngFor="let group of fixtures.fixtureSummaries | groupFixtures:'date'">
-		<h2>{{ group.date | date: 'fullDate' }}</h2>
-		<table>
-			<tbody>
-				<ng-container *ngFor="let fixture of group.fixtures | sortFixturesByTeam:clubName">
-				<tr>
-					<td colspan="2">
-						<a [routerLink]="['../match', fixture.matchKey]">{{fixture | homeTeam:clubName}}</a>
-					</td>
-					<td>
-						vs
-					</td>
-					<td>
-						{{fixture | opponentTeam:clubName}}
-					</td>
-					<td>
-						<span class="watch-icon" 
-						      [class.watching]="isWatching(fixture.gameId)"
-						      [title]="isWatching(fixture.gameId) ? 'Watching' : 'Not watching'">
-							<span class="material-icons">{{ isWatching(fixture.gameId) ? 'visibility' : 'visibility_off' }}</span>
-						</span>
-					</td>
-				</tr>
-				<tr *ngIf="fixture.description !=''"><td width="2em;"></td><td colspan="4" class="fixture-description">{{fixture.description}}</td></tr>
-			</ng-container>
-			</tbody>
-		</table>
+	<div class="container">
+		<div class="searching"><span *ngIf="!fixtures || fixtures.fixtureSummaries.length == 0">searching for fixtures...</span>
+		</div>
+		<div class="card day" *ngFor="let group of filteredFixtures.fixtureSummaries | groupFixtures:'date'">
+			<h2>{{ group.date | date: 'fullDate' }}</h2>
+			<table>
+				<tbody>
+					<ng-container *ngFor="let fixture of group.fixtures | sortFixturesByTeam:clubName">
+					<tr>
+						<td colspan="2">
+							<a [routerLink]="['../match', fixture.matchKey]">{{fixture | homeTeam:clubName}}</a>
+						</td>
+						<td>
+							vs
+						</td>
+						<td>
+							{{fixture | opponentTeam:clubName}}
+						</td>
+						<td>
+							<span class="watch-icon" 
+							      [class.watching]="isWatching(fixture.gameId)"
+							      [title]="isWatching(fixture.gameId) ? 'Watching' : 'Not watching'">
+								<span class="material-icons">{{ isWatching(fixture.gameId) ? 'visibility' : 'visibility_off' }}</span>
+							</span>
+						</td>
+					</tr>
+					<tr *ngIf="fixture.description !=''"><td width="2em;"></td><td colspan="4" class="fixture-description">{{fixture.description}}</td></tr>
+				</ng-container>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
