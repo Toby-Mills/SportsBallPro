@@ -1,6 +1,6 @@
-import { Fixture as WebsportsFixture, BattingScorecard, BattingLineup } from '../models/web-sports';
+import { FixtureAPI, BattingScorecardAPI, BattingLineupAPI } from '../models/web-sports';
 
-import { BattingInningsDetail } from './innings-detail';
+import { BattingInningsDetail, Player, PlayerLineup } from './batting-innings-detail';
 import { Innings } from './innings';
 import { RunComparison } from './run-comparison';
 import { } from './scorecard';
@@ -14,7 +14,7 @@ export class Match {
     status: Status = new Status;
     teamAScore: TeamScore = new TeamScore;
     teamBScore: TeamScore = new TeamScore;
-    innings: Innings[] = [];
+    innings: Innings[] = []; // Each innings contains 2 BattingInningsDetail objects, one for each team
     runComparison: RunComparison = new RunComparison;
     wagonWheel: WagonWheel = new WagonWheel;
 
@@ -40,7 +40,7 @@ export class Match {
         }
     }
 
-    public loadFixture(input: WebsportsFixture): void {
+    public loadFromAPI(input: FixtureAPI): void {
         this.fixture.gameId = input.gameID;
         this.fixture.game = input.game
         this.fixture.fixtureDate = input.fistureDate
@@ -59,25 +59,15 @@ export class Match {
         this.status.result = input.result;
     }
 
-    public loadTeamIds(input: WebsportsFixture): void {
+    public loadTeamIdsFromAPI(input: FixtureAPI): void {
         this.fixture.teamAId = input.aTeamID;
         this.fixture.teamBId = input.bTeamID;
     }
 
-    public loadLineup(type: 'Batting'|'Bowling', inningsNumber: 1|2, teamNumber: 1|2, input: BattingLineup): void {
+    public loadLineupFromAPI(type: 'Batting'|'Bowling', inningsNumber: 1|2, teamNumber: 1|2, input: BattingLineupAPI): void {
         const battingInnings = this.innings[inningsNumber - 1].battingInnings[teamNumber - 1];
-        let lineup: Array<Player> = type === 'Batting' ? battingInnings.battingLineup.lineup : battingInnings.bowlingLineup.lineup;
-
-        while (lineup.length > 0) { lineup.pop() }
-
-        for (let inputPlayer of input.team) {
-            let player = new Player();
-            player.firstName = inputPlayer.PlayerName;
-            player.surname = inputPlayer.PlayerSurname;
-            player.number = inputPlayer.Number;
-            player.playerId = inputPlayer.PlayerID
-            lineup.push(player);
-        }
+        const playerLineup = type === 'Batting' ? battingInnings.battingLineup : battingInnings.bowlingLineup;
+        playerLineup.loadFromAPI(input);
     }
 }
 
@@ -93,6 +83,26 @@ export class Fixture {
     teamBName: string = '';
     teamALogoName: string = '';
     teamBLogoName: string = '';
+    result: string = '';
+    teamAScore: number = 0;
+    teamBScore: number = 0;
+    
+    public loadFromAPI(input: any): void {
+        this.gameId = input.gameID || '';
+        this.game = input.game || '';
+        this.fixtureDate = input.datePlayed || '';
+        this.datePlayed = new Date(input.datePlayed);
+        this.venueDescription = input.venueDescription || '';
+        this.teamAId = input.aTeamID || '';
+        this.teamBId = input.bTeamID || '';
+        this.teamAName = input.aTeam || '';
+        this.teamBName = input.bTeam || '';
+        this.teamALogoName = input.aTeamLogoName || '';
+        this.teamBLogoName = input.bTeamLogoName || '';
+        this.result = input.result || '';
+        this.teamAScore = input.aRuns || 0;
+        this.teamBScore = input.bRuns || 0;
+    }
 }
 
 export class Status {
@@ -102,15 +112,4 @@ export class Status {
     result: string = '';
     currentInnings: 1 | 2 = 1;
     currentTeam: 1 | 2 = 1;
-}
-
-export class PlayerLineup {
-    lineup: Array<Player> = []
-}
-
-export class Player {
-    playerId: number = 0
-    number: number = 0
-    firstName: string = ''
-    surname: string = ''
 }

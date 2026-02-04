@@ -1,8 +1,8 @@
-export class Fixtures {
-	fixtures: Array<Fixture> = []
+export class FixturesAPI {
+	fixtures: Array<FixtureAPI> = []
 }
 
-export class Fixture {
+export class FixtureAPI {
 	gameID: string = ''
 	game: string = ''
 	fistureDate: string = ''
@@ -31,17 +31,17 @@ export class Fixture {
 	
 }
 
-export class BallCountdown {
-	ballcountdown: Array<Ball> = []
+export class BallCountdownAPI {
+	ballcountdown: Array<BallAPI> = []
 }
 
-export class Ball {
+export class BallAPI {
 	Over: string = ''
 	eventID: number = 0
 	BallDescription: string = ''
 }
 
-export class Commentary {
+export class CommentaryAPI {
 	commentary: Array<BallCommentaryAPI> = []
 }
 
@@ -60,11 +60,11 @@ export class BallCommentaryAPI {
 	BowlerTotalWickets: number = 0
 }
 
-export class Batsmen {
-	batsmen: Array<Batsman> = []
+export class BatsmenAPI {
+	batsmen: Array<BatsmanAPI> = []
 }
 
-export class Batsman {
+export class BatsmanAPI {
 	ServerPlayerID: string = ''
 	CurrentPlayer: string = ''
 	PlayerName: string = ''
@@ -75,11 +75,11 @@ export class Batsman {
 	batSixes: number = 0
 }
 
-export class FallOfWickets {
-	fow: Array<FallOfWicket> = []
+export class FallOfWicketsAPI {
+	fow: Array<FallOfWicketAPI> = []
 }
 
-export class FallOfWicket {
+export class FallOfWicketAPI {
 	GameID: string = ''
 	EventID: number = 0
 	PlayerName: string = ''
@@ -88,11 +88,11 @@ export class FallOfWicket {
 	TeamTotalWickets: number = 0
 }
 
-export class BattingScorecard {
-	scorecard: Array<BattingScorecardEntry> = []
+export class BattingScorecardAPI {
+	scorecard: Array<BattingScorecardEntryAPI> = []
 }
 
-export class BattingScorecardEntry {
+export class BattingScorecardEntryAPI {
 	HowOutFull: string = ''
 	PlayerName: string = ''
 	PlayerSurname: string = ''
@@ -107,11 +107,11 @@ export class BattingScorecardEntry {
 	HowOut: string = ''
 }
 
-export class BowlingScorecard {
-	scorecard: Array<BowlingScorecardEntry> = []
+export class BowlingScorecardAPI {
+	scorecard: Array<BowlingScorecardEntryAPI> = []
 }
 
-export class BowlingScorecardEntry {
+export class BowlingScorecardEntryAPI {
 	ServerPlayerID: string = ''
 	PlayerName: string = ''
 	PlayerSurname: string = ''
@@ -125,11 +125,11 @@ export class BowlingScorecardEntry {
 	TotalBowlerBalls: number = 0
 }
 
-export class Bowlers {
-	bowlers: Array<Bowler> = []
+export class BowlersAPI {
+	bowlers: Array<BowlerAPI> = []
 }
 
-export class Bowler {
+export class BowlerAPI {
 	ServerPlayerID: string = ''
 	CurrentPlayer: string = ''
 	PlayerName: string = ''
@@ -144,11 +144,11 @@ export class Bowler {
 	NoBalls: number = 0
 }
 
-export class RunComparison {
-	comparison: Array<RunComparisonOver> = []
+export class RunComparisonAPI {
+	comparison: Array<RunComparisonOverAPI> = []
 }
 
-export class RunComparisonOver {
+export class RunComparisonOverAPI {
 	gameID: string = ''
 	aRuns: number = 0
 	aWickets: number = 0
@@ -164,11 +164,11 @@ export class RunComparisonOver {
 	totalWicketsInOver: number = 0
 }
 
-export class WagonWheel {
-	wagonwheel: Array<WagonWheelEvent> = []
+export class WagonWheelAPI {
+	wagonwheel: Array<WagonWheelEventAPI> = []
 }
 
-export class WagonWheelEvent {
+export class WagonWheelEventAPI {
 	GameID: string = ''
 	EventID: number = 0
 	EventRuns: number = 0
@@ -176,15 +176,15 @@ export class WagonWheelEvent {
 	RunY: number = 0
 }
 
-export class BattingLineup {
-	team:Array<Player> = []
+export class BattingLineupAPI {
+	team:Array<PlayerAPI> = []
 }
 
-export class BowlingLineup {
-	team:Array<Player> = []
+export class BowlingLineupAPI {
+	team:Array<PlayerAPI> = []
 }
 
-export class Player {
+export class PlayerAPI {
 	PlayerID: number = 0
 	Number: number = 0
 	PlayerName: string = ''

@@ -1,9 +1,9 @@
 import TypedRegistry from 'chart.js/dist/core/core.typedRegistry';
-import { RunComparison as WebSportsRunComparison } from '../models/web-sports';
+import { RunComparisonAPI as WebSportsRunComparison } from '../models/web-sports';
 import { Color } from 'chart.js';
 
 export class RunComparisonFactory {
-	public loadRunComparison(input: WebSportsRunComparison) {
+	public loadFromAPI(input: WebSportsRunComparison) {
 
 		let newRunComparison = new RunComparison()
 

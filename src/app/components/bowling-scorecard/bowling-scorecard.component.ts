@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { WagonWheelComponent } from '../wagon-wheel/wagon-wheel.component';
-import { PlayerLineup } from '../../models/match';
+import { PlayerLineup } from '../../models/batting-innings-detail';
 
 @Pipe({
   name: 'visible',

@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Fixture } from '../../models/web-sports';
-import { Player } from '../../models/player';
+import { Fixture } from '../../models/match';
 import { FixtureSearchService } from '../../services/fixture-search.service';
 import { PlayerAggregationService } from '../../services/player-aggregation.service';
 import { StatsStateService } from '../../services/stats-state.service';
@@ -58,7 +57,7 @@ export class StatsContainerComponent implements OnInit, OnDestroy {
 			const savedSelectedIds = saved.selectedFixturesForStats || [];
 			if (Array.isArray(savedSelectedIds) && savedSelectedIds.length > 0) {
 				const idSet = new Set(savedSelectedIds);
-				this.selectedFixtures = this.selectedYearFixtures.filter(f => idSet.has(f.gameID));
+				this.selectedFixtures = this.selectedYearFixtures.filter(f => idSet.has(f.gameId));
 			}
 
 			// If we have team and year but no fixtures loaded yet, fetch them
@@ -137,7 +136,7 @@ export class StatsContainerComponent implements OnInit, OnDestroy {
 			selectedTeamName: this.selectedTeam,
 			selectedYear: this.selectedYear,
 			selectedYearFixtures: this.selectedYearFixtures,
-			selectedFixturesForStats: this.selectedFixtures.map(f => f.gameID)
+			selectedFixturesForStats: this.selectedFixtures.map(f => f.gameId)
 		});
 	}
 }

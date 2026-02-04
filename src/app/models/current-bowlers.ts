@@ -1,9 +1,9 @@
-import { Bowlers } from "./web-sports";
+import { BowlersAPI } from './web-sports';
 
 export class CurrentBowlers {
     bowlers: Bowler[] = [];
 
-    public loadCurrentBowlers(input: Bowlers): void {
+    public loadFromAPI(input: BowlersAPI): void {
         this.bowlers = [];
 
         for (let inputBowler of input.bowlers) {

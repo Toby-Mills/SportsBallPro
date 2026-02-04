@@ -1,4 +1,4 @@
-import { Commentary } from './web-sports';
+import { CommentaryAPI } from './web-sports';
 
 export class BallByBallCommentary {
   gameId: string = '';
@@ -6,7 +6,7 @@ export class BallByBallCommentary {
   innings: number = 0;
   overs: OverCommentary[] = [];
 
-  public loadCommentary(gameId: string, teamId: string, innings: number, input: Commentary): void {
+    public loadFromAPI(gameId: string, teamId: string, innings: number, input: CommentaryAPI): void {
     this.gameId = gameId;
     this.teamId = teamId;
     this.innings = innings;

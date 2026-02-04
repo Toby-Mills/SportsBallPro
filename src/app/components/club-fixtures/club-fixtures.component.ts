@@ -39,6 +39,9 @@ export class ClubFixturesComponent implements OnInit {
   public fixtures: FixtureSummaries = new FixtureSummaries;
   public isReloading: boolean = false;
   public showFutureFixtures: boolean = false;
+  private cachedFilteredFixtures: FixtureSummaries | null = null;
+  private lastFixtureCount = 0;
+  private lastShowFutureValue = false;
 
   public constructor(
     private matchKey: MatchKeyService,
@@ -91,17 +94,28 @@ export class ClubFixturesComponent implements OnInit {
   }
 
   public get filteredFixtures(): FixtureSummaries {
-    if (this.showFutureFixtures) {
-      return this.fixtures;
+    // Only recompute if data has actually changed
+    const hasFixtureCountChanged = this.fixtures.fixtureSummaries.length !== this.lastFixtureCount;
+    const hasToggleChanged = this.showFutureFixtures !== this.lastShowFutureValue;
+    
+    if (!this.cachedFilteredFixtures || hasFixtureCountChanged || hasToggleChanged) {
+      if (this.showFutureFixtures) {
+        this.cachedFilteredFixtures = this.fixtures;
+      } else {
+        const filtered = new FixtureSummaries();
+        const now = new Date();
+        filtered.fixtureSummaries = this.fixtures.fixtureSummaries.filter(fixture => {
+          const fixtureDate = new Date(fixture.datePlayed);
+          return fixtureDate <= now;
+        });
+        this.cachedFilteredFixtures = filtered;
+      }
+      
+      this.lastFixtureCount = this.fixtures.fixtureSummaries.length;
+      this.lastShowFutureValue = this.showFutureFixtures;
     }
     
-    const filtered = new FixtureSummaries();
-    const now = new Date();
-    filtered.fixtureSummaries = this.fixtures.fixtureSummaries.filter(fixture => {
-      const fixtureDate = new Date(fixture.datePlayed);
-      return fixtureDate <= now;
-    });
-    return filtered;
+    return this.cachedFilteredFixtures;
   }
 
   public onReloadFixtures(): void {

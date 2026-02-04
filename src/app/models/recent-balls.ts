@@ -1,4 +1,4 @@
-import { BallCountdown } from "./web-sports";
+import { BallCountdownAPI } from './web-sports';
 
 export class Over {
     number: number = 0;
@@ -18,7 +18,7 @@ export class Ball {
 export class RecentBalls {
     overs: Over[] = [];
 
-    public loadRecentOvers(input: BallCountdown): void {
+    public loadFromAPI(input: BallCountdownAPI): void {
         let updateFound: boolean = false;
         this.overs = [];
 

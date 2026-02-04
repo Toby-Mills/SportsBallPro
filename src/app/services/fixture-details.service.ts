@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { Fixtures } from '../models/web-sports';
+import { FixturesAPI } from '../models/web-sports';
 import { WebSportsAPIService } from './web-sports-api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FixtureDetailsService {
-  private cacheByGameId = new Map<string, Fixtures>();
-  private subjectByGameId = new Map<string, BehaviorSubject<Fixtures>>();
+  private cacheByGameId = new Map<string, FixturesAPI>();
+  private subjectByGameId = new Map<string, BehaviorSubject<FixturesAPI>>();
 
   constructor(
     private webSportsAPI: WebSportsAPIService
@@ -19,7 +19,7 @@ export class FixtureDetailsService {
    * Caches results by gameId and returns Observable of fixture details
    * If cache exists, emits cached data immediately, otherwise fetches from API
    */
-  getFixtureDetails(gameId: string): Observable<Fixtures> {
+  getFixtureDetails(gameId: string): Observable<FixturesAPI> {
     // Check if we have a cached subject for this gameId
     if (this.subjectByGameId.has(gameId)) {
       const subject = this.subjectByGameId.get(gameId)!;
@@ -33,11 +33,11 @@ export class FixtureDetailsService {
     }
     
     // No cache exists, create new subject and fetch from API
-    const subject = new BehaviorSubject<Fixtures>({ fixtures: [] });
+    const subject = new BehaviorSubject<FixturesAPI>({ fixtures: [] });
     this.subjectByGameId.set(gameId, subject);
     
     this.webSportsAPI.getFixtures(gameId, 1).subscribe(
-      (fixtures: Fixtures) => {
+      (fixtures: FixturesAPI) => {
         // Cache the fixture details by gameId
         this.cacheByGameId.set(gameId, fixtures);
         subject.next(fixtures);

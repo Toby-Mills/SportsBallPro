@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { Fixture, Fixtures } from '../models/web-sports';
+import { FixtureAPI, FixturesAPI } from '../models/web-sports';
+import { Fixture } from '../models/match';
 import { WebSportsAPIService } from './web-sports-api.service';
 
 @Injectable({
@@ -20,8 +21,22 @@ export class FixtureSearchService {
    * Search for fixtures by team name
    * Caches results by search term and returns Observable of fixtures
    * If cache exists, emits cached data immediately, otherwise fetches from API
+   * If searchTerm is empty, returns all fixtures without caching
    */
   searchByTerm(searchTerm: string): Observable<Fixture[]> {
+    // Handle empty search - return all fixtures without caching
+    if (!searchTerm || searchTerm.trim() === '') {
+      return this.webSportsAPI.getAllFixtures().pipe(
+        map((apiFixtures: FixturesAPI) => {
+          return apiFixtures.fixtures.map(apiFixture => {
+            const fixture = new Fixture();
+            fixture.loadFromAPI(apiFixture);
+            return fixture;
+          });
+        })
+      );
+    }
+
     // Store the search term so getYears and getFixtures can access the correct cache
     this.lastSearchTerm = searchTerm;
     
@@ -42,10 +57,16 @@ export class FixtureSearchService {
     this.subjectBySearchTerm.set(searchTerm, subject);
     
     this.webSportsAPI.getFixturesByTeamName(searchTerm).subscribe(
-      (fixtures: Fixtures) => {
+      (apiFixtures: FixturesAPI) => {
+        // Transform API fixtures to internal models
+        const fixtures = apiFixtures.fixtures.map(apiFixture => {
+          const fixture = new Fixture();
+          fixture.loadFromAPI(apiFixture);
+          return fixture;
+        });
         // Cache the fixtures by search term
-        this.cacheBySearchTerm.set(searchTerm, fixtures.fixtures);
-        subject.next(fixtures.fixtures);
+        this.cacheBySearchTerm.set(searchTerm, fixtures);
+        subject.next(fixtures);
       }
     );
     
@@ -62,11 +83,11 @@ export class FixtureSearchService {
         const teamSet = new Set<string>();
         const lowerSearch = searchTerm.toLowerCase();
         fixtures.forEach((fixture: Fixture) => {
-          if (fixture.aTeam && fixture.aTeam.toLowerCase().includes(lowerSearch)) {
-            teamSet.add(fixture.aTeam);
+          if (fixture.teamAName && fixture.teamAName.toLowerCase().includes(lowerSearch)) {
+            teamSet.add(fixture.teamAName);
           }
-          if (fixture.bTeam && fixture.bTeam.toLowerCase().includes(lowerSearch)) {
-            teamSet.add(fixture.bTeam);
+          if (fixture.teamBName && fixture.teamBName.toLowerCase().includes(lowerSearch)) {
+            teamSet.add(fixture.teamBName);
           }
         });
         return Array.from(teamSet).sort();
@@ -95,7 +116,7 @@ export class FixtureSearchService {
       map((fixtures: Fixture[]) => {
         const yearSet = new Set<number>();
         fixtures.forEach((fixture: Fixture) => {
-          if (fixture.aTeam === team || fixture.bTeam === team) {
+          if (fixture.teamAName === team || fixture.teamBName === team) {
             const year = new Date(fixture.datePlayed).getFullYear();
             yearSet.add(year);
           }
@@ -129,7 +150,7 @@ export class FixtureSearchService {
 
         return fixtures.filter((fixture: Fixture) => {
           const fixtureYear = new Date(fixture.datePlayed).getFullYear();
-          const teamMatches = fixture.aTeam === team || fixture.bTeam === team;
+          const teamMatches = fixture.teamAName === team || fixture.teamBName === team;
           const yearMatches = fixtureYear === yearAsNumber;
           return teamMatches && yearMatches;
         });

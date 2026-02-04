@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { MatchKeyService } from '../../services/match-key.service';
 import { StatsStateService } from '../../services/stats-state.service';
 import { WebSportsAPIService } from '../../services/web-sports-api.service';
-import { BattingLineup, BowlingLineup, Fixture, Fixtures } from '../../models/web-sports';
+import { FixtureSearchService } from '../../services/fixture-search.service';
+import { Fixtures } from '../../models/fixtures';
+import { Fixture } from '../../models/match';
+import { PlayerLineup } from '../../models/batting-innings-detail';
 
 @Component({
   selector: 'app-stats',
@@ -29,10 +31,10 @@ export class StatsComponent implements OnInit {
   selectedPlayer: any = null;
 
   constructor(
-    private http: HttpClient,
     private webSportsAPI: WebSportsAPIService,
     private matchKey: MatchKeyService,
-    private statsState: StatsStateService) { }
+    private statsState: StatsStateService,
+    private fixtureSearchService: FixtureSearchService) { }
 
   ngOnInit(): void {
     // Try to restore saved state (if the user is returning from the match view)
@@ -41,29 +43,26 @@ export class StatsComponent implements OnInit {
       this.teamNameSearch = saved.teamNameSearch || '';
       this.teamNamesFromSearch = saved.teamNamesFromSearch || [];
       this.selectedTeamName = saved.selectedTeamName || '';
-      this.selectedTeamFixtures = (saved.selectedTeamFixtures as Fixture[]) || [];
+      this.selectedTeamFixtures = saved.selectedTeamFixtures || [];
       this.uniqueYears = saved.uniqueYears || [];
       this.selectedYear = (typeof saved.selectedYear !== 'undefined') ? saved.selectedYear : null;
-      this.selectedYearFixtures = (saved.selectedYearFixtures as Fixture[]) || [];
-      // selectedFixturesForStats may have been saved as an array of gameID strings or as fixtures
-      const savedSelected = saved.selectedFixturesForStats || [];
-      if (savedSelected.length > 0) {
-        if (typeof savedSelected[0] === 'string') {
-          const ids = new Set(savedSelected as string[]);
-          // Prefer matching against selectedYearFixtures, then selectedTeamFixtures
-          this.selectedFixturesForStats = (this.selectedYearFixtures || []).filter(f => ids.has(f.gameID));
-          if ((this.selectedFixturesForStats || []).length === 0) {
-            this.selectedFixturesForStats = (this.selectedTeamFixtures || []).filter(f => ids.has(f.gameID));
-          }
-        } else {
-          this.selectedFixturesForStats = (savedSelected as Fixture[]) || [];
+      this.selectedYearFixtures = saved.selectedYearFixtures || [];
+      
+      // Restore selectedFixturesForStats from saved gameId strings
+      const savedGameIds = saved.selectedFixturesForStats || [];
+      if (savedGameIds.length > 0) {
+        const ids = new Set(savedGameIds);
+        // Prefer matching against selectedYearFixtures, then selectedTeamFixtures
+        this.selectedFixturesForStats = (this.selectedYearFixtures || []).filter(f => ids.has(f.gameId));
+        if (this.selectedFixturesForStats.length === 0) {
+          this.selectedFixturesForStats = (this.selectedTeamFixtures || []).filter(f => ids.has(f.gameId));
         }
       } else {
         this.selectedFixturesForStats = [];
       }
 
       // If fixtures were selected previously, fetch players again to rebuild the table
-      if (this.selectedFixturesForStats && this.selectedFixturesForStats.length > 0) {
+      if (this.selectedFixturesForStats.length > 0) {
         this.rebuildStatsTable();
       }
     }
@@ -76,17 +75,20 @@ export class StatsComponent implements OnInit {
   loadFixtures(teamName: string) {
     const lowerCaseTeamName = teamName.toLowerCase();
 
-    this.webSportsAPI.getFixturesByTeamName(teamName).subscribe(
+    // Use fixtureSearchService which returns internal Fixture[] models
+    this.fixtureSearchService.searchByTerm(teamName).subscribe(
       fixtures => {
-        this.teamSearchFixtures = fixtures;
+        this.teamSearchFixtures = new Fixtures();
+        this.teamSearchFixtures.fixtures = fixtures;
+        
         const teamNamesSet = new Set<string>();
 
         for (let fixture of this.teamSearchFixtures.fixtures) {
-          if (fixture.aTeam.toLowerCase().includes(lowerCaseTeamName)) {
-            teamNamesSet.add(fixture.aTeam);
+          if (fixture.teamAName.toLowerCase().includes(lowerCaseTeamName)) {
+            teamNamesSet.add(fixture.teamAName);
           }
-          if (fixture.bTeam.toLowerCase().includes(lowerCaseTeamName)) {
-            teamNamesSet.add(fixture.bTeam);
+          if (fixture.teamBName.toLowerCase().includes(lowerCaseTeamName)) {
+            teamNamesSet.add(fixture.teamBName);
           }
         }
 
@@ -97,7 +99,7 @@ export class StatsComponent implements OnInit {
 
   onTeamSelect() {
     this.selectedTeamFixtures = this.teamSearchFixtures.fixtures.filter(fixture =>
-      fixture.aTeam === this.selectedTeamName || fixture.bTeam === this.selectedTeamName
+      fixture.teamAName === this.selectedTeamName || fixture.teamBName === this.selectedTeamName
     );
 
     const yearsSet = new Set<number>();
@@ -127,7 +129,7 @@ export class StatsComponent implements OnInit {
 
   onFixtureSelect(fixture: Fixture, event: any) {
     const isChecked = !!event.target.checked;
-    const idx = this.selectedFixturesForStats.findIndex(f => f.gameID === fixture.gameID);
+    const idx = this.selectedFixturesForStats.findIndex(f => f.gameId === fixture.gameId);
     if (isChecked) {
       if (idx === -1) {
         this.selectedFixturesForStats.push(fixture);
@@ -143,21 +145,21 @@ export class StatsComponent implements OnInit {
   }
 
   isSelected(fixture: any): boolean {
-    return this.selectedFixturesForStats.some((f: Fixture) => f.gameID === fixture.gameID);
+    return this.selectedFixturesForStats.some((f: Fixture) => f.gameId === fixture.gameId);
   }
 
   getPlayersForFixture(fixture: Fixture) {
-    this.webSportsAPI.getFixtures(fixture.gameID, 1).subscribe(
+    this.webSportsAPI.getFixtures(fixture.gameId, 1).subscribe(
       fixtureDetails => {
         const teamAId = fixtureDetails.fixtures[0].aTeamID;
         const teamBId = fixtureDetails.fixtures[0].bTeamID;
 
-        if (fixture.aTeam === this.selectedTeamName) {
-          this.fetchPlayers(fixture.gameID, teamAId);
+        if (fixture.teamAName === this.selectedTeamName) {
+          this.fetchPlayers(fixture.gameId, teamAId);
         }
 
-        if (fixture.bTeam === this.selectedTeamName) {
-          this.fetchPlayers(fixture.gameID, teamBId);
+        if (fixture.teamBName === this.selectedTeamName) {
+          this.fetchPlayers(fixture.gameId, teamBId);
         }
       }
     );
@@ -165,20 +167,24 @@ export class StatsComponent implements OnInit {
 
   fetchPlayers(gameId: string, teamId: string) {
     this.webSportsAPI.getBattingLineup(gameId, teamId, 1).subscribe(
-      (battingLineup: BattingLineup) => {
-        battingLineup.team.forEach(player => this.addPlayer(player, gameId, teamId, true));
+      (apiBattingLineup) => {
+        const battingLineup = new PlayerLineup();
+        battingLineup.loadFromAPI(apiBattingLineup);
+        battingLineup.lineup.forEach(player => this.addPlayer(player, gameId, teamId, true));
       }
     );
 
     this.webSportsAPI.getBowlingLineup(gameId, teamId, 1).subscribe(
-      (bowlingLineup: BowlingLineup) => {
-        bowlingLineup.team.forEach(player => this.addPlayer(player, gameId, teamId, false));
+      (apiBowlingLineup) => {
+        const bowlingLineup = new PlayerLineup();
+        bowlingLineup.loadFromAPI(apiBowlingLineup);
+        bowlingLineup.lineup.forEach(player => this.addPlayer(player, gameId, teamId, false));
       }
     );
   }
 
   addPlayer(player: any, gameId: string, teamId: string, isBatter: boolean) {
-    const playerKey = `${player.PlayerName} ${player.PlayerSurname}`;
+    const playerKey = `${player.firstName} ${player.surname}`;
     if (this.allPlayers.has(playerKey)) {
       const existingPlayer = this.allPlayers.get(playerKey);
       const gameTeamPairExists = existingPlayer.gameTeamPairs.some(
@@ -228,8 +234,8 @@ export class StatsComponent implements OnInit {
    * Return the match key used by the Home component (hash + gameID)
    */
   getMatchKey(fixture: Fixture): string {
-    // web-sports Fixture uses `gameID` as the identifier
-    return this.matchKey.generateKey(fixture.gameID);
+    // web-sports Fixture uses `gameId` as the identifier
+    return this.matchKey.generateKey(fixture.gameId);
   }
 
   /** Save current component state so it can be restored when returning from match view */
@@ -242,8 +248,8 @@ export class StatsComponent implements OnInit {
       uniqueYears: this.uniqueYears,
       selectedYear: this.selectedYear,
       selectedYearFixtures: this.selectedYearFixtures,
-      // store only the gameID values for selected fixtures to avoid reference equality issues
-      selectedFixturesForStats: this.selectedFixturesForStats.map(f => f.gameID)
+      // store only the gameId values for selected fixtures to avoid reference equality issues
+      selectedFixturesForStats: this.selectedFixturesForStats.map(f => f.gameId)
     };
 
     this.statsState.setState(state);

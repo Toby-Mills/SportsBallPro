@@ -1,9 +1,9 @@
-import { Batsmen } from "./web-sports";
+import { BatsmenAPI } from './web-sports';
 
 export class CurrentBatters {
     batters: Batter[] = [];
 
-    public loadCurrentBatters(input: Batsmen): void {
+    public loadFromAPI(input: BatsmenAPI): void {
         this.batters = [];
 
         if (input.batsmen) {

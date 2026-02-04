@@ -1,9 +1,9 @@
-import { FallOfWickets as WebSportsFallOfWickets } from "./web-sports";
+import { FallOfWicketsAPI as WebSportsFallOfWickets } from './web-sports';
 export class FallOfWickets {
 
     wickets: FallOfWicket[] = [];
 
-    public loadFallOfWickets(update: WebSportsFallOfWickets) {
+    public loadFromAPI(update: WebSportsFallOfWickets) {
         this.wickets = [];
         if (update.fow) {
             for (let fow of update.fow) {

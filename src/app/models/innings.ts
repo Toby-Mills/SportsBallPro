@@ -1,4 +1,4 @@
-import { BattingInningsDetail } from './innings-detail';
+import { BattingInningsDetail } from './batting-innings-detail';
 
 export class Innings {
     number: number = 0;  // 1 or 2

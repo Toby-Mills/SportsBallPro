@@ -10,11 +10,11 @@
         [checked]="isSelected(fixture)" 
         (change)="onFixtureToggle(fixture, $event)"
         (click)="$event.stopPropagation()"
-        [attr.id]="'fixture-' + fixture.gameID">
+        [attr.id]="'fixture-' + fixture.gameId">
       <div class="fixture-label">
         <div class="fixture-info">
           <span class="fixture-teams">
-            {{ fixture.aTeam }} vs {{ fixture.bTeam }} on {{ fixture.datePlayed | date:'mediumDate' }}
+            {{ fixture.teamAName }} vs {{ fixture.teamBName }} on {{ fixture.datePlayed | date:'mediumDate' }}
           </span>
           <span class="fixture-status" [ngClass]="getStatusClass(fixture)">
             {{ getFixtureStatus(fixture) }}

@@ -1,13 +1,18 @@
+import { Fixture } from './match';
+
 export class FixtureSummaries {
     fixtureSummaries: FixtureSummary[]= [];
 
-    public loadFixtures(input: any){
+    /**
+     * Load fixture summaries from an array of internal Fixture models
+     */
+    public loadFixtures(input: { fixtures: Fixture[] }){
         for (let fixture of input.fixtures){
             let newFixture = new FixtureSummary;
-            newFixture.gameId = fixture.gameID;
-            newFixture.game = fixture.game;
-            newFixture.date = fixture.fixtureDate;
-            newFixture.datePlayed = fixture.datePlayed;
+            newFixture.gameId = fixture.gameId || '';
+            newFixture.game = fixture.game || '';
+            newFixture.date = fixture.fixtureDate || '';
+            newFixture.datePlayed = fixture.datePlayed || new Date();
             newFixture.loadAdditionalAttributes();
             this.fixtureSummaries.push(newFixture);
         }
@@ -26,8 +31,8 @@ export class FixtureSummary {
 
     public loadAdditionalAttributes(){
         const teams = this.game.split(' vs ');
-        this.teamAName = teams[0];
-        this.teamBName = teams[1];
+        this.teamAName = teams[0] || '';
+        this.teamBName = teams[1] || '';
     }
     
 }

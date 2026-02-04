@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Fixture, Match, PlayerLineup, Status } from '../models/match';
+import { Fixture, Match, Status } from '../models/match';
+import { BattingInningsDetail, PlayerLineup } from '../models/batting-innings-detail';
 import { WebSportsAPIService } from './web-sports-api.service';
 import { BehaviorSubject, catchError, concatMap, map, Observable, of, throwError } from 'rxjs';
 import { TeamScore } from '../models/team-score';
-import { BattingInningsDetail } from '../models/innings-detail';
 import { RunComparison, RunComparisonFactory } from '../models/run-comparison';
 import { BattingScorecard, BowlingScorecard } from '../models/scorecard';
 import { RecentBalls } from '../models/recent-balls';
@@ -350,14 +350,14 @@ export class MatchService {
         map(result => {
           if (result.fixtures.length > 0) {
             let updatedMatch = result.fixtures[0];
-            match.loadFixture(updatedMatch);
+            match.loadFromAPI(updatedMatch);
             this.getOrCreateSubject(this.fixtureSubjects, gameId, new Fixture()).next(match.fixture);
             this.getOrCreateSubject(this.statusSubjects, gameId, new Status()).next(match.status);
 
-            match.teamAScore.load(updatedMatch);
+            match.teamAScore.loadFromAPI(updatedMatch);
             this.getOrCreateSubject(this.teamAScoreSubjects, gameId, new TeamScore()).next(match.teamAScore);
 
-            match.teamBScore.load(updatedMatch);
+            match.teamBScore.loadFromAPI(updatedMatch);
             this.getOrCreateSubject(this.teamBScoreSubjects, gameId, new TeamScore()).next(match.teamBScore);
           }
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
@@ -377,14 +377,14 @@ export class MatchService {
             // Load Team A score for this innings
             const teamAScore = new TeamScore();
             teamAScore.teamNumber = 1;
-            teamAScore.load(fixtureData);
+            teamAScore.loadFromAPI(fixtureData);
             const keyA = this.getTeamScoreKey(gameId, inningsNumber, 1);
             this.getOrCreateSubject(this.teamScoreSubjects, keyA, new TeamScore()).next(teamAScore);
             
             // Load Team B score for this innings
             const teamBScore = new TeamScore();
             teamBScore.teamNumber = 2;
-            teamBScore.load(fixtureData);
+            teamBScore.loadFromAPI(fixtureData);
             const keyB = this.getTeamScoreKey(gameId, inningsNumber, 2);
             this.getOrCreateSubject(this.teamScoreSubjects, keyB, new TeamScore()).next(teamBScore);
           }
@@ -418,7 +418,7 @@ export class MatchService {
       .pipe(
         map(matches => {
           if (matches.fixtures.length > 0) {
-            match.loadTeamIds(matches.fixtures[0]);
+            match.loadTeamIdsFromAPI(matches.fixtures[0]);
             this.getOrCreateSubject(this.fixtureSubjects, gameId, new Fixture()).next(match.fixture);
           }
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
@@ -434,14 +434,14 @@ export class MatchService {
     if (type == 'Batting') {
       return this.webSportsApi.getBattingLineup(gameId, teamId, inningsNumber).pipe(
         map(lineup => {
-          match.loadLineup('Batting', inningsNumber, teamNumber, lineup);
+          match.loadLineupFromAPI('Batting', inningsNumber, teamNumber, lineup);
           this.getOrCreateSubject(this.battingLineupSubjects, key, new PlayerLineup()).next(battingInnings.battingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
       return this.webSportsApi.getBowlingLineup(gameId, teamId, inningsNumber).pipe(
         map(lineup => {
-          match.loadLineup('Bowling', inningsNumber, teamNumber, lineup);
+          match.loadLineupFromAPI('Bowling', inningsNumber, teamNumber, lineup);
           this.getOrCreateSubject(this.bowlingLineupSubjects, key, new PlayerLineup()).next(battingInnings.bowlingLineup);
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
@@ -457,7 +457,7 @@ export class MatchService {
     
     return this.webSportsApi.getBallCountdown(gameId, teamId, apiBattingInnings).pipe(
       map(ballCountdown => {
-        battingInnings.recentOvers.loadRecentOvers(ballCountdown);
+        battingInnings.recentOvers.loadFromAPI(ballCountdown);
         this.getOrCreateSubject(this.recentOversSubjects, key, new RecentBalls()).next(battingInnings.recentOvers);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     );
@@ -470,7 +470,7 @@ export class MatchService {
     
     return this.webSportsApi.getBatsmen(gameId, teamId, inningsNumber).pipe(
       map(batsmen => {
-        battingInnings.currentBatters.loadCurrentBatters(batsmen);
+        battingInnings.currentBatters.loadFromAPI(batsmen);
         battingInnings.battingScorecard.addOnStrike(batsmen);
 
         // Check if innings has changed (only for second team in first innings)
@@ -492,7 +492,7 @@ export class MatchService {
     
     return this.webSportsApi.getFallOfWickets(gameId, teamId, inningsNumber).pipe(
       map(fallOfWickets => {
-        battingInnings.fallOfWickets.loadFallOfWickets(fallOfWickets);
+        battingInnings.fallOfWickets.loadFromAPI(fallOfWickets);
         this.getOrCreateSubject(this.fallOfWicketsSubjects, key, new FallOfWickets()).next(battingInnings.fallOfWickets);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     );
@@ -507,7 +507,7 @@ export class MatchService {
 
     return this.webSportsApi.getCommentary(gameId, teamId, apiBattingInnings).pipe(
       map(commentary => {
-        battingInnings.ballByBallCommentary.loadCommentary(gameId, teamId, inningsNumber, commentary);
+        battingInnings.ballByBallCommentary.loadFromAPI(gameId, teamId, inningsNumber, commentary);
         this.getOrCreateSubject(this.ballByBallCommentarySubjects, key, new BallByBallCommentary()).next(battingInnings.ballByBallCommentary);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     );
@@ -521,7 +521,7 @@ export class MatchService {
     
     return this.webSportsApi.getBattingScorecard(gameId, teamId, inningsNumber).pipe(
       map(scorecard => {
-        battingInnings.battingScorecard.loadBattingScorcard(scorecard);
+        battingInnings.battingScorecard.loadFromAPI(scorecard);
         this.getOrCreateSubject(this.battingScorecardSubjects, key, new BattingScorecard()).next(battingInnings.battingScorecard);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     );
@@ -535,7 +535,7 @@ export class MatchService {
     
     return this.webSportsApi.getBowlingScorecard(gameId, teamId, inningsNumber).pipe(
       map(scorecard => {
-        battingInnings.bowlingScorecard.loadBowlingScorcard(scorecard);
+        battingInnings.bowlingScorecard.loadFromAPI(scorecard);
         battingInnings.bowlingScorecard.addCurrentBowlers(battingInnings.currentBowlers);
         this.getOrCreateSubject(this.bowlingScorecardSubjects, key, new BowlingScorecard()).next(battingInnings.bowlingScorecard);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
@@ -549,7 +549,7 @@ export class MatchService {
     
     return this.webSportsApi.getCurrentBowlers(gameId, apiBattingInnings).pipe(
       map(bowling => {
-        battingInnings.currentBowlers.loadCurrentBowlers(bowling);
+        battingInnings.currentBowlers.loadFromAPI(bowling);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     );
   }
@@ -559,7 +559,7 @@ export class MatchService {
     return this.webSportsApi.getRunComparison(gameId).pipe(
       map(inputRunComparison => {
         let runComparisonFactory = new RunComparisonFactory()
-        match.runComparison = runComparisonFactory.loadRunComparison(inputRunComparison)
+        match.runComparison = runComparisonFactory.loadFromAPI(inputRunComparison)
         this.getOrCreateSubject(this.runComparisonSubjects, gameId, new RunComparison()).next(match.runComparison);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     )
@@ -577,7 +577,7 @@ export class MatchService {
       this.webSportsApi.getWagonWheel(gameId, matchInnings, teamIdString, playerId, type).pipe(
         map(inputWagonWheel => {
           const wagonWheelType: 'Batting' | 'Bowling' = type === 'batting' ? 'Batting' : 'Bowling';
-          match.wagonWheel.loadWagonWheel(teamIdString, playerIdNum, wagonWheelType, inputWagonWheel);
+          match.wagonWheel.loadFromAPI(teamIdString, playerIdNum, wagonWheelType, inputWagonWheel);
           this.getOrCreateSubject(this.wagonWheelSubjects, gameId, new WagonWheel()).next(match.wagonWheel);
         }),
         catchError((error: HttpErrorResponse) => this.handleError(error))

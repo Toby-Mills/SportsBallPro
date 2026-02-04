@@ -1,12 +1,12 @@
 import { CurrentBowlers } from "./current-bowlers";
-import { Batsmen, BattingScorecard as WebSportsBattingScorecard, BowlingScorecard as WebSportsBowlingScorecard } from "./web-sports";
+import { BatsmenAPI, BattingScorecardAPI as WebSportsBattingScorecard, BowlingScorecardAPI as WebSportsBowlingScorecard } from './web-sports';
 
 export class BattingScorecard {
     batters: BattingScorecardEntry[] = [];
     hasCurrentBatters: boolean = false;
     stillToBat: String[] = [];
 
-    public loadBattingScorcard(input: WebSportsBattingScorecard) {
+    public loadFromAPI(input: WebSportsBattingScorecard) {
         this.batters = [];
         this.stillToBat = [];
         if (input.scorecard) {
@@ -38,7 +38,7 @@ export class BattingScorecard {
         }
     }
 
-    public addOnStrike(input: Batsmen) {
+    public addOnStrike(input: BatsmenAPI) {
         if (input.batsmen) {
             for (let batter of input.batsmen) {
                 let id = batter.ServerPlayerID;
@@ -77,7 +77,7 @@ export class BowlingScorecard {
     bowlers: BowlingScorecardEntry[] = [];
     hasCurrentBowlers: boolean = false;
 
-    public loadBowlingScorcard(input: WebSportsBowlingScorecard) {
+    public loadFromAPI(input: WebSportsBowlingScorecard) {
         this.bowlers = [];
 
         if (input.scorecard) {

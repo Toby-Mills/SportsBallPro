@@ -6,7 +6,7 @@ import { MatchService } from '../../services/match.service';
 import { Subscription } from 'rxjs';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { WagonWheelComponent } from '../wagon-wheel/wagon-wheel.component';
-import { PlayerLineup } from '../../models/match';
+import { PlayerLineup } from '../../models/batting-innings-detail';
 
 
 @Pipe({

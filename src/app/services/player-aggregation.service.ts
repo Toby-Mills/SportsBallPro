@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Fixture } from '../models/web-sports';
+import { Fixture } from '../models/match';
 import { WebSportsAPIService } from './web-sports-api.service';
 import { Observable, forkJoin, of } from 'rxjs';
 import { mergeMap, toArray } from 'rxjs/operators';
@@ -40,7 +40,7 @@ export class PlayerAggregationService {
 
     // Create an array of observables for each fixture's lineups
     const lineupObservables = fixtures.flatMap((fixture: Fixture) => {
-      const teamId = fixture.aTeam === selectedTeam ? fixture.aTeamID : fixture.bTeamID;
+      const teamId = fixture.teamAName === selectedTeam ? fixture.teamAId : fixture.teamBId;
       
       if (!teamId) {
         return [];
@@ -48,12 +48,12 @@ export class PlayerAggregationService {
 
       // Get both batting and bowling scorecards for this fixture (use innings 1 for aggregation)
       return [
-        this.webSportsAPI.getBattingScorecard(fixture.gameID, teamId, 1).pipe(
+        this.webSportsAPI.getBattingScorecard(fixture.gameId, teamId, 1).pipe(
           mergeMap((battingScorecard: any) => {
             return of({ fixture, teamId, players: battingScorecard.scorecard, isBatter: true });
           })
         ),
-        this.webSportsAPI.getBowlingScorecard(fixture.gameID, teamId, 1).pipe(
+        this.webSportsAPI.getBowlingScorecard(fixture.gameId, teamId, 1).pipe(
           mergeMap((bowlingScorecard: any) => {
             return of({ fixture, teamId, players: bowlingScorecard.scorecard, isBatter: false });
           })

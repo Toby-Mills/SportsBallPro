@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
+import { Fixture } from '../models/match';
 
 export interface StatsState {
   teamNameSearch?: string;
   teamNamesFromSearch?: string[];
   selectedTeamName?: string;
-  selectedTeamFixtures?: any[];
+  selectedTeamFixtures?: Fixture[];
   uniqueYears?: number[];
   selectedYear?: number | null;
-  selectedYearFixtures?: any[];
-  selectedFixturesForStats?: any[];
+  selectedYearFixtures?: Fixture[];
+  selectedFixturesForStats?: string[]; // Array of gameId strings
 }
 
 @Injectable({ providedIn: 'root' })

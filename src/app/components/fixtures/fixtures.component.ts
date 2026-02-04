@@ -1,7 +1,6 @@
 import { APP_BASE_HREF, CommonModule, NgFor } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FixtureSummaries } from '../../models/fixture-summary';
-import { HttpClient } from '@angular/common/http';
 import { MatchKeyService } from '../../services/match-key.service'
 import { SortFixturesPipe } from '../../pipes/sort-fixtures.pipe';
 import { environment } from '../../../environments/environment';
@@ -32,7 +31,6 @@ export class FixturesComponent implements OnInit {
   public area: 'wynberg' | 'main' = 'main';
 
   constructor(
-    private http: HttpClient,
     private matchKey: MatchKeyService,
     private fixtureSearchService: FixtureSearchService,
     private watchList: WatchListService,
@@ -83,35 +81,19 @@ export class FixturesComponent implements OnInit {
   public loadFixtures(search: string) {
     this.lastSearch = search;
 
-    if (search > '') {
-      // Use cached fixture search service for non-empty searches
-      this.fixtureSearchService.searchByTerm(search).subscribe({
-        next: fixtureArray => {
-          this.fixtureSummaries = new FixtureSummaries;
-          // Wrap Fixture[] in Fixtures format expected by loadFixtures
-          this.fixtureSummaries.loadFixtures({ fixtures: fixtureArray });
-          for (let fixture of this.fixtureSummaries.fixtureSummaries) {
-            fixture.matchKey = this.matchKey.generateKey(fixture.gameId)
-          }
-          this.isReloading = false;
+    // Use fixture search service for all searches (empty or not)
+    // Empty searches return all fixtures without caching
+    this.fixtureSearchService.searchByTerm(search).subscribe({
+      next: fixtureArray => {
+        this.fixtureSummaries = new FixtureSummaries;
+        // Wrap Fixture[] in Fixtures format expected by loadFixtures
+        this.fixtureSummaries.loadFixtures({ fixtures: fixtureArray });
+        for (let fixture of this.fixtureSummaries.fixtureSummaries) {
+          fixture.matchKey = this.matchKey.generateKey(fixture.gameId)
         }
-      });
-    } else {
-      // For empty search, use direct HTTP call to get all fixtures
-      const url = `https://www.websports.co.za/api/summary/fixturesother/session?action=GET`;
-      this.http.get<any>(url, {}).subscribe({
-        next: fixtures => {
-          this.fixtureSummaries = new FixtureSummaries;
-          this.fixtureSummaries.loadFixtures(fixtures);
-          for (let fixture of this.fixtureSummaries.fixtureSummaries) {
-            fixture.matchKey = this.matchKey.generateKey(fixture.gameId)
-          }
-        },
-        complete: () => {
-          this.isReloading = false;
-        }
-      });
-    }
+        this.isReloading = false;
+      }
+    });
   }
 
   public onGameIdChange(event: Event) {
@@ -127,13 +109,11 @@ export class FixturesComponent implements OnInit {
 
   public onReloadAllKeys(): void {
     this.isReloading = true;
-    if (this.lastSearch) {
+    // Only clear cache if we have a non-empty search term
+    if (this.lastSearch && this.lastSearch.trim() !== '') {
       this.fixtureSearchService.clearCache(this.lastSearch);
-      this.loadFixtures(this.lastSearch);
-    } else {
-      // For empty search, just reload directly (no cache to clear)
-      this.loadFixtures(this.lastSearch);
     }
+    this.loadFixtures(this.lastSearch);
   }
 
 }

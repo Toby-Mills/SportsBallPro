@@ -1,4 +1,4 @@
-import { WagonWheel as WebSportsWagonWheel } from "./web-sports"
+import { WagonWheelAPI as WebSportsWagonWheel } from './web-sports'
 
 export class WagonWheel {
 	teamId: string = '';
@@ -8,7 +8,7 @@ export class WagonWheel {
 	type: 'Batting' | 'Bowling' | '' = ''
 	events: Array<WagonWheelEvent> = []
 
-	public loadWagonWheel(teamId: string, playerId: number,type: 'Batting'|'Bowling', input: WebSportsWagonWheel) {
+	public loadFromAPI(teamId: string, playerId: number,type: 'Batting'|'Bowling', input: WebSportsWagonWheel) {
 		this.teamId = teamId;
 		this.playerId = playerId;
 		this.type = type;

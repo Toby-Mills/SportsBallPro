@@ -1,4 +1,4 @@
-import { Fixture } from "./web-sports";
+import { FixtureAPI } from "./web-sports";
 
 export class TeamScore {
     teamNumber: 0 | 1 | 2 = 0
@@ -10,7 +10,7 @@ export class TeamScore {
     extras: number = 0;
     runRate: number = 0;
 
-    load(input:Fixture){
+    loadFromAPI(input:FixtureAPI){
 
         if(this.teamNumber == 1){
             this.teamName = input.aTeam;

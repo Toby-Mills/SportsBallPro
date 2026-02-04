@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Fixture } from '../../models/web-sports';
+import { Fixture } from '../../models/match';
 import { MatchKeyService } from '../../services/match-key.service';
 import { StatsStateService } from '../../services/stats-state.service';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
@@ -43,7 +43,7 @@ export class FixtureSelectorComponent implements OnChanges {
   }
 
   isSelected(fixture: Fixture): boolean {
-    return this.selectedFixtures.some(f => f.gameID === fixture.gameID);
+    return this.selectedFixtures.some(f => f.gameId === fixture.gameId);
   }
 
   onFixtureToggle(fixture: Fixture, event: any) {
@@ -52,13 +52,13 @@ export class FixtureSelectorComponent implements OnChanges {
     if (isChecked) {
       updated = [...this.selectedFixtures, fixture];
     } else {
-      updated = this.selectedFixtures.filter(f => f.gameID !== fixture.gameID);
+      updated = this.selectedFixtures.filter(f => f.gameId !== fixture.gameId);
     }
     this.fixturesSelected.emit(updated);
   }
 
   getMatchKey(fixture: Fixture): string {
-    return this.matchKey.generateKey(fixture.gameID);
+    return this.matchKey.generateKey(fixture.gameId);
   }
 
   saveState() {
@@ -80,12 +80,14 @@ export class FixtureSelectorComponent implements OnChanges {
    * Get the match status string for display
    */
   getFixtureStatus(fixture: Fixture): string {
-    if (fixture.result) {
+    // Check if match has a result via status
+    if (fixture.result && fixture.result.length > 0) {
       return fixture.result;
     }
     
     // Check if match has started based on runs/wickets
-    if (fixture.aRuns > 0 || fixture.bRuns > 0) {
+    // Use teamAScore/teamBScore from the fixture
+    if (fixture.teamAScore && fixture.teamAScore > 0) {
       return 'In Progress';
     }
     
@@ -96,7 +98,8 @@ export class FixtureSelectorComponent implements OnChanges {
    * Get CSS class for status styling
    */
   getStatusClass(fixture: Fixture): string {
-    if (fixture.result) {
+    // Check status via the status field
+    if (fixture.result && fixture.result.length > 0) {
       const result = fixture.result.toLowerCase();
       if (result.includes('won') || result.includes('drawn') || result.includes('no result')) {
         return 'completed';
@@ -107,7 +110,8 @@ export class FixtureSelectorComponent implements OnChanges {
       }
     }
     
-    if (fixture.aRuns > 0 || fixture.bRuns > 0) {
+    // Check if match has started
+    if (fixture.teamAScore && fixture.teamAScore > 0) {
       return 'live';
     }
     
@@ -124,7 +128,7 @@ export class FixtureSelectorComponent implements OnChanges {
       return;
     }
     
-    this.selectedMatchGameId = fixture.gameID;
+    this.selectedMatchGameId = fixture.gameId;
     this.showMatchModal = true;
   }
 
