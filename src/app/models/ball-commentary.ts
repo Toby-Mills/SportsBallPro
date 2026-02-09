@@ -6,10 +6,7 @@ export class BallByBallCommentary {
   innings: number = 0;
   overs: OverCommentary[] = [];
 
-    public loadFromAPI(gameId: string, teamId: string, innings: number, input: CommentaryAPI): void {
-    this.gameId = gameId;
-    this.teamId = teamId;
-    this.innings = innings;
+    public loadFromAPI(input: CommentaryAPI): void {
     this.overs = [];
 
     if (input.commentary) {
@@ -58,6 +55,15 @@ export class BallByBallCommentary {
     const parsed = Number(parts[1]);
     return Number.isNaN(parsed) ? 0 : parsed;
   }
+
+  clone(): BallByBallCommentary {
+    const copy = new BallByBallCommentary();
+    copy.gameId = this.gameId;
+    copy.teamId = this.teamId;
+    copy.innings = this.innings;
+    copy.overs = this.overs.map(over => over.clone());
+    return copy;
+  }
 }
 
 export class OverCommentary {
@@ -96,6 +102,14 @@ export class OverCommentary {
       ? `${runs} run${runs !== 1 ? 's' : ''}, ${wickets} wicket${wickets > 1 ? 's' : ''}`
       : `${runs} run${runs !== 1 ? 's' : ''}`;
   }
+
+  clone(): OverCommentary {
+    const copy = new OverCommentary();
+    copy.overIndex = this.overIndex;
+    copy.overNumber = this.overNumber;
+    copy.balls = this.balls.map(ball => ball.clone());
+    return copy;
+  }
 }
 
 export class BallCommentary {
@@ -118,11 +132,53 @@ export class BallCommentary {
   }
 
   get isExtra(): boolean {
-    return ['WB', 'NB', 'LB'].some(extra => this.description.includes(extra));
+    return ['WB', 'NB', 'LB', 'B'].some(extra => this.description.includes(extra));
   }
 
   get runs(): number {
-    const num = parseInt(this.description, 10);
-    return Number.isNaN(num) ? 0 : num;
+    // Parse runs from description, handling extras like "WB", "2WB", "1NB", "LB", etc.
+    const desc = this.description;
+
+    // Try to extract leading number (e.g., "2WB" -> 2, "1NB" -> 1)
+    const leadingNum = parseInt(desc, 10);
+    const hasLeadingNumber = !Number.isNaN(leadingNum);
+
+    // Check for extras that add runs
+    const isWide = desc.includes('WB');
+    const isNoBall = desc.includes('NB');
+    const isLegBye = desc.includes('LB');
+    const isBye = desc.includes('B') && !isWide && !isNoBall && !isLegBye;
+
+    // Wide and no-ball always add at least 1 run for the extra itself
+    // Plus any additional runs scored (the leading number)
+    if (isWide || isNoBall) {
+      return (hasLeadingNumber ? leadingNum : 0) + 1;
+    }
+
+    // Leg byes and byes: the leading number is the runs, no automatic +1
+    if (isLegBye || isBye) {
+      return hasLeadingNumber ? leadingNum : 1;
+    }
+
+    // Regular delivery: just parse the number (0, 1, 2, 4, 6, etc.)
+    return hasLeadingNumber ? leadingNum : 0;
+  }
+
+  clone(): BallCommentary {
+    const copy = new BallCommentary();
+    copy.eventId = this.eventId;
+    copy.overIndex = this.overIndex;
+    copy.overNumber = this.overNumber;
+    copy.over = this.over;
+    copy.ballNumber = this.ballNumber;
+    copy.commentary = this.commentary;
+    copy.description = this.description;
+    copy.bowlerPlayerId = this.bowlerPlayerId;
+    copy.teamRuns = this.teamRuns;
+    copy.teamWickets = this.teamWickets;
+    copy.bowlerOvers = this.bowlerOvers;
+    copy.bowlerRuns = this.bowlerRuns;
+    copy.bowlerWickets = this.bowlerWickets;
+    return copy;
   }
 }

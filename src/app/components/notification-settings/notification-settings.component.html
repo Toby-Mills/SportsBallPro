@@ -1,0 +1,155 @@
+<app-modal-dialog
+	[isVisible]="isVisible"
+	[title]="'Notification Settings'"
+	(close)="onModalClose()">
+
+	<div class="settings-content">
+		<!-- Global Settings Section -->
+		<section class="settings-section">
+			<h3 class="section-title">Global Settings</h3>
+			
+			<div class="setting-row">
+				<label class="toggle-label">
+					<input 
+						type="checkbox" 
+						[(ngModel)]="globalPreferences.enabled"
+						(ngModelChange)="onGlobalEnabledChange()">
+					<span class="toggle-text">Enable notifications</span>
+				</label>
+				<span class="setting-description">Master switch for all match notifications</span>
+			</div>
+
+			<div class="setting-row" [class.disabled]="!globalPreferences.enabled">
+				<label class="toggle-label">
+					<input 
+						type="checkbox" 
+						[(ngModel)]="globalPreferences.soundEnabled"
+						(ngModelChange)="onSoundEnabledChange()"
+						[disabled]="!globalPreferences.enabled">
+					<span class="toggle-text">Sound</span>
+				</label>
+				<span class="setting-description">Play a sound for notifications</span>
+			</div>
+		</section>
+
+		<!-- Browser Notifications Section -->
+		<section class="settings-section">
+			<h3 class="section-title">Browser Notifications</h3>
+			
+			<div class="browser-permission">
+				<ng-container *ngIf="canRequestPermission">
+					<p class="permission-text">Get notifications even when the tab is in the background</p>
+					<button class="permission-btn" (click)="requestBrowserPermission()">
+						<span class="material-icons">notifications</span>
+						Enable Browser Notifications
+					</button>
+				</ng-container>
+
+				<ng-container *ngIf="hasPermission">
+					<p class="permission-granted">
+						<span class="material-icons">check_circle</span>
+						Browser notifications enabled
+					</p>
+				</ng-container>
+
+				<ng-container *ngIf="permissionDenied">
+					<p class="permission-denied">
+						<span class="material-icons">block</span>
+						Browser notifications blocked. Update your browser settings to enable them.
+					</p>
+				</ng-container>
+			</div>
+		</section>
+
+		<!-- Match-Specific Settings -->
+		<section class="settings-section" *ngIf="gameId">
+			<h3 class="section-title">This Match</h3>
+
+			<div class="setting-row">
+				<label class="toggle-label">
+					<input 
+						type="checkbox" 
+						[(ngModel)]="matchPreferences.enabled"
+						(ngModelChange)="onMatchEnabledChange()"
+						[disabled]="!globalPreferences.enabled">
+					<span class="toggle-text">Enable for this match</span>
+				</label>
+			</div>
+
+			<!-- Team Filter -->
+			<div class="setting-row" *ngIf="teamAName && teamBName" [class.disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+				<label class="setting-label">Notify for team:</label>
+				<div class="radio-group">
+					<label class="radio-label">
+						<input 
+							type="radio" 
+							name="teamFilter" 
+							[value]="undefined"
+							[checked]="!matchPreferences.teamIdFilter"
+							(change)="onTeamFilterChange(undefined)"
+							[disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+						<span>Both teams</span>
+					</label>
+					<label class="radio-label">
+						<input 
+							type="radio" 
+							name="teamFilter" 
+							value="teamA"
+							[checked]="matchPreferences.teamIdFilter === 'teamA'"
+							(change)="onTeamFilterChange('teamA')"
+							[disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+						<span>{{ teamAName }}</span>
+					</label>
+					<label class="radio-label">
+						<input 
+							type="radio" 
+							name="teamFilter" 
+							value="teamB"
+							[checked]="matchPreferences.teamIdFilter === 'teamB'"
+							(change)="onTeamFilterChange('teamB')"
+							[disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+						<span>{{ teamBName }}</span>
+					</label>
+				</div>
+			</div>
+
+			<!-- Event Types -->
+			<div class="event-types" [class.disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+				<div class="event-types-header">
+					<label class="setting-label">Event types:</label>
+					<div class="bulk-actions">
+						<button 
+							class="text-btn" 
+							(click)="selectAllEvents()"
+							[disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+							Select all
+						</button>
+						<span class="separator">|</span>
+						<button 
+							class="text-btn" 
+							(click)="deselectAllEvents()"
+							[disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+							Clear all
+						</button>
+					</div>
+				</div>
+				
+				<div class="event-type-list">
+					<label 
+						class="event-type-item" 
+						*ngFor="let option of eventTypeOptions"
+						[class.disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+						<input 
+							type="checkbox" 
+							[checked]="isEventEnabled(option.type)"
+							(change)="toggleEvent(option.type)"
+							[disabled]="!matchPreferences.enabled || !globalPreferences.enabled">
+						<span class="event-label">{{ option.label }}</span>
+						<span class="event-description">{{ option.description }}</span>
+					</label>
+				</div>
+			</div>
+		</section>
+	</div>
+
+</app-modal-dialog>

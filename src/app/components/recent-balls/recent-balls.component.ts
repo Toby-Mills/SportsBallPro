@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
     standalone: true
 })
 export class RecentBallsComponent implements OnChanges, OnDestroy {
-  @Input() inningsNumber: 1 | 2 = 1;
+  @Input() battingInningsNumber: 1 | 2 | 3 | 4 = 1;
   @Input() teamNumber: 1 | 2 = 1;
   @Input() gameId: string = '';
   recentBalls: RecentBalls = new RecentBalls();
@@ -21,7 +21,7 @@ export class RecentBallsComponent implements OnChanges, OnDestroy {
   constructor(public matchService: MatchService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['inningsNumber'] || changes['teamNumber'] || changes['gameId']) {
+    if (changes['battingInningsNumber'] || changes['gameId']) {
       this.subscribe();
     }
   }
@@ -32,10 +32,8 @@ export class RecentBallsComponent implements OnChanges, OnDestroy {
 
   private subscribe() {
     this.subscription?.unsubscribe();
-    console.log(`Recent balls component subscribing: innings=${this.inningsNumber}, team=${this.teamNumber}, gameId=${this.gameId}`);
-    this.subscription = this.matchService.getRecentOversUpdates(this.gameId, this.inningsNumber, this.teamNumber).subscribe(
+    this.subscription = this.matchService.getRecentOversUpdates(this.gameId, this.battingInningsNumber).subscribe(
       recentBalls => {
-        console.log(`Recent balls component received data: innings=${this.inningsNumber}, team=${this.teamNumber}, overs count:`, recentBalls.overs.length);
         this.recentBalls = recentBalls
       }
     );

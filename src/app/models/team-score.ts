@@ -10,6 +10,19 @@ export class TeamScore {
     extras: number = 0;
     runRate: number = 0;
 
+    clone(): TeamScore {
+        const copy = new TeamScore();
+        copy.teamNumber = this.teamNumber;
+        copy.teamName = this.teamName;
+        copy.logoName = this.logoName;
+        copy.runs = this.runs;
+        copy.wickets = this.wickets;
+        copy.overs = this.overs;
+        copy.extras = this.extras;
+        copy.runRate = this.runRate;
+        return copy;
+    }
+
     loadFromAPI(input:FixtureAPI){
 
         if(this.teamNumber == 1){

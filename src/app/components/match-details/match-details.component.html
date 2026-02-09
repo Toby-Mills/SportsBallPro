@@ -14,64 +14,60 @@
         </div>
         
         <!-- First Innings Team Scores -->
-        <div class="box small-box card team-score-card" [class.selected]="viewingBattingInnings === '1-1'">
+        <div class="box small-box card team-score-card" [class.selected]="viewingBattingInnings === 1">
             <app-team-score 
-                [teamNumber]="1" 
                 [gameId]="actualGameId" 
-                [inningsNumber]="1"
-                [isSelected]="viewingBattingInnings === '1-1'"
-                (cardClicked)="onTeamScoreClick($event)">
+                [battingInningsNumber]="1"
+                [isSelected]="viewingBattingInnings === 1"
+                (cardClicked)="onTeamScoreClick(1)">
             </app-team-score>
         </div>
-        <div class="box small-box card team-score-card" [class.selected]="viewingBattingInnings === '1-2'">
+        <div class="box small-box card team-score-card" [class.selected]="viewingBattingInnings === 2">
             <app-team-score 
-                [teamNumber]="2" 
                 [gameId]="actualGameId" 
-                [inningsNumber]="1"
-                [isSelected]="viewingBattingInnings === '1-2'"
-                (cardClicked)="onTeamScoreClick($event)">
+                [battingInningsNumber]="2"
+                [isSelected]="viewingBattingInnings === 2"
+                (cardClicked)="onTeamScoreClick(2)">
             </app-team-score>
         </div>
         
         <!-- Second Innings Team Scores (if exists) -->
-        <div class="box small-box card team-score-card" [class.selected]="viewingBattingInnings === '2-1'" *ngIf="hasSecondInnings">
+        <div class="box small-box card team-score-card" [class.selected]="viewingBattingInnings === 3" *ngIf="hasSecondInnings">
             <app-team-score 
-                [teamNumber]="1" 
                 [gameId]="actualGameId" 
-                [inningsNumber]="2"
-                [isSelected]="viewingBattingInnings === '2-1'"
-                (cardClicked)="onTeamScoreClick($event)">
+                [battingInningsNumber]="3"
+                [isSelected]="viewingBattingInnings === 3"
+                (cardClicked)="onTeamScoreClick(3)">
             </app-team-score>
         </div>
-        <div class="box small-box card team-score-card" [class.selected]="viewingBattingInnings === '2-2'" *ngIf="hasSecondInnings">
+        <div class="box small-box card team-score-card" [class.selected]="viewingBattingInnings === 4" *ngIf="hasSecondInnings">
             <app-team-score 
-                [teamNumber]="2" 
                 [gameId]="actualGameId" 
-                [inningsNumber]="2"
-                [isSelected]="viewingBattingInnings === '2-2'"
-                (cardClicked)="onTeamScoreClick($event)">
+                [battingInningsNumber]="4"
+                [isSelected]="viewingBattingInnings === 4"
+                (cardClicked)="onTeamScoreClick(4)">
             </app-team-score>
         </div>
         
         <div class="box wide-box innings-detail-label">Innings Detail</div><br>
         
         <div class="box small-box card">
-            <app-batting-scorecard [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber" [gameId]="actualGameId"></app-batting-scorecard>
+            <app-batting-scorecard [battingInningsNumber]="viewingBattingInnings" [gameId]="actualGameId"></app-batting-scorecard>
         </div>
         <div class="box small-box card">
-            <app-recent-balls [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber" [gameId]="actualGameId"></app-recent-balls>
+            <app-recent-balls [battingInningsNumber]="viewingBattingInnings" [gameId]="actualGameId"></app-recent-balls>
         </div>
         <div class="box small-box card">
-            <app-bowling-scorecard [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber === 1 ? 2 : 1" [gameId]="actualGameId"></app-bowling-scorecard>
+            <app-bowling-scorecard [battingInningsNumber]="viewingBattingInnings" [gameId]="actualGameId"></app-bowling-scorecard>
         </div>
         <div class="box small-box card">
-            <app-fall-of-wickets [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber" [gameId]="actualGameId"></app-fall-of-wickets>
+            <app-fall-of-wickets [battingInningsNumber]="viewingBattingInnings" [gameId]="actualGameId"></app-fall-of-wickets>
         </div>
         <div class="box small-box card run-comparison">
             <app-run-comparison [gameId]="actualGameId"></app-run-comparison>
         </div>
         <div class="box wide-box card ball-commentary-card">
-            <app-ball-by-ball-commentary [inningsNumber]="currentInningsNumber" [teamNumber]="currentTeamNumber" [gameId]="actualGameId"></app-ball-by-ball-commentary>
+            <app-ball-by-ball-commentary [battingInningsNumber]="viewingBattingInnings" [gameId]="actualGameId"></app-ball-by-ball-commentary>
         </div>
     </ng-container>
     <ng-template #noMatch>

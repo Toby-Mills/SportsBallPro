@@ -38,6 +38,9 @@
              [class.highlight]="gameId === highlightedMatchId"
              *ngFor="let gameId of watchedMatches; let i = index">
         <div class="match-card-header">
+          <button class="icon-btn notification-btn" (click)="openNotificationSettings(gameId)" title="Notification settings">
+            <span class="material-icons">notifications</span>
+          </button>
           <button class="icon-btn share-btn" (click)="shareMatch(gameId)" title="Share match">
             <span class="material-icons">share</span>
           </button>
@@ -60,6 +63,9 @@
          [class.highlight]="gameId === highlightedMatchId"
          *ngFor="let gameId of watchedMatches; let i = index">
       <div class="match-card-header">
+        <button class="icon-btn" (click)="openNotificationSettings(gameId)" aria-label="Notification settings" title="Notification settings">
+          <span class="material-icons">notifications</span>
+        </button>
         <button class="icon-btn" (click)="shareMatch(gameId)" aria-label="Share match">
           <span class="material-icons">share</span>
         </button>
@@ -75,3 +81,12 @@
     </div>
   </div>
 </div>
+
+<!-- Notification Settings Modal -->
+<app-notification-settings
+  [isVisible]="showNotificationSettings"
+  [gameId]="notificationSettingsGameId"
+  [teamAName]="notificationSettingsTeamA"
+  [teamBName]="notificationSettingsTeamB"
+  (close)="closeNotificationSettings()">
+</app-notification-settings>

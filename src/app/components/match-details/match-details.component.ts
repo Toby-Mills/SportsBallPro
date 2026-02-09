@@ -42,22 +42,12 @@ export class MatchDetailsComponent {
   title = 'SportsBallPro';
   fixture: Fixture = new Fixture;
   status: Status = new Status;
-  viewingBattingInnings: string = '1-1'; // Format: "inningsNumber-teamNumber"
+  viewingBattingInnings: 1 | 2 | 3 | 4 = 1;
   private wakeLock: any = null;
   public isWakeLockActive: boolean = false;
   public actualGameId: string = ''; // Store the resolved gameId
   public componentId: string = Math.random().toString(36).substring(7); // Unique ID for this instance
   public hasSecondInnings: boolean = false;
-
-  // Parsed values from viewingBattingInnings
-  get currentInningsNumber(): 1 | 2 {
-    return parseInt(this.viewingBattingInnings.split('-')[0]) as 1 | 2;
-  }
-
-  get currentTeamNumber(): 1 | 2 {
-    return parseInt(this.viewingBattingInnings.split('-')[1]) as 1 | 2;
-  }
-
 
   constructor(
     private http: HttpClient,
@@ -94,23 +84,6 @@ export class MatchDetailsComponent {
           this.status = status;
         }
       )
-      
-      // Check if second innings exists by looking for lineup data in innings 2, team 1
-      this.matchService.getBattingLineupUpdates(this.actualGameId, 2, 1).subscribe(
-        lineup => {
-          const hadSecondInnings = this.hasSecondInnings;
-          this.hasSecondInnings = lineup.lineup.length > 0;
-          
-          // Auto-select appropriate innings when data loads or changes
-          if (!hadSecondInnings && this.hasSecondInnings) {
-            // Second innings just became available
-            this.autoSelectInnings();
-          } else if (this.viewingBattingInnings === '1-1') {
-            // Initial load - auto select
-            this.autoSelectInnings();
-          }
-        }
-      )
 
       // Load the match data
       this.matchService.loadMatch(this.actualGameId);
@@ -121,26 +94,7 @@ export class MatchDetailsComponent {
    * Auto-select the appropriate innings to view based on match status
    */
   private autoSelectInnings() {
-    // For multi-innings matches, default to second match innings
-    // For single innings matches, default to the second team to bat
-    let matchInnings: 1 | 2 = 1;
-    let team: 1 | 2 = 1;
-    
-    if (this.hasSecondInnings) {
-      // Multi-innings match - show second match innings
-      matchInnings = 2;
-      team = this.status.currentTeam || 2;
-    } else if (this.status.currentInnings === 2) {
-      // Single innings match, second team batting
-      matchInnings = 1;
-      team = this.status.currentTeam || 2;
-    } else {
-      // Default to first team in first innings
-      matchInnings = 1;
-      team = 1;
-    }
-    
-    this.viewingBattingInnings = `${matchInnings}-${team}`;
+        this.viewingBattingInnings = this.status.currentBattingInnings;
   }
 
   ngAfterViewInit() {
@@ -169,7 +123,7 @@ export class MatchDetailsComponent {
     }
   }
 
-  public onTeamScoreClick(battingInnings: string): void {
+  public onTeamScoreClick(battingInnings: 1 | 2 | 3 | 4): void {
     this.viewingBattingInnings = battingInnings;
   }
 

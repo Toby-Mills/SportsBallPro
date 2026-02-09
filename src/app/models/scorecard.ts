@@ -53,6 +53,18 @@ export class BattingScorecard {
             }
         }
     }
+
+    clone(): BattingScorecard {
+        const copy = new BattingScorecard();
+        copy.hasCurrentBatters = this.hasCurrentBatters;
+        copy.stillToBat = [...this.stillToBat];
+        copy.batters = this.batters.map(batter => {
+            const batterCopy = new BattingScorecardEntry();
+            Object.assign(batterCopy, batter);
+            return batterCopy;
+        });
+        return copy;
+    }
 }
 
 export class BattingScorecardEntry {

@@ -43,8 +43,7 @@ export class VisibleBatter implements PipeTransform {
     styleUrl: './batting-scorecard.component.css'
 })
 export class BattingScorecardComponent implements OnChanges, OnDestroy {
-  @Input() inningsNumber: 1 | 2 = 1;
-  @Input() teamNumber: 1 | 2 = 1;
+  @Input() battingInningsNumber: 1 | 2 | 3 | 4 = 1;
   @Input() gameId: string = '';
   @ViewChild('wagonWheelModal') wagonWheelModal?: ModalDialogComponent;
   
@@ -60,7 +59,7 @@ export class BattingScorecardComponent implements OnChanges, OnDestroy {
   constructor(public matchService: MatchService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['inningsNumber'] || changes['teamNumber'] || changes['gameId']) {
+    if (changes['battingInningsNumber'] || changes['gameId']) {
       this.subscribe();
     }
   }
@@ -72,7 +71,7 @@ export class BattingScorecardComponent implements OnChanges, OnDestroy {
 
   private subscribe() {
     this.subscription?.unsubscribe();
-    this.subscription = this.matchService.getBattingScorecardUpdates(this.gameId, this.inningsNumber, this.teamNumber).subscribe(
+    this.subscription = this.matchService.getBattingScorecardUpdates(this.gameId, this.battingInningsNumber).subscribe(
       scorecard => {
         this.scorecard = scorecard;
       }
@@ -80,7 +79,7 @@ export class BattingScorecardComponent implements OnChanges, OnDestroy {
     
     // Subscribe to batting lineup to get PlayerID
     this.lineupSubscription?.unsubscribe();
-    this.lineupSubscription = this.matchService.getBattingLineupUpdates(this.gameId, this.inningsNumber, this.teamNumber).subscribe(
+    this.lineupSubscription = this.matchService.getBattingLineupUpdates(this.gameId, this.battingInningsNumber).subscribe(
       lineup => {
         this.lineup = lineup;
       }
@@ -96,7 +95,7 @@ export class BattingScorecardComponent implements OnChanges, OnDestroy {
     if (player && player.playerId) {
       this.selectedPlayerId = String(player.playerId);
       this.selectedPlayerName = playerName;
-      this.matchService.loadWagonWheel(this.gameId, String(player.playerId), this.inningsNumber, this.teamNumber, 'batting');
+      this.matchService.loadWagonWheel(this.gameId, String(player.playerId), this.battingInningsNumber, 'batting');
       this.showWagonWheel = true;
     } else {
       console.warn('Player not found in lineup:', playerName);

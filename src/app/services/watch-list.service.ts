@@ -12,8 +12,8 @@ interface WatchedMatch {
 export class WatchListService {
   private readonly STORAGE_KEY = 'sportsBallPro_watchList';
   private readonly MAX_MATCHES = 10;
-  private watchListByArea = new Map<'wynberg' | 'main', WatchedMatch[]>();
-  private watchListChanged$ = new Subject<'wynberg' | 'main'>();
+  private watchListByArea = new Map<string, WatchedMatch[]>();
+  private watchListChanged$ = new Subject<string>();
 
   constructor() {
     this.loadFromStorage();
@@ -23,12 +23,12 @@ export class WatchListService {
     return this.watchListChanged$.asObservable();
   }
 
-  getWatchList(area: 'wynberg' | 'main'): string[] {
+  getWatchList(area: string): string[] {
     const matches = this.watchListByArea.get(area) || [];
     return matches.map(m => m.gameId);
   }
 
-  addMatch(area: 'wynberg' | 'main', gameId: string): boolean {
+  addMatch(area: string, gameId: string): boolean {
     const list = this.watchListByArea.get(area) || [];
     
     console.log(`[WatchListService] Adding match ${gameId} to ${area} area. Current count: ${list.length}`);
@@ -63,7 +63,7 @@ export class WatchListService {
     return true;
   }
 
-  removeMatch(area: 'wynberg' | 'main', gameId: string): void {
+  removeMatch(area: string, gameId: string): void {
     const list = this.watchListByArea.get(area) || [];
     const filtered = list.filter(m => m.gameId !== gameId);
     this.watchListByArea.set(area, filtered);
@@ -71,22 +71,30 @@ export class WatchListService {
     this.watchListChanged$.next(area);
   }
 
-  clearAll(area: 'wynberg' | 'main'): void {
+  clearAll(area: string): void {
     this.watchListByArea.set(area, []);
     this.saveToStorage();
     this.watchListChanged$.next(area);
   }
 
-  isWatching(area: 'wynberg' | 'main', gameId: string): boolean {
+  isWatching(area: string, gameId: string): boolean {
     const list = this.watchListByArea.get(area) || [];
     return list.some(m => m.gameId === gameId);
   }
 
-  getWatchCount(area: 'wynberg' | 'main'): number {
+  getWatchCount(area: string): number {
     return (this.watchListByArea.get(area) || []).length;
   }
 
-  cleanInvalidEntries(area: 'wynberg' | 'main'): void {
+  getAllWatchedMatches(): string[] {
+    const allMatches = new Set<string>();
+    this.watchListByArea.forEach(matches => {
+      matches.forEach(match => allMatches.add(match.gameId));
+    });
+    return Array.from(allMatches);
+  }
+
+  cleanInvalidEntries(area: string): void {
     const list = this.watchListByArea.get(area) || [];
     const validList = list.filter(m => 
       m.gameId && 
@@ -109,19 +117,15 @@ export class WatchListService {
       if (stored) {
         const data = JSON.parse(stored);
         
-        // Convert plain objects back to Map
-        if (data.wynberg) {
-          this.watchListByArea.set('wynberg', data.wynberg.map((m: any) => ({
-            gameId: m.gameId,
-            addedAt: new Date(m.addedAt)
-          })));
-        }
-        if (data.main) {
-          this.watchListByArea.set('main', data.main.map((m: any) => ({
-            gameId: m.gameId,
-            addedAt: new Date(m.addedAt)
-          })));
-        }
+        // Convert plain objects back to Map - dynamically load all areas
+        Object.keys(data).forEach(area => {
+          if (Array.isArray(data[area])) {
+            this.watchListByArea.set(area, data[area].map((m: any) => ({
+              gameId: m.gameId,
+              addedAt: new Date(m.addedAt)
+            })));
+          }
+        });
         
         // Clean up old matches (> 7 days)
         this.cleanupOldMatches();
@@ -133,10 +137,11 @@ export class WatchListService {
 
   private saveToStorage(): void {
     try {
-      const data = {
-        wynberg: this.watchListByArea.get('wynberg') || [],
-        main: this.watchListByArea.get('main') || []
-      };
+      // Convert Map to plain object with all areas
+      const data: Record<string, WatchedMatch[]> = {};
+      this.watchListByArea.forEach((matches, area) => {
+        data[area] = matches;
+      });
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
       console.error('Error saving watch list to storage:', error);
@@ -147,8 +152,8 @@ export class WatchListService {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     
-    ['wynberg' as const, 'main' as const].forEach(area => {
-      const list = this.watchListByArea.get(area) || [];
+    // Iterate through all areas in the map
+    this.watchListByArea.forEach((list, area) => {
       const filtered = list.filter(m => m.addedAt > sevenDaysAgo);
       if (filtered.length !== list.length) {
         this.watchListByArea.set(area, filtered);

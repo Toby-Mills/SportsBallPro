@@ -1,4 +1,21 @@
-<div class="toaster" *ngIf="showToast"  [ngClass]="messageType">
-	<p>{{ message }}</p>
-  </div>
+<div class="toaster-container" *ngIf="messages.length > 0">
+	<div
+		class="toaster"
+		*ngFor="let toast of messages"
+		[ngClass]="toast.type"
+		(click)="toast.dismissible ? dismissMessage(toast.id) : null"
+	>
+		<p class="toaster-title" *ngIf="toast.title">{{ toast.title }}</p>
+		<p class="toaster-message">{{ toast.message }}</p>
+		<button
+			*ngIf="toast.dismissible"
+			class="toaster-dismiss"
+			type="button"
+			(click)="dismissMessage(toast.id); $event.stopPropagation()"
+			aria-label="Dismiss notification"
+		>
+			×
+		</button>
+	</div>
+</div>
   

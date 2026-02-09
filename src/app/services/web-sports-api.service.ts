@@ -36,8 +36,8 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
-  public getCommentary(gameId: string, teamId: string, innings: 1 | 2 | 3 | 4): Observable<CommentaryAPI> {
-    const url: string = `https://www.websports.co.za/api/live/fixture/commentary/${gameId}/${teamId}/${innings}`;
+  public getCommentary(gameId: string, teamId: string, battingInnings: 1 | 2 | 3 | 4): Observable<CommentaryAPI> {
+    const url: string = `https://www.websports.co.za/api/live/fixture/commentary/${gameId}/${teamId}/${battingInnings}`;
     return this.http.get<any>(url, {})
   }
 

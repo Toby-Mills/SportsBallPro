@@ -16,8 +16,7 @@ export class WagonWheelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() gameId: string = '';
   @Input() playerId: string = '';
   @Input() playerName: string = '';
-  @Input() matchInnings: 1 | 2 = 1;
-  @Input() teamNumber: 1 | 2 = 1;
+  @Input() battingInningsNumber: 1 | 2 | 3 | 4 = 1;
   @Input() type: 'batting' | 'bowling' = 'batting';
 
   public wagonWheelData: WagonWheel = new WagonWheel();
@@ -41,7 +40,7 @@ export class WagonWheelComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     // React when inputs change (they are set after constructor)
-    if (changes['teamNumber'] || changes['gameId']) {
+    if (changes['battingInningsNumber'] || changes['gameId']) {
       this.updateTeamName();
     }
   }
@@ -51,7 +50,7 @@ export class WagonWheelComponent implements OnInit, OnChanges, OnDestroy {
     this.fixtureSubscription?.unsubscribe();
     this.fixtureSubscription = this.matchService.getFixtureUpdates(this.gameId).subscribe(
       fixture => {
-        this.teamName = this.teamNumber === 1 ? fixture.teamAName : fixture.teamBName;
+        this.teamName = this.battingInningsNumber % 2 === 1 ? fixture.teamAName : fixture.teamBName;
       }
     );
   }

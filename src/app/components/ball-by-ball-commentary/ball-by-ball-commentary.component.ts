@@ -13,7 +13,7 @@ import { OverCommentaryComponent } from '../over-commentary/over-commentary.comp
   standalone: true
 })
 export class BallByBallCommentaryComponent implements OnChanges, OnDestroy {
-  @Input() inningsNumber: 1 | 2 = 1;
+  @Input() battingInningsNumber: 1 | 2 | 3 | 4 = 1;
   @Input() teamNumber: 1 | 2 = 1;
   @Input() gameId: string = '';
 
@@ -23,7 +23,7 @@ export class BallByBallCommentaryComponent implements OnChanges, OnDestroy {
   constructor(private matchService: MatchService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['inningsNumber'] || changes['teamNumber'] || changes['gameId']) {
+    if (changes['battingInningsNumber'] || changes['teamNumber'] || changes['gameId']) {
       this.subscribe();
     }
   }
@@ -39,7 +39,7 @@ export class BallByBallCommentaryComponent implements OnChanges, OnDestroy {
   private subscribe() {
     this.subscription?.unsubscribe();
     this.subscription = this.matchService
-      .getBallByBallCommentaryUpdates(this.gameId, this.inningsNumber, this.teamNumber)
+      .getBallByBallCommentaryUpdates(this.gameId, this.battingInningsNumber)
       .subscribe(commentary => {
         this.commentary = commentary;
       });

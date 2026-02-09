@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ToasterComponent } from './components/toaster/toaster.component';
+import { NotificationMonitorService } from './services/notification-monitor.service';
 
 
 @Component({
@@ -23,6 +24,6 @@ export class AppComponent {
 
   title = 'SportsBallPro';
 
-  constructor() { }
+  constructor(private notificationMonitorService: NotificationMonitorService) { }
 
 }

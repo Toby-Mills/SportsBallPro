@@ -12,19 +12,20 @@ import { WebSportsAPIService } from '../../services/web-sports-api.service';
     standalone: true
 })
 export class TeamScoreComponent {
-  @Input() teamNumber: 1 | 2 = 1;
   @Input() gameId: string = '';
-  @Input() inningsNumber: 1 | 2 = 1;
+  @Input() battingInningsNumber: 1 | 2 | 3 | 4 = 1;
   @Input() isSelected: boolean = false;
-  @Output() cardClicked = new EventEmitter<string>();
+  @Output() cardClicked = new EventEmitter<1 | 2 | 3 | 4>();
   public teamScore: TeamScore = new TeamScore;
   public logoUrl: string = '';
+  public teamNumber: 1 | 2 = 1;
 
   constructor(private matchService: MatchService, private webSportsAPI: WebSportsAPIService) { }
 
   ngOnInit() {
-    this.matchService.getTeamScoreUpdates(this.gameId, this.inningsNumber, this.teamNumber).subscribe(
+    this.matchService.getTeamScoreUpdates(this.gameId, this.battingInningsNumber).subscribe(
       teamScore => {
+        this.teamNumber = this.battingInningsNumber % 2 === 1 ? 1 : 2
         this.teamScore = teamScore;
         this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);
       }
@@ -41,7 +42,6 @@ export class TeamScoreComponent {
   }
 
   public onCardClick(): void {
-    const battingInnings = `${this.inningsNumber}-${this.teamNumber}`;
-    this.cardClicked.emit(battingInnings);
+    this.cardClicked.emit(this.battingInningsNumber);
   }
 }

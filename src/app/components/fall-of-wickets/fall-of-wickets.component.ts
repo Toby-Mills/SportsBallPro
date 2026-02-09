@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
     standalone: true
 })
 export class FallOfWicketsComponent implements OnChanges, OnDestroy {
-  @Input() inningsNumber: 1 | 2 = 1;
+  @Input() battingInningsNumber: 1 | 2 | 3 | 4 = 1;
   @Input() teamNumber: 1 | 2 = 1;
   @Input() gameId: string = '';
   public fallOfWickets:FallOfWickets = new FallOfWickets;
@@ -21,7 +21,7 @@ export class FallOfWicketsComponent implements OnChanges, OnDestroy {
   constructor (public matchService: MatchService){}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['inningsNumber'] || changes['teamNumber'] || changes['gameId']) {
+    if (changes['battingInningsNumber'] || changes['gameId']) {
       this.subscribe();
     }
   }
@@ -32,7 +32,7 @@ export class FallOfWicketsComponent implements OnChanges, OnDestroy {
 
   private subscribe() {
     this.subscription?.unsubscribe();
-    this.subscription = this.matchService.getFallOfWicketsUpdates(this.gameId, this.inningsNumber, this.teamNumber).subscribe(
+    this.subscription = this.matchService.getFallOfWicketsUpdates(this.gameId, this.battingInningsNumber).subscribe(
       fallOfWickets => {
         this.fallOfWickets = fallOfWickets;
       }

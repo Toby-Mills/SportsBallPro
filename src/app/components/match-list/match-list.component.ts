@@ -2,18 +2,19 @@ import { Component, OnInit, OnDestroy, AfterViewInit, HostListener, ViewChild } 
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { WatchListService } from '../../services/watch-list.service';
 import { MatchDetailsComponent } from '../match-details/match-details.component';
 import { MatchKeyService } from '../../services/match-key.service';
 import { RefreshTimerComponent } from '../refresh-timer/refresh-timer.component';
 import { MatchService } from '../../services/match.service';
 import { ToasterMessageService } from '../../services/toaster-message.service';
+import { NotificationSettingsComponent } from '../notification-settings/notification-settings.component';
 
 @Component({
   selector: 'app-match-list',
   standalone: true,
-  imports: [CommonModule, MatchDetailsComponent, RefreshTimerComponent],
+  imports: [CommonModule, MatchDetailsComponent, RefreshTimerComponent, NotificationSettingsComponent],
   templateUrl: './match-list.component.html',
   styleUrl: './match-list.component.css'
 })
@@ -28,6 +29,14 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   visibleMatchCount = 2; // How many matches visible in carousel (responsive)
   private destroy$ = new Subject<void>();
   highlightedMatchId: string | null = null; // Track which match to highlight
+  
+  // Notification settings modal state
+  showNotificationSettings = false;
+  notificationSettingsGameId: string | null = null;
+  notificationSettingsTeamA: string | null = null;
+  notificationSettingsTeamB: string | null = null;
+  private fixtureSubscriptions = new Map<string, Subscription>();
+  private matchTeamNames = new Map<string, { teamA: string; teamB: string }>();
   
   @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
@@ -199,8 +208,6 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         this.highlightedMatchId = null;
       }, 2000);
-    } else {
-      console.log(`[MatchListComponent] GameId ${gameId} not found in watch list`);
     }
   }
 
@@ -254,6 +261,27 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  openNotificationSettings(gameId: string) {
+    console.log (`[MatchListComponent] Opening notification settings for gameId: ${gameId}`);
+    this.notificationSettingsGameId = gameId;
+    
+    // Get team names from cached data or subscribe to fixture
+    const cached = this.matchTeamNames.get(gameId);
+    if (cached) {
+      this.notificationSettingsTeamA = cached.teamA;
+      this.notificationSettingsTeamB = cached.teamB;
+    }
+    
+    this.showNotificationSettings = true;
+  }
+
+  closeNotificationSettings() {
+    this.showNotificationSettings = false;
+    this.notificationSettingsGameId = null;
+    this.notificationSettingsTeamA = null;
+    this.notificationSettingsTeamB = null;
+  }
+
   openFullScreen(gameId: string) {
     window.open(`/${this.area}/match/${gameId}`, '_blank');
   }
@@ -261,8 +289,6 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   public onRefreshTimer() {
     // Only refresh matches that are not complete
     const liveMatches = this.watchedMatches.filter(gameId => !this.matchService.isMatchComplete(gameId));
-    
-    console.log(`[MatchListComponent] Refreshing ${liveMatches.length} of ${this.watchedMatches.length} matches`);
     
     liveMatches.forEach(gameId => {
       this.matchService.reloadMatchData(gameId);
