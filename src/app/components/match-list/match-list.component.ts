@@ -262,7 +262,6 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   openNotificationSettings(gameId: string) {
-    console.log (`[MatchListComponent] Opening notification settings for gameId: ${gameId}`);
     this.notificationSettingsGameId = gameId;
     
     // Get team names from cached data or subscribe to fixture

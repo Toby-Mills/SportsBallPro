@@ -59,7 +59,6 @@ export class NotificationSettingsComponent implements OnInit, OnChanges {
 	) { }
 
 	ngOnInit(): void {
-		console.log(`[NotificationSettingsComponent] Initializing with gameId: ${this.gameId}`);
 		this.loadPreferences();
 		this.checkBrowserPermission();
 	}

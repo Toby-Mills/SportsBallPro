@@ -26,11 +26,9 @@ export class MatchRedirectComponent implements OnInit {
     if (matchKey && area) {
       // Decode the matchKey to get the actual gameId
       const gameId = this.matchKeyService.readKey(matchKey);
-      console.log(`[MatchRedirectComponent] Decoded matchKey ${matchKey} to gameId ${gameId}`);
       
       // Add to watch list (will only add if not already present)
       const added = this.watchListService.addMatch(area, gameId);
-      console.log(`[MatchRedirectComponent] Match added: ${added}, isWatching: ${this.watchListService.isWatching(area, gameId)}`);
       
       if (!added && !this.watchListService.isWatching(area, gameId)) {
         // Failed to add and not already watching - must be at limit
@@ -38,7 +36,6 @@ export class MatchRedirectComponent implements OnInit {
       }
       
       // Redirect to matches view, passing gameId to scroll to
-      console.log(`[MatchRedirectComponent] Navigating to matches with gameId: ${gameId}`);
       this.router.navigate([area, 'matches'], { state: { scrollToGameId: gameId } });
     }
   }

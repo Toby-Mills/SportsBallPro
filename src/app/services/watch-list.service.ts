@@ -31,8 +31,6 @@ export class WatchListService {
   addMatch(area: string, gameId: string): boolean {
     const list = this.watchListByArea.get(area) || [];
     
-    console.log(`[WatchListService] Adding match ${gameId} to ${area} area. Current count: ${list.length}`);
-    
     // Validate gameId - reject route names and invalid IDs
     if (!gameId || gameId === 'matches' || gameId === 'fixtures' || gameId === 'stats' || gameId.length < 6) {
       console.warn(`[WatchListService] Invalid gameId rejected: ${gameId}`);
@@ -41,7 +39,6 @@ export class WatchListService {
     
     // Check if already exists
     if (list.some(m => m.gameId === gameId)) {
-      console.log(`[WatchListService] Match ${gameId} already in watch list`);
       return false;
     }
     
@@ -59,7 +56,6 @@ export class WatchListService {
     this.watchListByArea.set(area, list);
     this.saveToStorage();
     this.watchListChanged$.next(area);
-    console.log(`[WatchListService] Match added successfully. New count: ${list.length}`);
     return true;
   }
 
@@ -105,7 +101,6 @@ export class WatchListService {
     );
     
     if (validList.length !== list.length) {
-      console.log(`[WatchListService] Cleaned ${list.length - validList.length} invalid entries from ${area}`);
       this.watchListByArea.set(area, validList);
       this.saveToStorage();
     }

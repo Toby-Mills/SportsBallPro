@@ -30,19 +30,15 @@ export class NotificationMonitorService implements OnDestroy {
 
   private refreshMonitoredMatches(): void {
     const watchList = new Set<string>(this.watchListService.getAllWatchedMatches());
-    console.log(`[NotificationMonitor] refreshMonitoredMatches called, watchList:`, Array.from(watchList));
 
     watchList.forEach(gameId => {
       if (this.monitoredMatches.has(gameId)) {
-        console.log(`[NotificationMonitor] Already monitoring gameId: ${gameId}`);
         return;
       }
 
-      console.log(`[NotificationMonitor] Starting to monitor gameId: ${gameId}`);
       const subscription = this.eventDetectionService
         .startMonitoring(gameId)
         .subscribe(event => {
-          console.log(`[NotificationMonitor] Received event for gameId: ${gameId}`, event.eventType, event.title);
           this.notificationService.sendNotification(event);
         });
 

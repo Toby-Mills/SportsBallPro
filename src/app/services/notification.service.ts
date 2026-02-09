@@ -30,10 +30,7 @@ export class NotificationService {
 	}
 
 	public sendNotification(event: NotificationEvent): void {
-		console.log(`[NotificationService] sendNotification called:`, event.eventType, event.title);
-
 		if (!this.preferencesService.shouldNotify(event, event.gameId)) {
-			console.log(`[NotificationService] Notification suppressed by preferences`);
 			return;
 		}
 
@@ -69,8 +66,6 @@ export class NotificationService {
 	}
 
 	private sendBrowserNotification(title: string, options: NotificationOptions): void {
-		console.log(`[NotificationService] Sending browser notification:`, title, options.body);
-
 		if (!this.canUseBrowserNotifications()) {
 			return;
 		}
@@ -84,8 +79,6 @@ export class NotificationService {
 	}
 
 	private sendInAppNotification(message: NotificationMessage): void {
-		console.log(`[NotificationService] Sending in-app notification:`, message.event.eventType, message.event.title);
-
 		const eventTypeLabel = message.event.eventType.replace(/_/g, ' ');
 		const body = message.event.description
 			? `${eventTypeLabel}: ${message.event.description}`

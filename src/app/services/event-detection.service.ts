@@ -22,14 +22,11 @@ export class EventDetectionService {
   constructor(private matchService: MatchService) {}
 
   startMonitoring(gameId: string): Observable<NotificationEvent> {
-    console.log(`[EventDetection] startMonitoring called for gameId: ${gameId}`);
     const existing = this.eventSubjects.get(gameId);
     if (existing) {
-      console.log(`[EventDetection] Returning existing subject for gameId: ${gameId}`);
       return existing.asObservable();
     }
 
-    console.log(`[EventDetection] Creating new subject for gameId: ${gameId}`);
     const subject = new Subject<NotificationEvent>();
     this.eventSubjects.set(gameId, subject);
 
@@ -40,7 +37,6 @@ export class EventDetectionService {
         .getTeamAScoreUpdates(gameId)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          console.log(`[EventDetection] TeamAScore pairwise received:`, { previous: previous.runs, current: current.runs });
           this.handleTeamScoreChange(gameId, previous, current, subject);
         })
     );
@@ -50,7 +46,6 @@ export class EventDetectionService {
         .getTeamBScoreUpdates(gameId)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          console.log(`[EventDetection] TeamBScore pairwise received:`, { previous: previous.runs, current: current.runs });
           this.handleTeamScoreChange(gameId, previous, current, subject);
         })
     );
@@ -94,7 +89,6 @@ export class EventDetectionService {
         .getBattingScorecardUpdates(gameId, 1)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          console.log(`[EventDetection] BattingScorecard(1,1) pairwise received:`, { prevBatters: previous.batters.length, currBatters: current.batters.length });
           this.handleBattingScorecardChange(gameId, previous, current, subject);
         })
     );
@@ -104,7 +98,6 @@ export class EventDetectionService {
         .getBattingScorecardUpdates(gameId, 2)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          console.log(`[EventDetection] BattingScorecard(1,2) pairwise received:`, { prevBatters: previous.batters.length, currBatters: current.batters.length });
           this.handleBattingScorecardChange(gameId, previous, current, subject);
         })
     );
@@ -114,7 +107,6 @@ export class EventDetectionService {
         .getBattingScorecardUpdates(gameId, 3)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          console.log(`[EventDetection] BattingScorecard(2,1) pairwise received:`, { prevBatters: previous.batters.length, currBatters: current.batters.length });
           this.handleBattingScorecardChange(gameId, previous, current, subject);
         })
     );
@@ -124,7 +116,6 @@ export class EventDetectionService {
         .getBattingScorecardUpdates(gameId, 4)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          console.log(`[EventDetection] BattingScorecard(2,2) pairwise received:`, { prevBatters: previous.batters.length, currBatters: current.batters.length });
           this.handleBattingScorecardChange(gameId, previous, current, subject);
         })
     );

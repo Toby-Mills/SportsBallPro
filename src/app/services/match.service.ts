@@ -255,7 +255,6 @@ export class MatchService {
   }
 
   public reloadMatchData(gameId: string) {
-    console.log(`[MatchService] reloadMatchData called for gameId: ${gameId}`);
     const match = this.getOrCreateMatch(gameId);
 
     this.loadFixture(gameId).pipe(
@@ -320,11 +319,9 @@ export class MatchService {
             this.getOrCreateSubject(this.statusSubjects, gameId, new Status()).next(match.status);
 
             match.teamAScore.loadFromAPI(updatedMatch);
-            console.log(`[MatchService] Emitting teamAScore:`, { runs: match.teamAScore.runs, wickets: match.teamAScore.wickets });
             this.getOrCreateSubject(this.teamAScoreSubjects, gameId, new TeamScore()).next(match.teamAScore.clone());
 
             match.teamBScore.loadFromAPI(updatedMatch);
-            console.log(`[MatchService] Emitting teamBScore:`, { runs: match.teamBScore.runs, wickets: match.teamBScore.wickets });
             this.getOrCreateSubject(this.teamBScoreSubjects, gameId, new TeamScore()).next(match.teamBScore.clone());
           }
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
@@ -446,10 +443,9 @@ export class MatchService {
         battingInnings.battingScorecard.addOnStrike(batsmen);
 
         // Check if innings has changed
-        if ((battingInningsNumber > match.status.currentBattingInnings) && battingInnings.currentBatters.batters.length > 0) {
-          console.log('Batting Innings change detected, updating current innings in status');
+        if ((battingInningsNumber > match.status.currentBattingInnings) && batsmen.batsmen.length > 0) {
           this.matches.get(gameId)!.status.currentBattingInnings = battingInningsNumber;
-          this.getOrCreateSubject(this.battingInningsChangeSubjects, gameId, 1 as 1 | 2 | 3 | 4).next(match.status.currentBattingInnings);
+          this.getOrCreateSubject(this.battingInningsChangeSubjects, gameId, battingInningsNumber).next(match.status.currentBattingInnings);
         }
 
       }), catchError((error: HttpErrorResponse) => this.handleError(error))

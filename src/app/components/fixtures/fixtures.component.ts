@@ -49,11 +49,9 @@ export class FixturesComponent implements OnInit {
     // Toggle: if already watching, remove it; otherwise add it
     if (this.watchList.isWatching(this.area, gameId)) {
       this.watchList.removeMatch(this.area, gameId);
-      console.log(`Match ${gameId} removed from ${this.area} watch list`);
     } else {
       const added = this.watchList.addMatch(this.area, gameId);
       if (added) {
-        console.log(`Match ${gameId} added to ${this.area} watch list`);
       } else {
         this.toasterMessage.showMessage('Cannot add more than 10 matches to watch list', 'error');
       }
@@ -68,7 +66,6 @@ export class FixturesComponent implements OnInit {
     if (Id) {
       this.gameId = Id;;
       this.key = this.matchKey.generateKey(this.gameId);
-      console.log('baseHref', `${environment.baseHref}`);
       //this.url = `${this.baseHref}match/${this.key}`;
       this.url = `${environment.baseHref}/match/${this.key}`
     } else {

@@ -16,27 +16,27 @@ import { MatchService } from '../../services/match.service';
 import { ToasterMessageService } from '../../services/toaster-message.service';
 
 @Component({
-    selector: 'app-match-details',
-    imports: [
-        CommonModule,
-        FormsModule,
-        TeamScoreComponent,
-        RecentBallsComponent,
-        FallOfWicketsComponent,
-        BattingScorecardComponent,
-        BowlingScorecardComponent,
-        RunComparisonComponent,
-        BallByBallCommentaryComponent
-    ],
-    providers: [HttpClient,],
-    templateUrl: './match-details.component.html',
-    styleUrl: './match-details.component.css',
-    standalone: true
+  selector: 'app-match-details',
+  imports: [
+    CommonModule,
+    FormsModule,
+    TeamScoreComponent,
+    RecentBallsComponent,
+    FallOfWicketsComponent,
+    BattingScorecardComponent,
+    BowlingScorecardComponent,
+    RunComparisonComponent,
+    BallByBallCommentaryComponent
+  ],
+  providers: [HttpClient,],
+  templateUrl: './match-details.component.html',
+  styleUrl: './match-details.component.css',
+  standalone: true
 })
 export class MatchDetailsComponent {
   @Input() gameId?: string; // Optional: pass gameId directly for modal usage
   @Input() showWakeLock: boolean = true;
-  
+
   public parameterGameKey = this.route.snapshot.paramMap.get('id');
 
   title = 'SportsBallPro';
@@ -73,7 +73,7 @@ export class MatchDetailsComponent {
     if (this.actualGameId) {
       // Note: Not subscribing to getInningsChangeUpdates because detectSecondInnings
       // handles the auto-selection logic correctly for both single and multi-innings matches
-      
+
       this.matchService.getFixtureUpdates(this.actualGameId).subscribe(
         fixture => {
           this.fixture = fixture;
@@ -81,7 +81,18 @@ export class MatchDetailsComponent {
       )
       this.matchService.getStatusUpdates(this.actualGameId).subscribe(
         status => {
+          if (this.status.currentBattingInnings !== status.currentBattingInnings) {
+            this.autoSelectInnings();
+          }
           this.status = status;
+        }
+      )
+
+      // Check if second innings exists by looking for lineup data in battingInnings 3 (innings 2, team 1
+      this.matchService.getBattingLineupUpdates(this.actualGameId, 3).subscribe(
+        lineup => {
+          const hadSecondInnings = this.hasSecondInnings;
+          this.hasSecondInnings = lineup.lineup.length > 0;
         }
       )
 
@@ -94,7 +105,7 @@ export class MatchDetailsComponent {
    * Auto-select the appropriate innings to view based on match status
    */
   private autoSelectInnings() {
-        this.viewingBattingInnings = this.status.currentBattingInnings;
+    this.viewingBattingInnings = this.status.currentBattingInnings;
   }
 
   ngAfterViewInit() {
