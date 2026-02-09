@@ -421,9 +421,8 @@ export class MatchService {
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
     const key = this.getGameBattingInningsKey(gameId, battingInningsNumber);
     const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber);
-    const matchInningsNumber = this.getMatchInningsFromBattingInningsNumber(battingInningsNumber);
 
-    return this.webSportsApi.getBallCountdown(gameId, teamId, matchInningsNumber).pipe(
+    return this.webSportsApi.getBallCountdown(gameId, teamId, battingInningsNumber).pipe(
       map(ballCountdown => {
         battingInnings.recentOvers.loadFromAPI(ballCountdown);
         this.getOrCreateSubject(this.recentOversSubjects, key, new RecentBalls()).next(battingInnings.recentOvers);
