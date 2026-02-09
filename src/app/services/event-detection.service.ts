@@ -55,7 +55,7 @@ export class EventDetectionService {
         .getBattingInningsChangeUpdates(gameId)
         .subscribe((battingInningsNumber) => {
 			const fixture = this.fixturesByGameId.get(gameId);
-			const teamName = battingInningsNumber % 2 === 1 ? fixture?.teamBName : fixture?.teamAName;
+			const teamName = battingInningsNumber % 2 === 1 ? fixture?.teamAName : fixture?.teamBName;
 			const message = teamName ?
 			  `${teamName} batting innings started`
               : 'Batting innings started';

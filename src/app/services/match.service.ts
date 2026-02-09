@@ -445,7 +445,7 @@ export class MatchService {
         // Check if innings has changed
         if ((battingInningsNumber > match.status.currentBattingInnings) && batsmen.batsmen.length > 0) {
           this.matches.get(gameId)!.status.currentBattingInnings = battingInningsNumber;
-          this.getOrCreateSubject(this.battingInningsChangeSubjects, gameId, battingInningsNumber).next(match.status.currentBattingInnings);
+          this.getOrCreateSubject(this.battingInningsChangeSubjects, gameId, battingInningsNumber).next(battingInningsNumber);
         }
 
       }), catchError((error: HttpErrorResponse) => this.handleError(error))

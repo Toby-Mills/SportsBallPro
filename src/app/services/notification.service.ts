@@ -81,7 +81,7 @@ export class NotificationService {
 	private sendInAppNotification(message: NotificationMessage): void {
 		const eventTypeLabel = message.event.eventType.replace(/_/g, ' ');
 		const body = message.event.description
-			? `${eventTypeLabel}: ${message.event.description}`
+			? `${message.event.description}`
 			: eventTypeLabel;
 		const matchTitle = this.matchTitles.get(message.event.gameId);
 		this.toasterMessage.showMessage(
