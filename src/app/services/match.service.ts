@@ -50,9 +50,13 @@ export class MatchService {
     return battingInningsNumber % 2 === 1 ? 1 : 2;
   }
 
-  private getTeamIdFromBattingInningsNumber(match: Match, battingInningsNumber: 1 | 2 | 3 | 4): string { 
+  private getTeamIdFromBattingInningsNumber(match: Match, battingInningsNumber: 1 | 2 | 3 | 4, teamRole: 'batting' | 'bowling'  ): string { 
     const teamNumber = this.getTeamNumberFromBattingInningsNumber(battingInningsNumber);
-    return teamNumber === 1 ? match.fixture.teamAId : match.fixture.teamBId;
+    if (teamRole === 'batting') {
+      return teamNumber === 1 ? match.fixture.teamAId : match.fixture.teamBId;
+    } else {
+      return teamNumber === 1 ? match.fixture.teamBId : match.fixture.teamAId;
+    }
   }
 
   /**
@@ -396,10 +400,11 @@ export class MatchService {
     const match = this.getOrCreateMatch(gameId);
     const key = this.getGameBattingInningsKey(gameId, battingInningsNumber);
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
-    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber);
+
     const matchInningsNumber = this.getMatchInningsFromBattingInningsNumber(battingInningsNumber);
 
     if (type == 'Batting') {
+          const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber, 'batting');
       return this.webSportsApi.getBattingLineup(gameId, teamId, matchInningsNumber).pipe(
         map(lineup => {
           match.loadLineupFromAPI('Batting', battingInningsNumber, lineup);
@@ -407,6 +412,7 @@ export class MatchService {
         }), catchError((error: HttpErrorResponse) => this.handleError(error))
       )
     } else {
+          const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber, 'bowling');
       return this.webSportsApi.getBowlingLineup(gameId, teamId, matchInningsNumber).pipe(
         map(lineup => {
           match.loadLineupFromAPI('Bowling', battingInningsNumber, lineup);
@@ -420,7 +426,7 @@ export class MatchService {
     const match = this.getOrCreateMatch(gameId);
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
     const key = this.getGameBattingInningsKey(gameId, battingInningsNumber);
-    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber);
+    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber, 'batting');
 
     return this.webSportsApi.getBallCountdown(gameId, teamId, battingInningsNumber).pipe(
       map(ballCountdown => {
@@ -433,7 +439,7 @@ export class MatchService {
   private loadCurrentBatters(gameId: string, battingInningsNumber: 1 | 2 | 3 | 4): Observable<any> {
     const match = this.getOrCreateMatch(gameId);
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
-    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber);
+    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber, 'batting');
     const matchInningsNumber = this.getMatchInningsFromBattingInningsNumber(battingInningsNumber);
 
     return this.webSportsApi.getBatsmen(gameId, teamId, matchInningsNumber).pipe(
@@ -455,7 +461,7 @@ export class MatchService {
     const match = this.getOrCreateMatch(gameId);
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
     const key = this.getGameBattingInningsKey(gameId, battingInningsNumber);
-    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber);
+    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber, 'batting');
     const matchInningsNumber = this.getMatchInningsFromBattingInningsNumber(battingInningsNumber);
 
     return this.webSportsApi.getFallOfWickets(gameId, teamId, matchInningsNumber).pipe(
@@ -470,10 +476,9 @@ export class MatchService {
     const match = this.getOrCreateMatch(gameId);
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
     const key = this.getGameBattingInningsKey(gameId, battingInningsNumber);
-    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber);
-    const matchInningsNumber = this.getMatchInningsFromBattingInningsNumber(battingInningsNumber);
+    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber, 'batting');
 
-    return this.webSportsApi.getCommentary(gameId, teamId, matchInningsNumber).pipe(
+    return this.webSportsApi.getCommentary(gameId, teamId, battingInningsNumber).pipe(
       map(commentary => {
         battingInnings.ballByBallCommentary.loadFromAPI(commentary);
         this.getOrCreateSubject(this.ballByBallCommentarySubjects, key, new BallByBallCommentary()).next(battingInnings.ballByBallCommentary.clone());
@@ -489,7 +494,7 @@ export class MatchService {
     const match = this.getOrCreateMatch(gameId);
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
     const key = this.getGameBattingInningsKey(gameId, battingInningsNumber);
-    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber);
+    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber, 'batting');
     const matchInningsNumber = this.getMatchInningsFromBattingInningsNumber(battingInningsNumber);
 
     return this.webSportsApi.getBattingScorecard(gameId, teamId, matchInningsNumber).pipe(
@@ -504,7 +509,7 @@ export class MatchService {
     const match = this.getOrCreateMatch(gameId);
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
     const key = this.getGameBattingInningsKey(gameId, battingInningsNumber);
-    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber);
+    const teamId = this.getTeamIdFromBattingInningsNumber(match, battingInningsNumber, 'bowling');
     const matchInningsNumber = this.getMatchInningsFromBattingInningsNumber(battingInningsNumber);
 
     return this.webSportsApi.getBowlingScorecard(gameId, teamId, matchInningsNumber).pipe(
@@ -519,8 +524,9 @@ export class MatchService {
   private loadCurrentBowlers(gameId: string,  battingInningsNumber: 1 | 2 | 3 | 4): Observable<any> {
     const match = this.getOrCreateMatch(gameId);
     const battingInnings = match.battingInnings[battingInningsNumber - 1];
+     const matchInningsNumber = this.getMatchInningsFromBattingInningsNumber(battingInningsNumber);
 
-    return this.webSportsApi.getCurrentBowlers(gameId, battingInningsNumber).pipe(
+    return this.webSportsApi.getCurrentBowlers(gameId, matchInningsNumber).pipe(
       map(bowling => {
         battingInnings.currentBowlers.loadFromAPI(bowling);
       }), catchError((error: HttpErrorResponse) => this.handleError(error))

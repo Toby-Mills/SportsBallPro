@@ -62,8 +62,8 @@ export class WebSportsAPIService {
     return this.http.get<any>(url, {})
   }
 
-  public getCurrentBowlers(gameId: string, battingInnings: 1 | 2 | 3 | 4): Observable<BowlersAPI> {
-    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${gameId}/${battingInnings}`;
+  public getCurrentBowlers(gameId: string, matchInnings: 1 | 2): Observable<BowlersAPI> {
+    const url = `https://www.websports.co.za/api/live/fixture/bowlers/${gameId}/${matchInnings}`;
     return this.http.get<any>(url, {})
   }
 
