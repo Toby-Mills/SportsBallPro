@@ -40,6 +40,7 @@ export class BallByBallCommentary {
         over.overNumber = overIndex + 1;
         // Keep newest-first order within the over
         over.balls = balls;
+        over.balls.sort((a, b) => b.eventId - a.eventId);
         this.overs.push(over);
       });
 
