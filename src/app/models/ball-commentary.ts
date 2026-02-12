@@ -118,11 +118,14 @@ export class BallCommentary {
   }
 
   get isExtra(): boolean {
-    return ['WB', 'NB', 'LB'].some(extra => this.description.includes(extra));
+    return ['WB', 'NB', 'LB', 'B'].some(extra => this.description.includes(extra));
   }
 
   get runs(): number {
-    const num = parseInt(this.description, 10);
-    return Number.isNaN(num) ? 0 : num;
+    // Extract leading numeric value from description (e.g., "2" from "2LB", "4" from "4", "0" from "0", "0" from "WB")
+    const match = this.description.match(/^(\d+)/);
+    const numericValue = match ? parseInt(match[1], 10) : 0;
+    const extraValue =  ['WB', 'NB'].reduce((sum, extra) => this.description.includes(extra) ? sum + 1 : sum, 0);
+    return numericValue + extraValue;
   }
 }
