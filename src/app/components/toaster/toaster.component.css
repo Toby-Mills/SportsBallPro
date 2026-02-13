@@ -7,6 +7,7 @@
 	flex-direction: column;
 	gap: 8px;
 	align-items: flex-end;
+	pointer-events: none;
 }
 
 .toaster {
@@ -23,6 +24,7 @@
 	position: relative;
 	padding-right: 32px;
 	border-left: 3px solid #666;
+	pointer-events: auto;
 }
 
 .toaster-title {
