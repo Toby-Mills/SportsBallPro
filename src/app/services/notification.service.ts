@@ -30,32 +30,33 @@ export class NotificationService {
 	}
 
 	public sendNotification(event: NotificationEvent): void {
-		if (!this.preferencesService.shouldNotify(event, event.gameId)) {
+		const shouldNotify = this.preferencesService.shouldNotify(event, event.gameId);
+		if (!shouldNotify) {
 			return;
 		}
 
 		this.ensureFixtureSubscription(event.gameId);
+		const matchTitle = this.matchTitles.get(event.gameId) ?? event.title;
 
 		const globalPreferences = this.preferencesService.getGlobalPreferences();
 
-		if (!this.isInBackground()) {
-			this.sendInAppNotification({
-				id: event.id,
-				event,
-				read: false,
-				dismissed: false,
-				createdAt: new Date()
-			});
-		} else if (
+		this.sendInAppNotification({
+			id: event.id,
+			event,
+			read: false,
+			dismissed: false,
+			createdAt: new Date()
+		});
+
+		if (
 			this.canUseBrowserNotifications() &&
 			this.isInBackground() &&
 			Notification.permission === 'granted'
 		) {
-			this.sendBrowserNotification(event.title, {
+			this.sendBrowserNotification(matchTitle, {
 				body: event.description,
 				tag: `${event.gameId}-${event.eventType}`
 			});
-			return;
 		}
 
 
@@ -69,7 +70,6 @@ export class NotificationService {
 		if (!this.canUseBrowserNotifications()) {
 			return;
 		}
-
 		const notification = new Notification(title, options);
 		notification.onclick = () => {
 			if (typeof window !== 'undefined') {
