@@ -3,6 +3,7 @@ import { EventType } from './notification-event';
 export interface GlobalNotificationPreferences {
 	enabled: boolean; // Master switch for all notifications
 	soundEnabled: boolean;
+	browserNotificationsEnabled: boolean;
 }
 
 export interface MatchNotificationPreferences {

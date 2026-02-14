@@ -16,7 +16,7 @@
 						(ngModelChange)="onGlobalEnabledChange()">
 					<span class="toggle-text">Enable notifications</span>
 				</label>
-				<span class="setting-description">Master switch for all match notifications</span>
+				<span class="setting-description">Enable notifications for all selected matches</span>
 			</div>
 
 			<div class="setting-row" [class.disabled]="!globalPreferences.enabled">
@@ -30,34 +30,60 @@
 				</label>
 				<span class="setting-description">Play a sound for notifications</span>
 			</div>
-		</section>
 
-		<!-- Browser Notifications Section -->
-		<section class="settings-section">
-			<h3 class="section-title">Browser Notifications</h3>
-			
-			<div class="browser-permission">
-				<ng-container *ngIf="canRequestPermission">
-					<p class="permission-text">Get notifications even when the tab is in the background</p>
-					<button class="permission-btn" (click)="requestBrowserPermission()">
-						<span class="material-icons">notifications</span>
-						Enable Browser Notifications
-					</button>
-				</ng-container>
+			<div class="setting-row" [class.disabled]="!globalPreferences.enabled">
+				<span class="setting-label">Browser notifications</span>
+				<label class="toggle-label">
+					<input
+						type="checkbox"
+						[(ngModel)]="globalPreferences.browserNotificationsEnabled"
+						(ngModelChange)="onBrowserNotificationsChange()"
+						[disabled]="!globalPreferences.enabled">
+					<span class="toggle-text">Enable browser notifications</span>
+				</label>
+				<span class="setting-description">Show OS notifications when the tab is in the background</span>
+				<div
+					class="browser-permission"
+					[class.disabled]="!globalPreferences.enabled || !globalPreferences.browserNotificationsEnabled">
+					<ng-container *ngIf="!globalPreferences.enabled">
+						<p class="permission-disabled">
+							Browser notifications are disabled while global notifications are off.
+						</p>
+					</ng-container>
 
-				<ng-container *ngIf="hasPermission">
-					<p class="permission-granted">
-						<span class="material-icons">check_circle</span>
-						Browser notifications enabled
-					</p>
-				</ng-container>
+					<ng-container *ngIf="globalPreferences.enabled && !globalPreferences.browserNotificationsEnabled">
+						<p class="permission-disabled">
+							Browser notifications are turned off in settings.
+						</p>
+					</ng-container>
 
-				<ng-container *ngIf="permissionDenied">
-					<p class="permission-denied">
-						<span class="material-icons">block</span>
-						Browser notifications blocked. Update your browser settings to enable them.
-					</p>
-				</ng-container>
+					<ng-container *ngIf="globalPreferences.enabled && globalPreferences.browserNotificationsEnabled">
+						<ng-container *ngIf="canRequestPermission">
+							<p class="permission-text">Get notifications even when the tab is in the background</p>
+							<button
+								class="permission-btn"
+								(click)="requestBrowserPermission()"
+								[disabled]="!globalPreferences.enabled || !globalPreferences.browserNotificationsEnabled">
+								<span class="material-icons">notifications</span>
+								Enable Browser Notifications
+							</button>
+						</ng-container>
+
+						<ng-container *ngIf="hasPermission">
+							<p class="permission-granted">
+								<span class="material-icons">check_circle</span>
+								Browser notifications enabled
+							</p>
+						</ng-container>
+
+						<ng-container *ngIf="permissionDenied">
+							<p class="permission-denied">
+								<span class="material-icons">block</span>
+								Browser notifications blocked. Update your browser settings to enable them.
+							</p>
+						</ng-container>
+					</ng-container>
+				</div>
 			</div>
 		</section>
 
@@ -65,12 +91,12 @@
 		<section class="settings-section" *ngIf="gameId">
 			<h3 class="section-title">This Match</h3>
 
-			<div class="setting-row">
+			<div class="setting-row" [class.disabled]="!globalPreferences.enabled">
 				<label class="toggle-label">
 					<input 
 						type="checkbox" 
-						[(ngModel)]="matchPreferences.enabled"
-						(ngModelChange)="onMatchEnabledChange()"
+						[checked]="globalPreferences.enabled && matchPreferences.enabled"
+						(change)="onMatchEnabledChange($any($event.target).checked)"
 						[disabled]="!globalPreferences.enabled">
 					<span class="toggle-text">Enable for this match</span>
 				</label>

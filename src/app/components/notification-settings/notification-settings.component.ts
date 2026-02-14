@@ -32,7 +32,8 @@ export class NotificationSettingsComponent implements OnInit, OnChanges {
 
 	globalPreferences: GlobalNotificationPreferences = {
 		enabled: true,
-		soundEnabled: false
+		soundEnabled: false,
+		browserNotificationsEnabled: true
 	};
 
 	matchPreferences: MatchNotificationPreferences = {
@@ -85,7 +86,12 @@ export class NotificationSettingsComponent implements OnInit, OnChanges {
 		this.saveGlobalPreferences();
 	}
 
-	onMatchEnabledChange(): void {
+	onBrowserNotificationsChange(): void {
+		this.saveGlobalPreferences();
+	}
+
+	onMatchEnabledChange(enabled: boolean): void {
+		this.matchPreferences.enabled = enabled;
 		this.saveMatchPreferences();
 	}
 

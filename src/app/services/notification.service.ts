@@ -49,6 +49,7 @@ export class NotificationService {
 		});
 
 		if (
+			globalPreferences.browserNotificationsEnabled &&
 			this.canUseBrowserNotifications() &&
 			this.isInBackground() &&
 			Notification.permission === 'granted'

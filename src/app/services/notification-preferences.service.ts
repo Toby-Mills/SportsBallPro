@@ -69,6 +69,7 @@ export class NotificationPreferencesService {
 		return {
 			enabled: true,
 			soundEnabled: false,
+			browserNotificationsEnabled: true,
 		};
 	}
 
@@ -83,6 +84,9 @@ export class NotificationPreferencesService {
 		return {
 			enabled: !!prefs.enabled,
 			soundEnabled: !!prefs.soundEnabled,
+			browserNotificationsEnabled: typeof prefs.browserNotificationsEnabled === 'boolean'
+				? prefs.browserNotificationsEnabled
+				: true,
 		};
 	}
 
