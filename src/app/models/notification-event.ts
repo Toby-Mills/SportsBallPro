@@ -5,6 +5,7 @@ export enum EventType {
   MILESTONE_PARTNERSHIP = 'milestone_partnership',
   MILESTONE_TEAM = 'milestone_team',
   MAIDEN_OVER = 'maiden_over',
+  WICKET_MAIDEN = 'wicket_maiden',
   HAT_TRICK = 'hat_trick',
   BOUNDARY = 'boundary',
   INNINGS_CHANGE = 'innings_change',

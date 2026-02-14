@@ -49,6 +49,7 @@ export class NotificationSettingsComponent implements OnInit, OnChanges {
 		{ type: EventType.MILESTONE_PARTNERSHIP, label: 'Partnership Milestones', description: 'Partnership reaches 50, 100, etc.' },
 		{ type: EventType.MILESTONE_TEAM, label: 'Team Milestones', description: 'Team reaches 100, 200, etc.' },
 		{ type: EventType.MAIDEN_OVER, label: 'Maiden Overs', description: 'Bowler completes a maiden over' },
+		{ type: EventType.WICKET_MAIDEN, label: 'Wicket Maidens', description: 'Maiden over that includes a wicket' },
 		{ type: EventType.HAT_TRICK, label: 'Hat-tricks', description: 'Bowler takes three wickets in a row' },
 		{ type: EventType.INNINGS_CHANGE, label: 'Innings Changes', description: 'When an innings ends' },
 		{ type: EventType.MATCH_STATUS, label: 'Match Status', description: 'Match result announcements' }

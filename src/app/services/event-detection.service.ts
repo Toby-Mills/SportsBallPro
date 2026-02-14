@@ -352,11 +352,19 @@ export class EventDetectionService {
         // Check if it's a maiden (0 runs conceded)
         if (over.totalRuns === 0) {
           const bowlerName = over.bowlerName || 'Bowler';
-          const title = `Maiden over by ${bowlerName}`;
-          const description = `${bowlerName} bowled a maiden over (over ${over.overNumber})`;
-          subject.next(
-            this.createEvent(gameId, EventType.MAIDEN_OVER, title, description, undefined, bowlerName)
-          );
+          if (over.hasWicket) {
+            const title = `Wicket maiden by ${bowlerName}`;
+            const description = `${bowlerName} bowled a wicket maiden (over ${over.overNumber})`;
+            subject.next(
+              this.createEvent(gameId, EventType.WICKET_MAIDEN, title, description, undefined, bowlerName)
+            );
+          } else {
+            const title = `Maiden over by ${bowlerName}`;
+            const description = `${bowlerName} bowled a maiden over (over ${over.overNumber})`;
+            subject.next(
+              this.createEvent(gameId, EventType.MAIDEN_OVER, title, description, undefined, bowlerName)
+            );
+          }
         }
       }
     });
