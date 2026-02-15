@@ -11,23 +11,26 @@
 	background-color: rgba(32, 32, 32, 0.35);
 	padding: 8px;
 	border-radius: 8px;
+	max-width: calc(100vw - 40px);
+	box-sizing: border-box;
 }
 
 .toaster-actions {
 	width: 100%;
 	display: flex;
-	justify-content: flex-end;
+	justify-content: center;
 	pointer-events: auto;
 }
 
 .toaster-clear {
-	background: #ffffff;
+	background: #2196f3;
 	border: 1px solid #d5d5d5;
 	border-radius: 6px;
-	color: #444;
+	color: #ffffff;
 	font-size: 12px;
 	padding: 4px 8px;
 	cursor: pointer;
+	width: 60%;
 }
 
 .toaster-clear:hover {
@@ -42,10 +45,9 @@
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 	font-size: 14px;
 	opacity: 1;
-	transition: opacity 0.5s ease-in-out;
-	width: min(90vw, 360px);
-	max-width: min(90vw, 360px);
-	cursor: pointer;
+	transition: height 0.5s ease-out, opacity 0.5s ease-out, margin 0.5s ease-out, padding 0.5s ease-out;
+	width: 100%;
+	max-width: 360px;
 	position: relative;
 	padding-right: 32px;
 	border-left: 3px solid #666;
@@ -53,6 +55,8 @@
 	display: flex;
 	align-items: flex-start;
 	gap: 12px;
+	box-sizing: border-box;
+	overflow: hidden;
 }
 
 .toaster-content {

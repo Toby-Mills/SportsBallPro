@@ -1,14 +1,19 @@
 <div class="toaster-container" *ngIf="messages.length > 0">
 	<div class="toaster-actions">
 		<button class="toaster-clear" type="button" (click)="clearAll()">
-			Clear all
+			Clear all Notifications
 		</button>
 	</div>
 	<div
 		class="toaster"
+		#toastElement
+		[attr.data-id]="toast.id"
 		*ngFor="let toast of messages"
 		[ngClass]="toast.type"
-		(click)="toast.dismissible ? dismissMessage(toast.id) : null"
+		(touchstart)="onTouchStart($event, toast.id)"
+		(touchmove)="onTouchMove($event, toast.id)"
+		(touchend)="onTouchEnd(toast.id)"
+		[ngStyle]="getToastStyle(toast.id)"
 	>
 		<div class="toaster-content">
 			<img
