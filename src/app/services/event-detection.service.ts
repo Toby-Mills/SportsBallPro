@@ -226,19 +226,6 @@ export class EventDetectionService {
       return;
     }
 
-    if (current.wickets > previous.wickets) {
-      const wicketsLost = current.wickets - previous.wickets;
-      const scoreline = `${current.runs}/${current.wickets} in ${current.overs} ov`;
-      const title = wicketsLost === 1
-        ? `${current.teamName} lost a wicket (${scoreline})`
-        : `${current.teamName} lost ${wicketsLost} wickets (${scoreline})`;
-      const description = `${current.teamName} lost a wicket (${scoreline})`;
-
-      subject.next(
-        this.createEvent(gameId, EventType.WICKET, title, description, current.teamName, undefined, current.wickets)
-      );
-    }
-
     const milestonesCrossed = this.getMilestonesCrossed(previous.runs, current.runs);
     if (milestonesCrossed.length > 0) {
       const milestone = Math.max(...milestonesCrossed);
@@ -335,6 +322,31 @@ export class EventDetectionService {
     current: BallByBallCommentary,
     subject: Subject<NotificationEvent>
   ): void {
+    // Build set of previous ball event IDs to identify new events
+    const previousEventIds = new Set<number>();
+    previous.overs.forEach(over => {
+      over.balls.forEach(ball => previousEventIds.add(ball.eventId));
+    });
+
+    // Detect new wickets from ball-by-ball commentary
+    current.overs.forEach(over => {
+      over.balls.forEach(ball => {
+        if (ball.isWicket && !previousEventIds.has(ball.eventId)) {
+          // Extract bowler, batter and dismissal from commentary (format: "BowlerName to BatterName: description")
+          const match = ball.commentary.match(/^(.+?)\s+to\s+(.+?):\s*(.+)$/);
+          const bowlerName = match ? match[1].trim() : 'Bowler';
+          const batterName = match ? match[2].trim() : 'Batter';
+          const dismissal = match ? match[3].trim() : 'dismissed';
+          
+          const title = `${batterName} dismissed by ${bowlerName} (${dismissal})`;
+          const description = `${batterName} dismissed by ${bowlerName} (${dismissal})`;
+          subject.next(
+            this.createEvent(gameId, EventType.WICKET, title, description, undefined, `${bowlerName} and ${batterName}`, 1)
+          );
+        }
+      });
+    });
+
     // Build map of previous overs by overIndex for comparison
     const previousOversMap = new Map<number, number>(); // overIndex -> legal ball count
     previous.overs.forEach(over => {
