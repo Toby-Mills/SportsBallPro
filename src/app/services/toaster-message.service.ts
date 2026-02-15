@@ -7,6 +7,7 @@ export interface ToastMessage {
   message: string;
   type: 'success' | 'error';
   dismissible: boolean;
+  iconPath?: string;
 }
 
 @Injectable({
@@ -24,14 +25,16 @@ export class ToasterMessageService {
     type: 'success' | 'error' = 'success',
     durationMs?: number,
     dismissible: boolean = true,
-    title?: string
+    title?: string,
+    iconPath?: string
   ): void {
     const toast: ToastMessage = {
       id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
       title,
       message,
       type,
-      dismissible
+      dismissible,
+      iconPath
     };
 
     this.messagesSubject.next([...this.messagesSubject.value, toast]);
@@ -44,5 +47,9 @@ export class ToasterMessageService {
 
   dismissMessage(id: string): void {
     this.messagesSubject.next(this.messagesSubject.value.filter(msg => msg.id !== id));
+  }
+
+  clearAll(): void {
+    this.messagesSubject.next([]);
   }
 }

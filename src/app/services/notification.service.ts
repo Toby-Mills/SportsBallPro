@@ -14,6 +14,17 @@ export class NotificationService {
 	private readonly eventNotificationDurationMs = 5 * 60 * 1000;
 	private fixtureSubscriptions = new Map<string, Subscription>();
 	private matchTitles = new Map<string, string>();
+	private readonly eventIconMap = new Map<string, string>([
+		['wicket', 'assets/event icons/wicket.png'],
+		['milestone_batsman', 'assets/event icons/milestone_batter.png'],
+		['milestone_partnership', 'assets/event icons/milestone_partnership.png'],
+		['milestone_team', 'assets/event icons/milestone_team.png'],
+		['maiden_over', 'assets/event icons/maiden.png'],
+		['wicket_maiden', 'assets/event icons/wicket_maiden.png'],
+		['hat_trick', 'assets/event icons/hat_trick.png'],
+		['innings_change', 'assets/event icons/innings_change.png'],
+		['match_status', 'assets/event icons/status_update.png'],
+	]);
 
 	constructor(
 		private matchService: MatchService,
@@ -85,12 +96,14 @@ export class NotificationService {
 			? `${message.event.description}`
 			: eventTypeLabel;
 		const matchTitle = this.matchTitles.get(message.event.gameId);
+		const iconPath = this.eventIconMap.get(message.event.eventType);
 		this.toasterMessage.showMessage(
 			body || message.event.title,
 			'success',
 			this.eventNotificationDurationMs,
 			true,
-			matchTitle ?? message.event.title
+			matchTitle ?? message.event.title,
+			iconPath
 		);
 	}
 

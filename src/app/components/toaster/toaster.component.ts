@@ -23,4 +23,8 @@ export class ToasterComponent {
   dismissMessage(id: string): void {
     this.toasterService.dismissMessage(id);
   }
+
+  clearAll(): void {
+    this.toasterService.clearAll();
+  }
 }

@@ -44,15 +44,15 @@ export class NotificationSettingsComponent implements OnInit, OnChanges {
 	browserPermission: NotificationPermission = 'default';
 
 	readonly eventTypeOptions: EventTypeOption[] = [
-		{ type: EventType.WICKET, label: 'Wickets', description: 'When a batter gets out' },
+		{ type: EventType.WICKET, label: 'Wickets', description: 'When a batter goes out' },
 		{ type: EventType.MILESTONE_BATSMAN, label: 'Batter Milestones', description: '50s, 100s, 150s, 200s' },
 		{ type: EventType.MILESTONE_PARTNERSHIP, label: 'Partnership Milestones', description: 'Partnership reaches 50, 100, etc.' },
 		{ type: EventType.MILESTONE_TEAM, label: 'Team Milestones', description: 'Team reaches 100, 200, etc.' },
 		{ type: EventType.MAIDEN_OVER, label: 'Maiden Overs', description: 'Bowler completes a maiden over' },
-		{ type: EventType.WICKET_MAIDEN, label: 'Wicket Maidens', description: 'Maiden over that includes a wicket' },
+		{ type: EventType.WICKET_MAIDEN, label: 'Wicket Maidens', description: 'Maiden over that includes one or more wickets' },
 		{ type: EventType.HAT_TRICK, label: 'Hat-tricks', description: 'Bowler takes three wickets in a row' },
-		{ type: EventType.INNINGS_CHANGE, label: 'Innings Changes', description: 'When an innings ends' },
-		{ type: EventType.MATCH_STATUS, label: 'Match Status', description: 'Match result announcements' }
+		{ type: EventType.INNINGS_CHANGE, label: 'Innings Changes', description: 'When an innings starts' },
+		{ type: EventType.MATCH_STATUS, label: 'Match Status', description: 'Match status updates' }
 	];
 
 	constructor(

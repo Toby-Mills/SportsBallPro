@@ -1,12 +1,27 @@
 <div class="toaster-container" *ngIf="messages.length > 0">
+	<div class="toaster-actions">
+		<button class="toaster-clear" type="button" (click)="clearAll()">
+			Clear all
+		</button>
+	</div>
 	<div
 		class="toaster"
 		*ngFor="let toast of messages"
 		[ngClass]="toast.type"
 		(click)="toast.dismissible ? dismissMessage(toast.id) : null"
 	>
-		<p class="toaster-title" *ngIf="toast.title">{{ toast.title }}</p>
-		<p class="toaster-message">{{ toast.message }}</p>
+		<div class="toaster-content">
+			<img
+				*ngIf="toast.iconPath"
+				class="toaster-icon"
+				[src]="toast.iconPath"
+				alt="notification icon"
+			/>
+			<div class="toaster-text">
+				<p class="toaster-title" *ngIf="toast.title">{{ toast.title }}</p>
+				<p class="toaster-message">{{ toast.message }}</p>
+			</div>
+		</div>
 		<button
 			*ngIf="toast.dismissible"
 			class="toaster-dismiss"
