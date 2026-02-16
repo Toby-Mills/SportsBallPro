@@ -19,6 +19,7 @@ export class EventDetectionService {
   private eventCounter = 0;
   private fixturesByGameId = new Map<string, Fixture>();
   private inningsFirstEmission = new Map<string, Set<number>>();
+  private statusFirstEmission = new Set<string>();
 
   constructor(private matchService: MatchService) {}
 
@@ -202,6 +203,7 @@ export class EventDetectionService {
     }
 
     this.fixturesByGameId.delete(gameId);
+    this.statusFirstEmission.delete(gameId);
     this.inningsFirstEmission.delete(gameId);
   }
 
@@ -232,9 +234,17 @@ export class EventDetectionService {
     current: Status,
     subject: Subject<NotificationEvent>
   ): void {
-    if (previous && !previous.result && current.result && current.result !== 'Fixture') {
+    // Skip first emission for this gameId
+    const isFirstEmission = !this.statusFirstEmission.has(gameId);
+    if (isFirstEmission) {
+      this.statusFirstEmission.add(gameId);
+      return;
+    }
+
+    // Emit only when status actually changes, and it's not 'Fixture'
+    if (previous.result !== current.result && current.result && current.result !== 'Fixture') {
       subject.next(
-        this.createEvent(gameId, EventType.MATCH_STATUS, 'Match result', current.result)
+        this.createEvent(gameId, EventType.MATCH_STATUS, 'Match status', current.result)
       );
     }
   }
@@ -328,7 +338,6 @@ export class EventDetectionService {
 
     // Detect innings start: previous was empty, current has overs (but skip on first emission)
     if (!isFirstEmission && (!previous.overs || previous.overs.length === 0) && current.overs && current.overs.length > 0) {
-      console.log(`[Event Detection] Innings ${inningNumber} started!`);
       const fixture = this.fixturesByGameId.get(gameId);
       const teamName = inningNumber % 2 === 1 ? fixture?.teamAName : fixture?.teamBName;
       const message = teamName ? `${teamName} batting innings started` : 'Batting innings started';
