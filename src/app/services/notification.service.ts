@@ -100,7 +100,7 @@ export class NotificationService {
 		this.toasterMessage.showMessage(
 			body || message.event.title,
 			'success',
-			this.eventNotificationDurationMs,
+			0,
 			true,
 			matchTitle ?? message.event.title,
 			iconPath
