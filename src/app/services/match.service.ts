@@ -38,7 +38,6 @@ export class MatchService {
   private bowlingLineupSubjects = new Map<string, BehaviorSubject<PlayerLineup>>();
   private runComparisonSubjects = new Map<string, BehaviorSubject<RunComparison>>();
   private wagonWheelSubjects = new Map<string, BehaviorSubject<WagonWheel>>();
-  private battingInningsChangeSubjects = new Map<string, BehaviorSubject<1 | 2 | 3 | 4>>();
 
   constructor(public webSportsApi: WebSportsAPIService, private toasterMessage: ToasterMessageService) { }
 
@@ -141,10 +140,6 @@ export class MatchService {
     return this.getOrCreateSubject(this.wagonWheelSubjects, gameId, new WagonWheel()).asObservable();
   }
 
-  getBattingInningsChangeUpdates(gameId: string): Observable<1 | 2 | 3 | 4> {
-    return this.getOrCreateSubject(this.battingInningsChangeSubjects, gameId, 1 as 1 | 2 | 3 | 4).asObservable();
-  }
-
   /**
    * Helper to get or create a BehaviorSubject for a specific gameId
    */
@@ -219,7 +214,6 @@ export class MatchService {
     this.getOrCreateSubject(this.teamBScoreSubjects, gameId, new TeamScore()).next(match.teamBScore);
     this.getOrCreateSubject(this.runComparisonSubjects, gameId, new RunComparison()).next(match.runComparison);
     this.getOrCreateSubject(this.wagonWheelSubjects, gameId, new WagonWheel()).next(match.wagonWheel);
-    this.getOrCreateSubject(this.battingInningsChangeSubjects, gameId, 1 as 1 | 2 | 3 | 4).next(match.status.currentBattingInnings);
 
     // Emit batting innings specific data using loops
     for (let battingInningsNumber = 1; battingInningsNumber <= 4; battingInningsNumber++) {
@@ -446,13 +440,6 @@ export class MatchService {
       map(batsmen => {
         battingInnings.currentBatters.loadFromAPI(batsmen);
         battingInnings.battingScorecard.addOnStrike(batsmen);
-
-        // Check if innings has changed
-        if ((battingInningsNumber > match.status.currentBattingInnings) && batsmen.batsmen.length > 0) {
-          this.matches.get(gameId)!.status.currentBattingInnings = battingInningsNumber;
-          this.getOrCreateSubject(this.battingInningsChangeSubjects, gameId, battingInningsNumber).next(battingInningsNumber);
-        }
-
       }), catchError((error: HttpErrorResponse) => this.handleError(error))
     );
   }

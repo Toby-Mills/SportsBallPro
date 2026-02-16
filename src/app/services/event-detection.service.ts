@@ -18,6 +18,7 @@ export class EventDetectionService {
   private subscriptions = new Map<string, Subscription>();
   private eventCounter = 0;
   private fixturesByGameId = new Map<string, Fixture>();
+  private inningsFirstEmission = new Map<string, Set<number>>();
 
   constructor(private matchService: MatchService) {}
 
@@ -49,21 +50,6 @@ export class EventDetectionService {
           this.handleTeamScoreChange(gameId, previous, current, subject);
         })
     );
-
-	subscription.add(
-      this.matchService
-        .getBattingInningsChangeUpdates(gameId)
-        .subscribe((battingInningsNumber) => {
-			const fixture = this.fixturesByGameId.get(gameId);
-			const teamName = battingInningsNumber % 2 === 1 ? fixture?.teamAName : fixture?.teamBName;
-			const message = teamName ?
-			  `${teamName} batting innings started`
-              : 'Batting innings started';
-		   subject.next(
-              this.createEvent(gameId, EventType.INNINGS_CHANGE, message, message, teamName)
-            );
-		})
-	);
 
     subscription.add(
       this.matchService
@@ -127,7 +113,7 @@ export class EventDetectionService {
         .getBallByBallCommentaryUpdates(gameId, 1)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          this.handleBallByBallCommentaryChange(gameId, previous, current, subject);
+          this.handleBallByBallCommentaryChange(gameId, previous, current, subject, 1);
         })
     );
 
@@ -136,7 +122,7 @@ export class EventDetectionService {
         .getBallByBallCommentaryUpdates(gameId, 2)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          this.handleBallByBallCommentaryChange(gameId, previous, current, subject);
+          this.handleBallByBallCommentaryChange(gameId, previous, current, subject, 2);
         })
     );
 
@@ -146,7 +132,7 @@ export class EventDetectionService {
         .getBallByBallCommentaryUpdates(gameId, 3)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          this.handleBallByBallCommentaryChange(gameId, previous, current, subject);
+          this.handleBallByBallCommentaryChange(gameId, previous, current, subject, 3);
         })
     );
 
@@ -155,7 +141,7 @@ export class EventDetectionService {
         .getBallByBallCommentaryUpdates(gameId, 4)
         .pipe(pairwise())
         .subscribe(([previous, current]) => {
-          this.handleBallByBallCommentaryChange(gameId, previous, current, subject);
+          this.handleBallByBallCommentaryChange(gameId, previous, current, subject, 4);
         })
     );
 
@@ -214,6 +200,9 @@ export class EventDetectionService {
       subject.complete();
       this.eventSubjects.delete(gameId);
     }
+
+    this.fixturesByGameId.delete(gameId);
+    this.inningsFirstEmission.delete(gameId);
   }
 
   private handleTeamScoreChange(
@@ -222,7 +211,7 @@ export class EventDetectionService {
     current: TeamScore,
     subject: Subject<NotificationEvent>
   ): void {
-    if (!current.teamName) {
+    if (!current.teamName || !previous.teamName) {
       return;
     }
 
@@ -243,7 +232,7 @@ export class EventDetectionService {
     current: Status,
     subject: Subject<NotificationEvent>
   ): void {
-    if (!previous.result && current.result && current.result !== 'Fixture') {
+    if (previous && !previous.result && current.result && current.result !== 'Fixture') {
       subject.next(
         this.createEvent(gameId, EventType.MATCH_STATUS, 'Match result', current.result)
       );
@@ -274,6 +263,10 @@ export class EventDetectionService {
     current: BattingScorecard,
     subject: Subject<NotificationEvent>
   ): void {
+    if (!previous.batters || previous.batters.length === 0) {
+      return;
+    }
+
     const previousRunsById = new Map<string, number>();
     previous.batters.forEach(batter => {
       if (batter.id) {
@@ -320,8 +313,38 @@ export class EventDetectionService {
     gameId: string,
     previous: BallByBallCommentary,
     current: BallByBallCommentary,
-    subject: Subject<NotificationEvent>
+    subject: Subject<NotificationEvent>,
+    inningNumber: number
   ): void {
+    // Track first emission for this inning to skip false innings-started events on initial pairwise() emit
+    if (!this.inningsFirstEmission.has(gameId)) {
+      this.inningsFirstEmission.set(gameId, new Set());
+    }
+    const seenInnings = this.inningsFirstEmission.get(gameId)!;
+    const isFirstEmission = !seenInnings.has(inningNumber);
+    if (isFirstEmission) {
+      seenInnings.add(inningNumber);
+    }
+
+    // Detect innings start: previous was empty, current has overs (but skip on first emission)
+    if (!isFirstEmission && (!previous.overs || previous.overs.length === 0) && current.overs && current.overs.length > 0) {
+      console.log(`[Event Detection] Innings ${inningNumber} started!`);
+      const fixture = this.fixturesByGameId.get(gameId);
+      const teamName = inningNumber % 2 === 1 ? fixture?.teamAName : fixture?.teamBName;
+      const message = teamName ? `${teamName} batting innings started` : 'Batting innings started';
+      subject.next(
+        this.createEvent(gameId, EventType.INNINGS_CHANGE, message, message, teamName)
+      );
+    }
+
+    // Skip further processing if previous was empty
+    if (!previous.overs || previous.overs.length === 0) {
+      return;
+    }
+    if (!previous.overs || previous.overs.length === 0) {
+      return;
+    }
+
     // Build set of previous ball event IDs to identify new events
     const previousEventIds = new Set<number>();
     previous.overs.forEach(over => {
@@ -381,12 +404,9 @@ export class EventDetectionService {
       }
     });
 
-    // TODO: Detect boundaries from commentary description (4 or 6)
-
     // Detect hat-trick: 3 consecutive wickets by the same bowler
     this.detectHatTrick(gameId, previous, current, subject);
 
-    // TODO: Parse commentary text for special events (catches, run outs, etc.)
   }
 
   private detectHatTrick(
@@ -459,6 +479,10 @@ export class EventDetectionService {
     current: Partnership[],
     subject: Subject<NotificationEvent>
   ): void {
+    if (!previous || previous.length === 0) {
+      return;
+    }
+
     // Build map of previous partnership runs by wicket number
     const previousRunsMap = new Map<number, number>();
     previous.forEach(p => previousRunsMap.set(p.wicketNumber, p.runs));
