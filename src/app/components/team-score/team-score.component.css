@@ -1,14 +1,19 @@
 .score {
     padding-left: 20px;
     padding-right: 20px;
+    box-sizing: border-box;
+    width: calc(100% - 5em - 40px);
 }
 
 .team-name {
     font-size: 1.6em;
+    overflow-wrap: anywhere;
 }
 
 .team-logo {
     height: 5em;
+    width: 5em;
+    object-fit: contain;
 }
 
 .a .score {
