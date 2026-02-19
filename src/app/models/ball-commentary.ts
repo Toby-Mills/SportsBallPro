@@ -6,7 +6,7 @@ export class BallByBallCommentary {
   innings: number = 0;
   overs: OverCommentary[] = [];
 
-    public loadFromAPI(input: CommentaryAPI): void {
+  public loadFromAPI(input: CommentaryAPI): void {
     this.overs = [];
 
     if (input.commentary) {
@@ -137,32 +137,11 @@ export class BallCommentary {
   }
 
   get runs(): number {
-    // Parse runs from description, handling extras like "WB", "2WB", "1NB", "LB", etc.
-    const desc = this.description;
-
-    // Try to extract leading number (e.g., "2WB" -> 2, "1NB" -> 1)
-    const leadingNum = parseInt(desc, 10);
-    const hasLeadingNumber = !Number.isNaN(leadingNum);
-
-    // Check for extras that add runs
-    const isWide = desc.includes('WB');
-    const isNoBall = desc.includes('NB');
-    const isLegBye = desc.includes('LB');
-    const isBye = desc.includes('B') && !isWide && !isNoBall && !isLegBye;
-
-    // Wide and no-ball always add at least 1 run for the extra itself
-    // Plus any additional runs scored (the leading number)
-    if (isWide || isNoBall) {
-      return (hasLeadingNumber ? leadingNum : 0) + 1;
-    }
-
-    // Leg byes and byes: the leading number is the runs, no automatic +1
-    if (isLegBye || isBye) {
-      return hasLeadingNumber ? leadingNum : 1;
-    }
-
-    // Regular delivery: just parse the number (0, 1, 2, 4, 6, etc.)
-    return hasLeadingNumber ? leadingNum : 0;
+    // Extract leading numeric value from description (e.g., "2" from "2LB", "4" from "4", "0" from "0", "0" from "WB")
+    const match = this.description.match(/^(\d+)/);
+    const numericValue = match ? parseInt(match[1], 10) : 0;
+    const extraValue = ['WB', 'NB'].reduce((sum, extra) => this.description.includes(extra) ? sum + 1 : sum, 0);
+    return numericValue + extraValue;
   }
 
   clone(): BallCommentary {
