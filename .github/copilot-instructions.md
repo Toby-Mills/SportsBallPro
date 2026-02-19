@@ -18,6 +18,9 @@ It includes features such as viewing sports scores, fixtures, and league standin
 
 ## AI Agents Instructions
 
+- Start every message in the chat with the name of the LLM model you are using, in square brackets. For example: [GPT-4].
+- If the user asks for the AI Agent to makes changes, but the agent is in a mode that does not support making those edits directly, the agent should respond with a message indicating that it cannot make the changes directly, and suggest that the user change the agent mode rather than write out instructions.
+
 ### 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
