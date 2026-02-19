@@ -38,12 +38,21 @@
              [class.highlight]="gameId === highlightedMatchId"
              *ngFor="let gameId of watchedMatches; let i = index">
         <div class="match-card-header">
-          <button class="icon-btn notification-btn" (click)="openNotificationSettings(gameId)" title="Notification settings">
-            <span class="material-icons">notifications</span>
-          </button>
-          <button class="icon-btn share-btn" (click)="shareMatch(gameId)" title="Share match">
-            <span class="material-icons">share</span>
-          </button>
+          <div class="menu-wrapper">
+            <button class="icon-btn menu-btn" (click)="toggleMenu(gameId, $event)" title="More options">
+              <span class="material-icons">more_vert</span>
+            </button>
+            <div class="dropdown-menu" *ngIf="openMenus.has(gameId)">
+              <button class="menu-item" (click)="onMenuNotifications(gameId, $event)">
+                <span class="material-icons">notifications</span>
+                <span>Notifications</span>
+              </button>
+              <button class="menu-item" (click)="onMenuShare(gameId, $event)">
+                <span class="material-icons">share</span>
+                <span>Share</span>
+              </button>
+            </div>
+          </div>
           <button class="icon-btn close-btn" (click)="removeMatch(gameId)" title="Remove from watch list">
             <span class="material-icons">close</span>
           </button>
@@ -63,12 +72,21 @@
          [class.highlight]="gameId === highlightedMatchId"
          *ngFor="let gameId of watchedMatches; let i = index">
       <div class="match-card-header">
-        <button class="icon-btn" (click)="openNotificationSettings(gameId)" aria-label="Notification settings" title="Notification settings">
-          <span class="material-icons">notifications</span>
-        </button>
-        <button class="icon-btn" (click)="shareMatch(gameId)" aria-label="Share match">
-          <span class="material-icons">share</span>
-        </button>
+        <div class="menu-wrapper">
+          <button class="icon-btn menu-btn" (click)="toggleMenu(gameId, $event)" title="More options">
+            <span class="material-icons">more_vert</span>
+          </button>
+          <div class="dropdown-menu" *ngIf="openMenus.has(gameId)">
+            <button class="menu-item" (click)="onMenuNotifications(gameId, $event)">
+              <span class="material-icons">notifications</span>
+              <span>Notifications</span>
+            </button>
+            <button class="menu-item" (click)="onMenuShare(gameId, $event)">
+              <span class="material-icons">share</span>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
         <button class="icon-btn close-btn" (click)="removeMatch(gameId)" aria-label="Remove match">
           <span class="material-icons">close</span>
         </button>

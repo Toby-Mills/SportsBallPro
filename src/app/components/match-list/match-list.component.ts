@@ -23,6 +23,13 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   watchedMatches: string[] = [];
   currentIndex = 0;
   isMobileView = false;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.menu-wrapper')) {
+      this.openMenus.clear();
+    }
+  }
   useCarouselView = false; // True when we have too many matches for side-by-side
   private readonly MAX_SIDE_BY_SIDE = 3; // Maximum matches to show side-by-side
   currentScrollIndex = 0; // Which match is at the left edge
@@ -36,7 +43,8 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   notificationSettingsTeamA: string | null = null;
   notificationSettingsTeamB: string | null = null;
   private fixtureSubscriptions = new Map<string, Subscription>();
-  private matchTeamNames = new Map<string, { teamA: string; teamB: string }>();
+  private matchTeamNames = new Map<string, { teamA: string; teamB: string }>;
+  openMenus: Set<string> = new Set(); // Track which game menus are open
   
   @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
 
@@ -237,26 +245,35 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   shareMatch(gameId: string) {
+    console.log('shareMatch called with gameId:', gameId);
     // Generate the match key from the gameId
     const matchKey = this.matchKeyService.generateKey(gameId);
+    console.log('Generated matchKey:', matchKey);
     // Get the base URL from the base href tag (includes deployment subdirectory)
     const baseElement = document.getElementsByTagName('base')[0];
     const baseHref = baseElement?.getAttribute('href') || '/';
+    console.log('baseHref:', baseHref);
     // Use area-specific route for wynberg, minimal layout for main
     const matchPath = this.area === 'wynberg' 
       ? `wynberg/match/${matchKey}`
       : `match/${matchKey}`;
-    // Construct full URL: base href already includes origin and path, just append our route
-    const matchUrl = new URL(matchPath, baseHref).href;
+    // Construct full URL using origin + baseHref + path
+    const matchUrl = window.location.origin + baseHref + matchPath;
+    console.log('Match URL:', matchUrl);
+    console.log('navigator.clipboard available:', !!navigator.clipboard);
+    console.log('isSecureContext:', window.isSecureContext);
     
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(matchUrl).then(() => {
+        console.log('URL copied to clipboard successfully');
         this.toasterMessage.showMessage('Match link copied to clipboard');
       }).catch(err => {
+        console.error('Failed to copy to clipboard:', err);
         this.toasterMessage.showMessage('Failed to copy link to clipboard');
       });
     } else {
       // Fallback for non-secure contexts
+      console.warn('Clipboard not available - secure context:', window.isSecureContext, 'clipboard:', !!navigator.clipboard);
       this.toasterMessage.showMessage('Clipboard not available in this context');
     }
   }
@@ -272,6 +289,39 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     
     this.showNotificationSettings = true;
+  }
+
+  toggleMenu(gameId: string, event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (this.openMenus.has(gameId)) {
+      this.openMenus.delete(gameId);
+    } else {
+      this.openMenus.clear(); // Close any other open menus
+      this.openMenus.add(gameId);
+    }
+  }
+
+  onMenuItemClick(gameId: string, callback: () => void, event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    callback();
+    this.openMenus.delete(gameId);
+  }
+
+  onMenuNotifications(gameId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.openNotificationSettings(gameId);
+    this.openMenus.delete(gameId);
+  }
+
+  onMenuShare(gameId: string, event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.shareMatch(gameId);
+    this.openMenus.delete(gameId);
   }
 
   closeNotificationSettings() {
