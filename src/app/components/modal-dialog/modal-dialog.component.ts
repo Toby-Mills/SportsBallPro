@@ -10,6 +10,7 @@ import { Component, EventEmitter, Input, Output, Inject, OnInit, OnDestroy, Elem
 export class ModalDialogComponent implements OnInit, OnDestroy {
   @Input() isVisible: boolean = false;
   @Input() title: string = 'Modal Title';
+  @Input() titleIcon: string | null = null;
   @Output() close = new EventEmitter<void>();
 
   private originalParent: HTMLElement | null = null;

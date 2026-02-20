@@ -12,6 +12,8 @@ import { ToasterMessageService } from './toaster-message.service';
 })
 export class NotificationService {
 	private readonly eventNotificationDurationMs = 5 * 60 * 1000;
+	private readonly inAppSoundPath = 'assets/sounds/notification.mp3';
+	private inAppSound: HTMLAudioElement | null = null;
 	private fixtureSubscriptions = new Map<string, Subscription>();
 	private matchTitles = new Map<string, string>();
 	private readonly eventIconMap = new Map<string, string>([
@@ -105,6 +107,28 @@ export class NotificationService {
 			matchTitle ?? message.event.title,
 			iconPath
 		);
+
+		const globalPreferences = this.preferencesService.getGlobalPreferences();
+		if (globalPreferences.soundEnabled) {
+			this.playInAppSound();
+		}
+	}
+
+	private playInAppSound(): void {
+		if (typeof Audio === 'undefined') {
+			return;
+		}
+
+		if (!this.inAppSound) {
+			this.inAppSound = new Audio(this.inAppSoundPath);
+			this.inAppSound.volume = 0.25;
+		}
+
+		this.inAppSound.currentTime = 0;
+		const playResult = this.inAppSound.play();
+		if (playResult && typeof playResult.catch === 'function') {
+			playResult.catch(() => undefined);
+		}
 	}
 
 	private ensureFixtureSubscription(gameId: string): void {

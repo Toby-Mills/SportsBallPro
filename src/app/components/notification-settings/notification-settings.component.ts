@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 import { NotificationPreferencesService } from '../../services/notification-preferences.service';
 import { NotificationService } from '../../services/notification.service';
+import { ToasterMessageService } from '../../services/toaster-message.service';
 import { EventType } from '../../models/notification-event';
 import {
 	GlobalNotificationPreferences,
@@ -57,7 +58,8 @@ export class NotificationSettingsComponent implements OnInit, OnChanges {
 
 	constructor(
 		private preferencesService: NotificationPreferencesService,
-		private notificationService: NotificationService
+		private notificationService: NotificationService,
+		private toasterMessage: ToasterMessageService
 	) { }
 
 	ngOnInit(): void {
@@ -130,7 +132,24 @@ export class NotificationSettingsComponent implements OnInit, OnChanges {
 	}
 
 	async requestBrowserPermission(): Promise<void> {
+		if (this.browserPermission === 'denied') {
+			this.toasterMessage.showMessage('Browser notifications are blocked. Update your browser settings to enable them.');
+			return;
+		}
+
 		this.browserPermission = await this.notificationService.requestPermission();
+
+		if (this.browserPermission === 'granted') {
+			this.toasterMessage.showMessage('Browser notifications enabled.');
+			return;
+		}
+
+		if (this.browserPermission === 'denied') {
+			this.toasterMessage.showMessage('Browser notifications are blocked. Update your browser settings to enable them.');
+			return;
+		}
+
+		this.toasterMessage.showMessage('Browser notifications are still disabled.');
 	}
 
 	get canRequestPermission(): boolean {

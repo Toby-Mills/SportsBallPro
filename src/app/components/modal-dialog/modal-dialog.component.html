@@ -1,7 +1,10 @@
 <div class="modal-overlay" (click)="onBackdropClick()" *ngIf="isVisible">
 	<div class="modal-container" (click)="preventClose($event)">
 	  <header class="modal-header">
-		<span id="title">{{ title }}</span>
+		<span class="modal-title">
+			<span *ngIf="titleIcon" class="material-icons title-icon">{{ titleIcon }}</span>
+			<span id="title">{{ title }}</span>
+		</span>
 		<button class="close-button" (click)="closeModal()">×</button>
 	  </header>
 	  <div class="modal-body">

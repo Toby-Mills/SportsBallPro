@@ -4,6 +4,12 @@
 	gap: 1.5rem;
 }
 
+.settings-separator {
+	height: 1px;
+	background: #e0e0e0;
+	margin-top: -0.75rem;
+}
+
 .settings-section {
 	padding-bottom: 1rem;
 	border-bottom: 1px solid #e0e0e0;

@@ -69,7 +69,7 @@ export class NotificationPreferencesService {
 		return {
 			enabled: true,
 			soundEnabled: false,
-			browserNotificationsEnabled: true,
+			browserNotificationsEnabled: false,
 		};
 	}
 

@@ -1,9 +1,12 @@
 <app-modal-dialog
 	[isVisible]="isVisible"
 	[title]="'Notification Settings'"
+	[titleIcon]="'notifications'"
 	(close)="onModalClose()">
 
 	<div class="settings-content">
+		<p class="settings-description">Stay in touch with the matches you care about, even when you're not actively watching.</p>
+		<div class="settings-separator" aria-hidden="true"></div>
 		<!-- Global Settings Section -->
 		<section class="settings-section">
 			<h3 class="section-title">Global Settings</h3>
@@ -14,9 +17,9 @@
 						type="checkbox" 
 						[(ngModel)]="globalPreferences.enabled"
 						(ngModelChange)="onGlobalEnabledChange()">
-					<span class="toggle-text">Enable notifications</span>
+					<span class="toggle-text">Allow notifications</span>
 				</label>
-				<span class="setting-description">Enable notifications for all selected matches</span>
+				<span class="setting-description">Allow notifications for match events. You can still enable or disable notifications for individual matches.</span>
 			</div>
 
 			<div class="setting-row" [class.disabled]="!globalPreferences.enabled">
@@ -41,7 +44,7 @@
 						[disabled]="!globalPreferences.enabled">
 					<span class="toggle-text">Enable browser notifications</span>
 				</label>
-				<span class="setting-description">Show OS notifications when the tab is in the background</span>
+				<span class="setting-description">Allow the browser to show notifications, when this tab is not visible</span>
 				<div
 					class="browser-permission"
 					[class.disabled]="!globalPreferences.enabled || !globalPreferences.browserNotificationsEnabled">
@@ -53,13 +56,13 @@
 
 					<ng-container *ngIf="globalPreferences.enabled && !globalPreferences.browserNotificationsEnabled">
 						<p class="permission-disabled">
-							Browser notifications are turned off in settings.
+							Browser notifications are currently disabled.
 						</p>
 					</ng-container>
 
 					<ng-container *ngIf="globalPreferences.enabled && globalPreferences.browserNotificationsEnabled">
 						<ng-container *ngIf="canRequestPermission">
-							<p class="permission-text">Get notifications even when the tab is in the background</p>
+							<p class="permission-text">Get notifications even when this tab is not visible</p>
 							<button
 								class="permission-btn"
 								(click)="requestBrowserPermission()"
@@ -81,6 +84,13 @@
 								<span class="material-icons">block</span>
 								Browser notifications blocked. Update your browser settings to enable them.
 							</p>
+							<button
+								class="permission-btn"
+								(click)="requestBrowserPermission()"
+								[disabled]="!globalPreferences.enabled || !globalPreferences.browserNotificationsEnabled">
+								<span class="material-icons">notifications</span>
+								Enable Browser Notifications
+							</button>
 						</ng-container>
 					</ng-container>
 				</div>

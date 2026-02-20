@@ -59,7 +59,17 @@
 	text-align: right;
   }
   
-  #title {
+	.modal-title {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	}
+
+	.title-icon {
+	font-size: 1.2rem;
+	}
+
+	#title {
 	font-size: 1.2rem;
 	font-weight: bold;
   }
