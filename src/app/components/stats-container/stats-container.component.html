@@ -30,5 +30,36 @@
 
 <app-player-stats-table
   *ngIf="aggregatedPlayers.length > 0"
-  [players]="aggregatedPlayers">
+  [players]="aggregatedPlayers"
+  (playerSelected)="onPlayerSelected($event)">
 </app-player-stats-table>
+
+<app-modal-dialog
+  [isVisible]="showPlayerFixturesModal"
+  [title]="selectedPlayerName + ' Fixtures'"
+  (close)="closePlayerFixturesModal()">
+  <div class="player-fixtures-modal-content" *ngIf="showPlayerFixturesModal">
+    <p *ngIf="selectedPlayerFixtures.length === 0" class="empty-fixtures-message">
+      No fixtures found for this player in the selected set.
+    </p>
+    <ul *ngIf="selectedPlayerFixtures.length > 0" class="player-fixtures-list">
+      <li *ngFor="let fixture of selectedPlayerFixtures" class="player-fixture-item">
+        <button type="button" class="fixture-link-button" (click)="openFixtureDetails(fixture)">
+          {{ fixture.teamAName }} vs {{ fixture.teamBName }}
+        </button>
+        <span>{{ fixture.datePlayed | date:'mediumDate' }}</span>
+      </li>
+    </ul>
+  </div>
+</app-modal-dialog>
+
+<app-modal-dialog
+  [isVisible]="showSelectedFixtureModal"
+  [title]="'Match Details'"
+  (close)="closeSelectedFixtureModal()">
+  <app-match-details
+    [gameId]="selectedFixtureGameId"
+    [showWakeLock]="false"
+    *ngIf="showSelectedFixtureModal">
+  </app-match-details>
+</app-modal-dialog>

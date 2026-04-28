@@ -8,7 +8,9 @@ import { StatsStateService } from '../../services/stats-state.service';
 import { TeamSearchComponent } from '../team-search/team-search.component';
 import { YearFilterComponent } from '../year-filter/year-filter.component';
 import { FixtureSelectorComponent } from '../fixture-selector/fixture-selector.component';
-import { PlayerStatsTableComponent } from '../player-stats-table/player-stats-table.component';
+import { PlayerDisplay, PlayerStatsTableComponent } from '../player-stats-table/player-stats-table.component';
+import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
+import { MatchDetailsComponent } from '../match-details/match-details.component';
 
 @Component({
 	selector: 'app-stats-container',
@@ -19,7 +21,9 @@ import { PlayerStatsTableComponent } from '../player-stats-table/player-stats-ta
 		TeamSearchComponent,
 		YearFilterComponent,
 		FixtureSelectorComponent,
-		PlayerStatsTableComponent
+		PlayerStatsTableComponent,
+		ModalDialogComponent,
+		MatchDetailsComponent
 	],
 	templateUrl: './stats-container.component.html',
 	styleUrl: './stats-container.component.css'
@@ -33,6 +37,11 @@ export class StatsContainerComponent implements OnInit, OnDestroy {
 	selectedFixtures: Fixture[] = [];
 	selectedYearFixtures: Fixture[] = [];
 	aggregatedPlayers: any[] = [];
+	showPlayerFixturesModal: boolean = false;
+	selectedPlayerFixtures: Fixture[] = [];
+	selectedPlayerName: string = '';
+	showSelectedFixtureModal: boolean = false;
+	selectedFixtureGameId: string = '';
 
 	constructor(
 		private fixtureSearch: FixtureSearchService,
@@ -100,6 +109,31 @@ export class StatsContainerComponent implements OnInit, OnDestroy {
 
 	onAnalyzeRequested() {
 		this.rebuildStats();
+	}
+
+	onPlayerSelected(player: PlayerDisplay) {
+		const selectedGameIds = new Set(player.gameTeamPairs.map(pair => pair.gameId));
+		this.selectedPlayerFixtures = this.selectedFixtures
+			.filter(fixture => selectedGameIds.has(fixture.gameId))
+			.sort((a, b) => new Date(b.datePlayed).getTime() - new Date(a.datePlayed).getTime());
+		this.selectedPlayerName = `${player.PlayerName} ${player.PlayerSurname}`;
+		this.showPlayerFixturesModal = true;
+	}
+
+	closePlayerFixturesModal() {
+		this.showPlayerFixturesModal = false;
+		this.selectedPlayerFixtures = [];
+		this.selectedPlayerName = '';
+	}
+
+	openFixtureDetails(fixture: Fixture): void {
+		this.selectedFixtureGameId = fixture.gameId;
+		this.showSelectedFixtureModal = true;
+	}
+
+	closeSelectedFixtureModal(): void {
+		this.showSelectedFixtureModal = false;
+		this.selectedFixtureGameId = '';
 	}
 
 	private loadFixturesForYear() {

@@ -97,7 +97,11 @@ export interface PlayerDisplay {
         </thead>
         <tbody>
           <tr *ngFor="let player of getSortedPlayers()">
-            <td>{{ player.PlayerName }} {{ player.PlayerSurname }}</td>
+            <td>
+              <a href="#" class="player-link" (click)="onPlayerClick(player, $event)">
+                {{ player.PlayerName }} {{ player.PlayerSurname }}
+              </a>
+            </td>
             <td>{{ getUniqueGamesCount(player) }}</td>
             <td class="batting-start">{{ player.totalRuns }}</td>
             <td>{{ (player.timesOut > 0 ? (player.totalRuns / player.timesOut).toFixed(2) : '-') }}</td>
@@ -160,6 +164,14 @@ export interface PlayerDisplay {
     }
     td:first-child {
       text-align: left;
+    }
+    .player-link {
+      color: #0066cc;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .player-link:hover {
+      color: #004a99;
     }
     tr:hover {
       background-color: #f9f9f9;
@@ -268,6 +280,11 @@ export class PlayerStatsTableComponent {
       this.sortField = field;
       this.sortDirection = 'asc';
     }
+  }
+
+  onPlayerClick(player: PlayerDisplay, event: MouseEvent): void {
+    event.preventDefault();
+    this.playerSelected.emit(player);
   }
 
   // Returns the number of unique gameIds in gameTeamPairs
