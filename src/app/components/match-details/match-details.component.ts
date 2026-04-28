@@ -2,7 +2,9 @@ import { ChangeDetectorRef, Component, ViewChild, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 import { Fixture, Status } from '../../models/match';
+import { EventType, NotificationEvent } from '../../models/notification-event';
 import { RecentBallsComponent } from '../recent-balls/recent-balls.component';
 import { TeamScoreComponent } from '../team-score/team-score.component';
 import { FallOfWicketsComponent } from '../fall-of-wickets/fall-of-wickets.component';
@@ -13,6 +15,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatchKeyService } from '../../services/match-key.service';
 import { RunComparisonComponent } from "../run-comparison/run-comparison.component";
 import { MatchService } from '../../services/match.service';
+import { EventDetectionService } from '../../services/event-detection.service';
 import { ToasterMessageService } from '../../services/toaster-message.service';
 
 @Component({
@@ -48,12 +51,14 @@ export class MatchDetailsComponent {
   public actualGameId: string = ''; // Store the resolved gameId
   public componentId: string = Math.random().toString(36).substring(7); // Unique ID for this instance
   public hasSecondInnings: boolean = false;
+  private subscriptions = new Subscription();
 
   constructor(
     private http: HttpClient,
     private matchService: MatchService,
     private route: ActivatedRoute,
     private matchKeys: MatchKeyService,
+    private eventDetectionService: EventDetectionService,
     private toasterMessageService: ToasterMessageService,
     private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
   ) { }
@@ -71,30 +76,38 @@ export class MatchDetailsComponent {
 
     // Now that we have actualGameId, set up subscriptions
     if (this.actualGameId) {
-      // Note: Not subscribing to getInningsChangeUpdates because detectSecondInnings
-      // handles the auto-selection logic correctly for both single and multi-innings matches
-
-      this.matchService.getFixtureUpdates(this.actualGameId).subscribe(
-        fixture => {
-          this.fixture = fixture;
-        }
-      )
-      this.matchService.getStatusUpdates(this.actualGameId).subscribe(
-        status => {
-          if (this.status.currentBattingInnings !== status.currentBattingInnings) {
-            this.autoSelectInnings();
+      this.subscriptions.add(
+        this.matchService.getFixtureUpdates(this.actualGameId).subscribe(
+          fixture => {
+            this.fixture = fixture;
           }
-          this.status = status;
-        }
-      )
+        )
+      );
+
+      this.subscriptions.add(
+        this.matchService.getStatusUpdates(this.actualGameId).subscribe(
+          status => {
+            this.status = status;
+          }
+        )
+      );
+
+      this.subscriptions.add(
+        this.eventDetectionService.startMonitoring(this.actualGameId).subscribe(event => {
+          if (event.eventType === EventType.INNINGS_CHANGE) {
+            this.autoSelectInnings(event);
+          }
+        })
+      );
 
       // Check if second innings exists by looking for lineup data in battingInnings 3 (innings 2, team 1
-      this.matchService.getBattingLineupUpdates(this.actualGameId, 3).subscribe(
-        lineup => {
-          const hadSecondInnings = this.hasSecondInnings;
-          this.hasSecondInnings = lineup.lineup.length > 0;
-        }
-      )
+      this.subscriptions.add(
+        this.matchService.getBattingLineupUpdates(this.actualGameId, 3).subscribe(
+          lineup => {
+            this.hasSecondInnings = lineup.lineup.length > 0;
+          }
+        )
+      );
 
       // Load the match data
       this.matchService.loadMatch(this.actualGameId);
@@ -104,8 +117,16 @@ export class MatchDetailsComponent {
   /**
    * Auto-select the appropriate innings to view based on match status
    */
-  private autoSelectInnings() {
-    this.viewingBattingInnings = this.status.currentBattingInnings;
+  private autoSelectInnings(event: NotificationEvent) {
+    if (typeof event.value !== 'number' || event.value < 1 || event.value > 4) {
+      return;
+    }
+
+    this.viewingBattingInnings = event.value as 1 | 2 | 3 | 4;
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   ngAfterViewInit() {
