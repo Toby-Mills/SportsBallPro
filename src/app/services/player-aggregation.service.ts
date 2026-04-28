@@ -73,7 +73,7 @@ export class PlayerAggregationService {
         lineups.forEach((lineupData: any) => {
           const { fixture, teamId, players, isBatter } = lineupData;
           players.forEach((player: any) => {
-            this.addPlayerToMap(playerMap, player, fixture.gameID, teamId, isBatter);
+            this.addPlayerToMap(playerMap, player, fixture.gameId, teamId, isBatter);
           });
         });
 
