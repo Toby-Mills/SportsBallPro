@@ -98,7 +98,7 @@ export interface PlayerDisplay {
         <tbody>
           <tr *ngFor="let player of getSortedPlayers()">
             <td>{{ player.PlayerName }} {{ player.PlayerSurname }}</td>
-            <td>{{ player.gameTeamPairs.length }}</td>
+            <td>{{ getUniqueGamesCount(player) }}</td>
             <td class="batting-start">{{ player.totalRuns }}</td>
             <td>{{ (player.timesOut > 0 ? (player.totalRuns / player.timesOut).toFixed(2) : '-') }}</td>
             <td>{{ player.totalFours }}</td>
@@ -201,8 +201,8 @@ export class PlayerStatsTableComponent {
         aValue = `${a.PlayerName} ${a.PlayerSurname}`.toLowerCase();
         bValue = `${b.PlayerName} ${b.PlayerSurname}`.toLowerCase();
       } else if (this.sortField === 'matches') {
-        aValue = a.gameTeamPairs.length;
-        bValue = b.gameTeamPairs.length;
+        aValue = this.getUniqueGamesCount(a);
+        bValue = this.getUniqueGamesCount(b);
       } else if (this.sortField === 'runs') {
         aValue = a.totalRuns;
         bValue = b.totalRuns;
@@ -268,5 +268,12 @@ export class PlayerStatsTableComponent {
       this.sortField = field;
       this.sortDirection = 'asc';
     }
+  }
+
+  // Returns the number of unique gameIds in gameTeamPairs
+  getUniqueGamesCount(player: any): number {
+    if (!player || !player.gameTeamPairs) return 0;
+    const uniqueGameIds = new Set(player.gameTeamPairs.map((pair: any) => pair.gameId));
+    return uniqueGameIds.size;
   }
 }

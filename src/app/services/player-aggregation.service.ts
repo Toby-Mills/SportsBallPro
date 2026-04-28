@@ -7,7 +7,7 @@ import { mergeMap, toArray } from 'rxjs/operators';
 export interface AggregatedPlayer {
   PlayerName: string;
   PlayerSurname: string;
-  gameTeamPairs: Array<{ gameId: string; teamId: string }>;
+  gameTeamPairs: Array<{ gameId: string; teamId: string; inningsNumber: number }>;
   battingGames: Set<string>;
   totalRuns: number;
   totalBalls: number;
@@ -38,27 +38,27 @@ export class PlayerAggregationService {
       return of([]);
     }
 
-    // Create an array of observables for each fixture's lineups
+    // Create an array of observables for each fixture's lineups, for both innings
     const lineupObservables = fixtures.flatMap((fixture: Fixture) => {
       const teamId = fixture.teamAName === selectedTeam ? fixture.teamAId : fixture.teamBId;
-      
       if (!teamId) {
         return [];
       }
 
-      // Get both batting and bowling scorecards for this fixture (use innings 1 for aggregation)
-      return [
-        this.webSportsAPI.getBattingScorecard(fixture.gameId, teamId, 1).pipe(
+      // Retrieve both innings (1 and 2) for batting and bowling
+      const inningsNumbers = [1, 2];
+      return inningsNumbers.flatMap((inningsNumber) => [
+        this.webSportsAPI.getBattingScorecard(fixture.gameId, teamId, inningsNumber as 1 | 2).pipe(
           mergeMap((battingScorecard: any) => {
-            return of({ fixture, teamId, players: battingScorecard.scorecard, isBatter: true });
+            return of({ fixture, teamId, inningsNumber, players: battingScorecard.scorecard, isBatter: true });
           })
         ),
-        this.webSportsAPI.getBowlingScorecard(fixture.gameId, teamId, 1).pipe(
+        this.webSportsAPI.getBowlingScorecard(fixture.gameId, teamId, inningsNumber as 1 | 2).pipe(
           mergeMap((bowlingScorecard: any) => {
-            return of({ fixture, teamId, players: bowlingScorecard.scorecard, isBatter: false });
+            return of({ fixture, teamId, inningsNumber, players: bowlingScorecard.scorecard, isBatter: false });
           })
         )
-      ];
+      ]);
     });
 
     // Combine all lineup observables and aggregate
@@ -71,9 +71,9 @@ export class PlayerAggregationService {
         const playerMap = new Map<string, AggregatedPlayer>();
 
         lineups.forEach((lineupData: any) => {
-          const { fixture, teamId, players, isBatter } = lineupData;
+          const { fixture, teamId, inningsNumber, players, isBatter } = lineupData;
           players.forEach((player: any) => {
-            this.addPlayerToMap(playerMap, player, fixture.gameId, teamId, isBatter);
+            this.addPlayerToMap(playerMap, player, fixture.gameId, teamId, inningsNumber, isBatter);
           });
         });
 
@@ -92,6 +92,7 @@ export class PlayerAggregationService {
     player: any,
     gameId: string,
     teamId: string,
+    inningsNumber: number,
     isBatter: boolean
   ) {
     // Use name as the unique key since PlayerID is match-specific
@@ -106,11 +107,11 @@ export class PlayerAggregationService {
       const timesOut = isBatter && !isNotOut && howOut.length > 0 ? 1 : 0;
       const is50 = isBatter && runs >= 50 && runs < 100 ? 1 : 0;
       const is100 = isBatter && runs >= 100 ? 1 : 0;
-      
+
       playerMap.set(playerKey, {
         PlayerName: player.PlayerName,
         PlayerSurname: player.PlayerSurname,
-        gameTeamPairs: [{ gameId, teamId }],
+        gameTeamPairs: [{ gameId, teamId, inningsNumber }],
         battingGames: isBatter ? new Set([gameId]) : new Set(),
         totalRuns: runs,
         totalBalls: balls,
@@ -128,11 +129,11 @@ export class PlayerAggregationService {
     } else {
       const existing = playerMap.get(playerKey)!;
       const gameTeamPairExists = existing.gameTeamPairs.some(
-        (pair) => pair.gameId === gameId && pair.teamId === teamId
+        (pair) => pair.gameId === gameId && pair.teamId === teamId && pair.inningsNumber === inningsNumber
       );
-      
+
       if (!gameTeamPairExists) {
-        existing.gameTeamPairs.push({ gameId, teamId });
+        existing.gameTeamPairs.push({ gameId, teamId, inningsNumber });
       }
       
       if (isBatter) {
