@@ -342,7 +342,7 @@ export class EventDetectionService {
       const teamName = inningNumber % 2 === 1 ? fixture?.teamAName : fixture?.teamBName;
       const message = teamName ? `${teamName} batting innings started` : 'Batting innings started';
       subject.next(
-        this.createEvent(gameId, EventType.INNINGS_CHANGE, message, message, teamName)
+        this.createEvent(gameId, EventType.INNINGS_CHANGE, message, message, teamName, undefined, inningNumber)
       );
     }
 
