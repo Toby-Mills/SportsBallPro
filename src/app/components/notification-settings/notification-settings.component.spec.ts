@@ -21,7 +21,8 @@ describe('NotificationSettingsComponent', () => {
 
 		mockPreferencesService.getGlobalPreferences.and.returnValue({
 			enabled: true,
-			soundEnabled: false
+			soundEnabled: false,
+			browserNotificationsEnabled: true
 		});
 
 		mockPreferencesService.getMatchPreferences.and.returnValue({
@@ -69,7 +70,7 @@ describe('NotificationSettingsComponent', () => {
 	it('should save match preferences when match enabled changes', () => {
 		component.gameId = 'test-game';
 		component.matchPreferences.enabled = false;
-		component.onMatchEnabledChange();
+		component.onMatchEnabledChange(false);
 		expect(mockPreferencesService.setMatchPreferences).toHaveBeenCalledWith(
 			'test-game',
 			jasmine.objectContaining({ enabled: false })
