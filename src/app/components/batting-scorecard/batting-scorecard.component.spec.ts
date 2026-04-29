@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { BattingScorecardComponent } from './batting-scorecard.component';
 import { MatchService } from '../../services/match.service';
 import { BattingScorecard } from '../../models/scorecard';
+import { PlayerLineup } from '../../models/batting-innings-detail';
 import { Fixture } from '../../models/match';
 import { WagonWheel } from '../../models/wagon-wheel';
 
@@ -13,8 +14,9 @@ describe('BattingScorecardComponent', () => {
   let mockMatchService: jasmine.SpyObj<MatchService>;
 
   beforeEach(async () => {
-    mockMatchService = jasmine.createSpyObj('MatchService', ['getBattingScorecardUpdates', 'getFixtureUpdates', 'getWagonWheelUpdates']);
+    mockMatchService = jasmine.createSpyObj('MatchService', ['getBattingScorecardUpdates', 'getBattingLineupUpdates', 'getFixtureUpdates', 'getWagonWheelUpdates', 'loadWagonWheel']);
     mockMatchService.getBattingScorecardUpdates.and.returnValue(of(new BattingScorecard()));
+    mockMatchService.getBattingLineupUpdates.and.returnValue(of(new PlayerLineup()));
     mockMatchService.getFixtureUpdates.and.returnValue(of(new Fixture()));
     mockMatchService.getWagonWheelUpdates.and.returnValue(of(new WagonWheel()));
 
@@ -29,7 +31,7 @@ describe('BattingScorecardComponent', () => {
     fixture = TestBed.createComponent(BattingScorecardComponent);
     component = fixture.componentInstance;
     component.gameId = 'test-game-123';
-    component.teamNumber = 1;
+    component.battingInningsNumber = 1;
     fixture.detectChanges();
   });
 

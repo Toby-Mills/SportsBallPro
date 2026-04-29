@@ -1,10 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { NotificationMonitorService } from './services/notification-monitor.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
+      providers: [
+        { provide: NotificationMonitorService, useValue: {} }
+      ]
     }).compileComponents();
   });
 
