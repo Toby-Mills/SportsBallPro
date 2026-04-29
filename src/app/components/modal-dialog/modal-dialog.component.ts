@@ -1,5 +1,5 @@
-import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, EventEmitter, Input, Output, Inject, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output, Inject, OnInit, OnDestroy, ElementRef, DOCUMENT } from '@angular/core';
 
 @Component({
     selector: 'app-modal-dialog',

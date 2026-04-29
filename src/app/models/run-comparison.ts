@@ -1,4 +1,3 @@
-import TypedRegistry from 'chart.js/dist/core/core.typedRegistry';
 import { RunComparisonAPI as WebSportsRunComparison } from '../models/web-sports';
 import { Color } from 'chart.js';
 
