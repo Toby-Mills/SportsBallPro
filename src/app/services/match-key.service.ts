@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as CryptoJS from 'crypto-js';
+import { Hex, SHA256 } from 'crypto-es';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class MatchKeyService {
   }
 
   private getHash(gameId: string) {
-    let hash = CryptoJS.SHA256(gameId).toString(CryptoJS.enc.Hex);
+    let hash = SHA256(gameId).toString(Hex);
     return hash.slice(0, 8);
   }
 }

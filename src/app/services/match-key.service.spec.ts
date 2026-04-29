@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MatchKeyService } from './match-key.service';
-import * as CryptoJS from 'crypto-js';
+import { Hex, SHA256 } from 'crypto-es';
 
 describe('MatchKeyService', () => {
   let service: MatchKeyService;
@@ -44,7 +44,7 @@ describe('MatchKeyService', () => {
       const key = service.generateKey(gameId);
       
       // Calculate expected hash manually
-      const expectedHash = CryptoJS.SHA256(gameId).toString(CryptoJS.enc.Hex).slice(0, 8);
+      const expectedHash = SHA256(gameId).toString(Hex).slice(0, 8);
       const expectedKey = `${expectedHash}${gameId}`;
       
       expect(key).toBe(expectedKey);
@@ -198,7 +198,7 @@ describe('MatchKeyService', () => {
       const gameId = 'testgame';
       const key = service.generateKey(gameId);
       
-      const fullHash = CryptoJS.SHA256(gameId).toString(CryptoJS.enc.Hex);
+      const fullHash = SHA256(gameId).toString(Hex);
       const expectedHashPrefix = fullHash.slice(0, 8);
       
       expect(key.startsWith(expectedHashPrefix)).toBe(true);
