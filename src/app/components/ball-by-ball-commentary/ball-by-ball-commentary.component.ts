@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { MatchService } from '../../services/match.service';
@@ -20,7 +20,7 @@ export class BallByBallCommentaryComponent implements OnChanges, OnDestroy {
   commentary: BallByBallCommentary = new BallByBallCommentary();
   private subscription?: Subscription;
 
-  constructor(private matchService: MatchService) { }
+  constructor(private matchService: MatchService, private cdr: ChangeDetectorRef) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['battingInningsNumber'] || changes['teamNumber'] || changes['gameId']) {
@@ -42,6 +42,7 @@ export class BallByBallCommentaryComponent implements OnChanges, OnDestroy {
       .getBallByBallCommentaryUpdates(this.gameId, this.battingInningsNumber)
       .subscribe(commentary => {
         this.commentary = commentary;
+        this.cdr.markForCheck();
       });
   }
 }

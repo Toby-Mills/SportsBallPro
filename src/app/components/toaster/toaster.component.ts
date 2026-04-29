@@ -1,4 +1,4 @@
-import { Component ,OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component ,OnInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ToastMessage, ToasterMessageService } from '../../services/toaster-message.service';
 import { CommonModule } from '@angular/common';
 
@@ -26,11 +26,12 @@ export class ToasterComponent {
 
   @ViewChildren('toastElement') toastElements!: QueryList<ElementRef>;
 
-  constructor(private toasterService: ToasterMessageService) {}
+  constructor(private toasterService: ToasterMessageService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.toasterService.messages$.subscribe(messages => {
       this.messages = messages;
+      this.cdr.markForCheck();
     });
   }
 

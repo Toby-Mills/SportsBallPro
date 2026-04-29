@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MatchService } from '../../services/match.service';
 import { CommonModule } from '@angular/common';
@@ -25,7 +25,7 @@ export class WagonWheelComponent implements OnInit, OnChanges, OnDestroy {
   private subscription?: Subscription;
   private fixtureSubscription?: Subscription;
 
-  constructor(private sanitizer: DomSanitizer, private matchService: MatchService) { }
+  constructor(private sanitizer: DomSanitizer, private matchService: MatchService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     // Subscribe to wagon wheel updates
@@ -34,6 +34,7 @@ export class WagonWheelComponent implements OnInit, OnChanges, OnDestroy {
       wagonWheel => {
         this.wagonWheelData = wagonWheel;
         this.svgContent = this.sanitizer.bypassSecurityTrustHtml(this.generateCricketFieldSvg(3));
+        this.cdr.markForCheck();
       }
     );
   }
@@ -51,6 +52,7 @@ export class WagonWheelComponent implements OnInit, OnChanges, OnDestroy {
     this.fixtureSubscription = this.matchService.getFixtureUpdates(this.gameId).subscribe(
       fixture => {
         this.teamName = this.battingInningsNumber % 2 === 1 ? fixture.teamAName : fixture.teamBName;
+        this.cdr.markForCheck();
       }
     );
   }

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FallOfWickets } from '../../models/fall-of-wickets';
 import { CommonModule } from '@angular/common';
 import { MatchService } from '../../services/match.service';
@@ -18,7 +18,7 @@ export class FallOfWicketsComponent implements OnChanges, OnDestroy {
   public fallOfWickets:FallOfWickets = new FallOfWickets;
   private subscription?: Subscription;
 
-  constructor (public matchService: MatchService){}
+  constructor (public matchService: MatchService, private cdr: ChangeDetectorRef){}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['battingInningsNumber'] || changes['gameId']) {
@@ -35,6 +35,7 @@ export class FallOfWicketsComponent implements OnChanges, OnDestroy {
     this.subscription = this.matchService.getFallOfWicketsUpdates(this.gameId, this.battingInningsNumber).subscribe(
       fallOfWickets => {
         this.fallOfWickets = fallOfWickets;
+        this.cdr.markForCheck();
       }
     );
   }

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FixtureSearchService } from '../../services/fixture-search.service';
@@ -19,7 +19,7 @@ export class TeamSearchComponent implements OnInit {
   selectedTeamName = '';
   teamNamesFromSearch: string[] = [];
 
-  constructor(private fixtureSearch: FixtureSearchService) {}
+  constructor(private fixtureSearch: FixtureSearchService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     // If prefilterTeam is provided, auto-search with it
@@ -41,6 +41,7 @@ export class TeamSearchComponent implements OnInit {
     this.fixtureSearch.searchTeams(this.teamNameSearch).subscribe(
       (teams: string[]) => {
         this.teamNamesFromSearch = teams;
+        this.cdr.markForCheck();
       },
       (error: any) => console.error('Error searching teams:', error)
     );

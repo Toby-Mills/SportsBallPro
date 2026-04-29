@@ -80,6 +80,7 @@ export class MatchDetailsComponent {
         this.matchService.getFixtureUpdates(this.actualGameId).subscribe(
           fixture => {
             this.fixture = fixture;
+            this.cdr.markForCheck();
           }
         )
       );
@@ -88,6 +89,7 @@ export class MatchDetailsComponent {
         this.matchService.getStatusUpdates(this.actualGameId).subscribe(
           status => {
             this.status = status;
+            this.cdr.markForCheck();
           }
         )
       );
@@ -96,6 +98,7 @@ export class MatchDetailsComponent {
         this.eventDetectionService.startMonitoring(this.actualGameId).subscribe(event => {
           if (event.eventType === EventType.INNINGS_CHANGE) {
             this.autoSelectInnings(event);
+            this.cdr.markForCheck();
           }
         })
       );
@@ -105,6 +108,7 @@ export class MatchDetailsComponent {
         this.matchService.getBattingLineupUpdates(this.actualGameId, 3).subscribe(
           lineup => {
             this.hasSecondInnings = lineup.lineup.length > 0;
+            this.cdr.markForCheck();
           }
         )
       );

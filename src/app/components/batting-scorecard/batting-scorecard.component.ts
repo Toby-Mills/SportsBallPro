@@ -1,4 +1,4 @@
-import { Component, Input, Pipe, PipeTransform, OnChanges, SimpleChanges, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, Pipe, PipeTransform, OnChanges, SimpleChanges, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { BattingScorecard, BattingScorecardEntry } from '../../models/scorecard';
 import { CommonModule, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -56,7 +56,7 @@ export class BattingScorecardComponent implements OnChanges, OnDestroy {
   private subscription?: Subscription;
   private lineupSubscription?: Subscription;
 
-  constructor(public matchService: MatchService) { }
+  constructor(public matchService: MatchService, private cdr: ChangeDetectorRef) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['battingInningsNumber'] || changes['gameId']) {
@@ -74,6 +74,7 @@ export class BattingScorecardComponent implements OnChanges, OnDestroy {
     this.subscription = this.matchService.getBattingScorecardUpdates(this.gameId, this.battingInningsNumber).subscribe(
       scorecard => {
         this.scorecard = scorecard;
+        this.cdr.markForCheck();
       }
     );
     
@@ -82,6 +83,7 @@ export class BattingScorecardComponent implements OnChanges, OnDestroy {
     this.lineupSubscription = this.matchService.getBattingLineupUpdates(this.gameId, this.battingInningsNumber).subscribe(
       lineup => {
         this.lineup = lineup;
+        this.cdr.markForCheck();
       }
     );
   }

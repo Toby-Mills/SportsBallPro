@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FixtureSearchService } from '../../services/fixture-search.service';
@@ -48,7 +48,7 @@ export class YearFilterComponent implements OnInit, OnChanges {
   selectedYear: number | null = null;
   uniqueYears: number[] = [];
 
-  constructor(private fixtureSearch: FixtureSearchService) {}
+  constructor(private fixtureSearch: FixtureSearchService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.loadYears();
@@ -66,6 +66,7 @@ export class YearFilterComponent implements OnInit, OnChanges {
       this.fixtureSearch.getYears(this.team).subscribe(
         (years: number[]) => {
           this.uniqueYears = years;
+          this.cdr.markForCheck();
         },
         (error: any) => console.error('Error loading years:', error)
       );

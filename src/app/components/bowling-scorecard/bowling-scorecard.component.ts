@@ -1,5 +1,5 @@
 import { CommonModule, NgFor } from '@angular/common';
-import { Component, Input, Pipe, PipeTransform, OnChanges, SimpleChanges, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, Pipe, PipeTransform, OnChanges, SimpleChanges, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { BowlingScorecard, BowlingScorecardEntry } from '../../models/scorecard';
 import { MatchService } from '../../services/match.service';
 import { FormsModule } from '@angular/forms';
@@ -48,7 +48,7 @@ export class BowlingScorecardComponent implements OnChanges, OnDestroy {
   private subscription?: Subscription;
   private lineupSubscription?: Subscription;
 
-  constructor(public matchService: MatchService) { }
+  constructor(public matchService: MatchService, private cdr: ChangeDetectorRef) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['battingInningsNumber'] || changes['gameId']) {
@@ -66,6 +66,7 @@ export class BowlingScorecardComponent implements OnChanges, OnDestroy {
     this.subscription = this.matchService.getBowlingScorecardUpdates(this.gameId, this.battingInningsNumber).subscribe(
       scorecard => {
         this.scorecard = scorecard;
+        this.cdr.markForCheck();
       }
     );
     
@@ -74,6 +75,7 @@ export class BowlingScorecardComponent implements OnChanges, OnDestroy {
     this.lineupSubscription = this.matchService.getBowlingLineupUpdates(this.gameId, this.battingInningsNumber).subscribe(
       lineup => {
         this.lineup = lineup;
+        this.cdr.markForCheck();
       }
     );
   }

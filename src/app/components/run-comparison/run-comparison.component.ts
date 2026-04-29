@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartDataset, RunComparison, RunComparisonChartData } from '../../models/run-comparison';
@@ -21,7 +21,7 @@ export class RunComparisonComponent {
   private teamAColour: Color = '#990000';
   private teamBColour: Color = '#000099'
 
-  constructor(public matchService: MatchService) { }
+  constructor(public matchService: MatchService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.matchService.getRunComparisonUpdates(this.gameId).subscribe(
@@ -53,6 +53,7 @@ export class RunComparisonComponent {
         else { maxRunsDataset.borderColor = this.teamBColour }
         maxRunsDataset.elements = { point: { radius: 0 }, line: { borderDash: [4, 6] } }; // Hide point elements
         this.chartData.datasets.push(maxRunsDataset);
+        this.cdr.markForCheck();
       }
     )
   }

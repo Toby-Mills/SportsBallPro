@@ -24,15 +24,21 @@ export class FixtureSearchService {
    * If searchTerm is empty, returns all fixtures without caching
    */
   searchByTerm(searchTerm: string): Observable<Fixture[]> {
+    console.debug('[FixtureSearchService] searchByTerm start', { searchTerm });
+
     // Handle empty search - return all fixtures without caching
     if (!searchTerm || searchTerm.trim() === '') {
+      console.time('[FixtureSearchService] getAllFixtures transform');
       return this.webSportsAPI.getAllFixtures().pipe(
         map((apiFixtures: FixturesAPI) => {
-          return apiFixtures.fixtures.map(apiFixture => {
+          const fixtures = apiFixtures.fixtures.map(apiFixture => {
             const fixture = new Fixture();
             fixture.loadFromAPI(apiFixture);
             return fixture;
           });
+          console.timeEnd('[FixtureSearchService] getAllFixtures transform');
+          console.debug('[FixtureSearchService] getAllFixtures result', { count: fixtures.length });
+          return fixtures;
         })
       );
     }
@@ -43,6 +49,10 @@ export class FixtureSearchService {
     // Check if we have a cached subject for this search term
     if (this.subjectBySearchTerm.has(searchTerm)) {
       const subject = this.subjectBySearchTerm.get(searchTerm)!;
+      console.debug('[FixtureSearchService] cache hit', {
+        searchTerm,
+        cachedCount: this.cacheBySearchTerm.get(searchTerm)?.length ?? 0
+      });
       // Emit cached data immediately using setTimeout to ensure subscriptions are ready
       setTimeout(() => {
         if (this.cacheBySearchTerm.has(searchTerm)) {
@@ -55,14 +65,24 @@ export class FixtureSearchService {
     // No cache exists, create new subject and fetch from API
     const subject = new BehaviorSubject<Fixture[]>([]);
     this.subjectBySearchTerm.set(searchTerm, subject);
+
+    const timerLabel = `[FixtureSearchService] getFixturesByTeamName ${searchTerm}`;
+    console.time(timerLabel);
     
     this.webSportsAPI.getFixturesByTeamName(searchTerm).subscribe(
       (apiFixtures: FixturesAPI) => {
         // Transform API fixtures to internal models
+        const mapStart = performance.now();
         const fixtures = apiFixtures.fixtures.map(apiFixture => {
           const fixture = new Fixture();
           fixture.loadFromAPI(apiFixture);
           return fixture;
+        });
+        console.timeEnd(timerLabel);
+        console.debug('[FixtureSearchService] API result transformed', {
+          searchTerm,
+          count: fixtures.length,
+          transformMs: Math.round(performance.now() - mapStart)
         });
         // Cache the fixtures by search term
         this.cacheBySearchTerm.set(searchTerm, fixtures);

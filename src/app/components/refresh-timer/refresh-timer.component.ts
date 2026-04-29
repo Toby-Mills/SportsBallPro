@@ -29,6 +29,7 @@ export class RefreshTimerComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    clearInterval(this.screenUpdateTimer);
     this.stopTimer();
   }
 

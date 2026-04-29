@@ -1,4 +1,4 @@
-import { Component, input, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, input, Input, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Ball, Over, RecentBalls } from '../../models/recent-balls';
 import { CommonModule, NgFor } from '@angular/common';
 import { MatchService } from '../../services/match.service';
@@ -18,7 +18,7 @@ export class RecentBallsComponent implements OnChanges, OnDestroy {
   recentBalls: RecentBalls = new RecentBalls();
   private subscription?: Subscription;
 
-  constructor(public matchService: MatchService) { }
+  constructor(public matchService: MatchService, private cdr: ChangeDetectorRef) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['battingInningsNumber'] || changes['gameId']) {
@@ -35,6 +35,7 @@ export class RecentBallsComponent implements OnChanges, OnDestroy {
     this.subscription = this.matchService.getRecentOversUpdates(this.gameId, this.battingInningsNumber).subscribe(
       recentBalls => {
         this.recentBalls = recentBalls
+        this.cdr.markForCheck();
       }
     );
   }

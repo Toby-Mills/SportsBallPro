@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Fixture } from '../../models/match';
@@ -46,7 +46,8 @@ export class StatsContainerComponent implements OnInit, OnDestroy {
 	constructor(
 		private fixtureSearch: FixtureSearchService,
 		private playerAggregation: PlayerAggregationService,
-		private statsState: StatsStateService
+		private statsState: StatsStateService,
+		private cdr: ChangeDetectorRef
 	) { }
 
 	ngOnInit() {
@@ -141,6 +142,7 @@ export class StatsContainerComponent implements OnInit, OnDestroy {
 			this.fixtureSearch.getFixtures(this.selectedTeam, this.selectedYear).subscribe(
 				(fixtures: Fixture[]) => {
 					this.selectedYearFixtures = fixtures;
+					this.cdr.markForCheck();
 				},
 				(error: any) => console.error('Error loading fixtures:', error)
 			);
@@ -155,6 +157,7 @@ export class StatsContainerComponent implements OnInit, OnDestroy {
 			).subscribe(
 				(players: any[]) => {
 					this.aggregatedPlayers = players;
+					this.cdr.markForCheck();
 				},
 				(error: any) => {
 					console.error('Error aggregating players:', error);

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { TeamScore } from '../../models/team-score';
 import { CommonModule, NgClass } from '@angular/common';
 import { MatchService } from '../../services/match.service';
@@ -20,7 +20,7 @@ export class TeamScoreComponent {
   public logoUrl: string = '';
   public teamNumber: 1 | 2 = 1;
 
-  constructor(private matchService: MatchService, private webSportsAPI: WebSportsAPIService) { }
+  constructor(private matchService: MatchService, private webSportsAPI: WebSportsAPIService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.matchService.getTeamScoreUpdates(this.gameId, this.battingInningsNumber).subscribe(
@@ -28,6 +28,7 @@ export class TeamScoreComponent {
         this.teamNumber = this.battingInningsNumber % 2 === 1 ? 1 : 2
         this.teamScore = teamScore;
         this.logoUrl = this.webSportsAPI.teamSmallLogoUrl(this.teamScore.logoName, this.teamNumber);
+        this.cdr.markForCheck();
       }
     );
   }

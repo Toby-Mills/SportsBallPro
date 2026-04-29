@@ -1,5 +1,5 @@
 import { APP_BASE_HREF, CommonModule, NgFor } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FixtureSummaries } from '../../models/fixture-summary';
 import { MatchKeyService } from '../../services/match-key.service'
 import { SortFixturesPipe } from '../../pipes/sort-fixtures.pipe';
@@ -35,7 +35,8 @@ export class FixturesComponent implements OnInit {
     private fixtureSearchService: FixtureSearchService,
     private watchList: WatchListService,
     private route: ActivatedRoute,
-    private toasterMessage: ToasterMessageService
+    private toasterMessage: ToasterMessageService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {
@@ -89,6 +90,7 @@ export class FixturesComponent implements OnInit {
           fixture.matchKey = this.matchKey.generateKey(fixture.gameId)
         }
         this.isReloading = false;
+        this.cdr.markForCheck();
       }
     });
   }
