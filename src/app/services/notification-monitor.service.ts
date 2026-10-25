@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { EventDetectionService } from './event-detection.service';
+import { MatchService } from './match.service';
 import { NotificationService } from './notification.service';
 import { WatchListService } from './watch-list.service';
 
@@ -14,7 +15,8 @@ export class NotificationMonitorService implements OnDestroy {
   constructor(
     private watchListService: WatchListService,
     private eventDetectionService: EventDetectionService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private matchService: MatchService
   ) {
     this.refreshMonitoredMatches();
     this.watchListSubscription = this.watchListService.watchListChanged.subscribe(() => {
@@ -41,6 +43,9 @@ export class NotificationMonitorService implements OnDestroy {
         .subscribe(event => {
           this.notificationService.sendNotification(event);
         });
+
+      // Keep the match fresh in the background so events fire on any page
+      subscription.add(this.matchService.pollMatch(gameId).subscribe());
 
       this.monitoredMatches.set(gameId, subscription);
     });
