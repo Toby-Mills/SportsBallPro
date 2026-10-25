@@ -1,4 +1,4 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Subject, throwError } from 'rxjs';
@@ -115,5 +115,21 @@ describe('MatchService', () => {
       service.reloadMatchData('g1');
       expect(getFixtures).toHaveBeenCalledTimes(4);
     });
+
+    it('abandons a stalled reload so a later reload can run', fakeAsync(() => {
+      const stalled = new Subject<any>();
+      const getFixtures = spyOn(service.webSportsApi, 'getFixtures').and.returnValue(stalled);
+
+      service.reloadMatchData('g1');
+      tick(29999);
+      service.reloadMatchData('g1');
+      expect(getFixtures).toHaveBeenCalledTimes(1);
+
+      tick(1);
+      expect(stalled.observed).toBeFalse();
+      service.reloadMatchData('g1');
+      expect(getFixtures).toHaveBeenCalledTimes(2);
+      discardPeriodicTasks();
+    }));
   });
 });

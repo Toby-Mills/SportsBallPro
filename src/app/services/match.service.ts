@@ -3,7 +3,7 @@ import { Fixture, Match, Status } from '../models/match';
 import { BattingInningsDetail, PlayerLineup } from '../models/batting-innings-detail';
 import { Partnership } from '../models/partnership';
 import { WebSportsAPIService } from './web-sports-api.service';
-import { BehaviorSubject, catchError, concatMap, finalize, interval, map, Observable, of, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, concatMap, finalize, interval, map, Observable, of, Subscription, throwError, timeout } from 'rxjs';
 import { TeamScore } from '../models/team-score';
 import { RunComparison, RunComparisonFactory } from '../models/run-comparison';
 import { BattingScorecard, BowlingScorecard } from '../models/scorecard';
@@ -20,6 +20,8 @@ import { isApiErrorResponse } from '../models/api-response';
 })
 export class MatchService {
   public static readonly REFRESH_INTERVAL_MS = 30000;
+  // A reload chain that makes no progress for this long is abandoned so the overlap guard cannot stay stuck
+  private static readonly RELOAD_STALL_TIMEOUT_MS = 30000;
 
   // Map-based storage for multiple matches
   private matches = new Map<string, Match>();
@@ -359,6 +361,7 @@ export class MatchService {
       // Load team scores for both innings
       concatMap(x => this.loadTeamScores(gameId, 1)),
       concatMap(x => this.loadTeamScores(gameId, 2)),
+      timeout({ each: MatchService.RELOAD_STALL_TIMEOUT_MS }),
       finalize(() => this.reloading.delete(gameId))
     ).subscribe({ error: () => { } })
   }
