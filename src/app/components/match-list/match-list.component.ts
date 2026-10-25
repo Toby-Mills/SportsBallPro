@@ -246,16 +246,12 @@ export class MatchListComponent implements OnInit, OnDestroy {
     // Generate the match key from the gameId
     const matchKey = this.matchKeyService.generateKey(gameId);
     console.log('Generated matchKey:', matchKey);
-    // Get the base URL from the base href tag (includes deployment subdirectory)
-    const baseElement = document.getElementsByTagName('base')[0];
-    const baseHref = baseElement?.getAttribute('href') || '/';
-    console.log('baseHref:', baseHref);
     // Use area-specific route for wynberg, minimal layout for main
-    const matchPath = this.area === 'wynberg' 
+    const matchPath = this.area === 'wynberg'
       ? `wynberg/match/${matchKey}`
       : `match/${matchKey}`;
-    // Construct full URL using origin + baseHref + path
-    const matchUrl = window.location.origin + baseHref + matchPath;
+    // Resolve against the base href, which may be relative (local) or absolute (production)
+    const matchUrl = new URL(matchPath, document.baseURI).href;
     console.log('Match URL:', matchUrl);
     console.log('navigator.clipboard available:', !!navigator.clipboard);
     console.log('isSecureContext:', window.isSecureContext);
