@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -18,7 +18,7 @@ import { NotificationSettingsComponent } from '../notification-settings/notifica
   templateUrl: './match-list.component.html',
   styleUrl: './match-list.component.css'
 })
-export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
+export class MatchListComponent implements OnInit, OnDestroy {
   area: 'wynberg' | 'main' = 'main';
   watchedMatches: string[] = [];
   currentIndex = 0;
@@ -44,9 +44,9 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   notificationSettingsTeamB: string | null = null;
   private fixtureSubscriptions = new Map<string, Subscription>();
   private matchTeamNames = new Map<string, { teamA: string; teamB: string }>;
+  private pollSubscriptions = new Map<string, Subscription>();
   openMenus: Set<string> = new Set(); // Track which game menus are open
-  
-  @ViewChild('refreshTimer') refreshTimer!: RefreshTimerComponent;
+  nextRefreshAt$ = this.matchService.nextRefreshAt$;
 
   constructor(
     private route: ActivatedRoute,
@@ -97,21 +97,8 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-  
-  ngAfterViewInit() {
-    // Initialize refresh timer if we have matches and timer is available
-    this.ensureTimerStarted();
-  }
-
-  private ensureTimerStarted() {
-    // Start timer if we have matches and timer is available and not already running
-    if (this.watchedMatches.length > 0 && this.refreshTimer) {
-      // Check if timer already has an interval set by checking if it has a timer property
-      if (!this.refreshTimer.timer) {
-        this.refreshTimer.setTimer(30000); // 30 seconds
-      }
-    }
+    this.pollSubscriptions.forEach(sub => sub.unsubscribe());
+    this.pollSubscriptions.clear();
   }
 
   @HostListener('window:resize', [])
@@ -146,8 +133,18 @@ export class MatchListComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentScrollIndex = Math.max(0, this.watchedMatches.length - this.visibleMatchCount);
     }
     
-    // Ensure timer is started if we have matches
-    this.ensureTimerStarted();
+    // Keep every watched match polled, and release matches that were removed
+    this.pollSubscriptions.forEach((sub, gameId) => {
+      if (!this.watchedMatches.includes(gameId)) {
+        sub.unsubscribe();
+        this.pollSubscriptions.delete(gameId);
+      }
+    });
+    this.watchedMatches.forEach(gameId => {
+      if (!this.pollSubscriptions.has(gameId)) {
+        this.pollSubscriptions.set(gameId, this.matchService.pollMatch(gameId).subscribe());
+      }
+    });
   }
 
   private updateVisibleMatchCount() {

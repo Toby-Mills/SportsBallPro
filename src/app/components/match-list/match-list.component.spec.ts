@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { MatchListComponent } from './match-list.component';
 import { WatchListService } from '../../services/watch-list.service';
@@ -20,7 +20,10 @@ describe('MatchListComponent', () => {
   beforeEach(async () => {
     mockWatchListService = jasmine.createSpyObj('WatchListService', ['cleanInvalidEntries', 'getWatchList']);
     mockMatchKeyService = jasmine.createSpyObj('MatchKeyService', ['generateKey']);
-    mockMatchService = jasmine.createSpyObj('MatchService', ['getMatch']);
+    mockMatchService = jasmine.createSpyObj('MatchService', ['getMatch', 'pollMatch', 'reloadMatchData', 'isMatchComplete'], {
+      nextRefreshAt$: of(null)
+    });
+    mockMatchService.pollMatch.and.callFake(() => new Observable<never>(() => () => {}));
     mockToasterMessageService = jasmine.createSpyObj('ToasterMessageService', ['show']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate'], { events: of() });
 
@@ -51,5 +54,38 @@ describe('MatchListComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('polling', () => {
+    let teardowns: string[];
+
+    beforeEach(() => {
+      teardowns = [];
+      mockMatchService.pollMatch.and.callFake((gameId: string) =>
+        new Observable<never>(() => () => teardowns.push(gameId))
+      );
+    });
+
+    it('polls newly watched games and releases removed ones', () => {
+      mockWatchListService.getWatchList.and.returnValue(['a', 'b']);
+      (component as any).refreshWatchList();
+      expect(mockMatchService.pollMatch.calls.allArgs()).toEqual([['a'], ['b']]);
+
+      mockWatchListService.getWatchList.and.returnValue(['b', 'c']);
+      (component as any).refreshWatchList();
+
+      expect(mockMatchService.pollMatch).toHaveBeenCalledTimes(3);
+      expect(mockMatchService.pollMatch).toHaveBeenCalledWith('c');
+      expect(teardowns).toEqual(['a']);
+    });
+
+    it('releases all polls on destroy', () => {
+      mockWatchListService.getWatchList.and.returnValue(['a', 'b']);
+      (component as any).refreshWatchList();
+
+      component.ngOnDestroy();
+
+      expect(teardowns.sort()).toEqual(['a', 'b']);
+    });
   });
 });

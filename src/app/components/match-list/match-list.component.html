@@ -20,7 +20,7 @@
   </div>
 
   <!-- Refresh Timer (shown when matches exist) -->
-  <app-refresh-timer #refreshTimer (timerTriggered)="onRefreshTimer()" *ngIf="watchedMatches.length > 0"></app-refresh-timer>
+  <app-refresh-timer [nextRefreshAt]="nextRefreshAt$ | async" (timerTriggered)="onRefreshTimer()" *ngIf="watchedMatches.length > 0"></app-refresh-timer>
 
   <!-- Empty State -->
   <div class="empty-state" *ngIf="watchedMatches.length === 0">

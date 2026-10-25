@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { MatchService } from '../../services/match.service';
 
 @Component({
     selector: 'app-refresh-timer',
@@ -11,8 +12,9 @@ import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core
 export class RefreshTimerComponent implements OnDestroy {
   @Output() timerTriggered: EventEmitter<number> = new EventEmitter<number>();
 
-  timer: any;
-  interval: number = 0;
+  @Input() interval: number = MatchService.REFRESH_INTERVAL_MS;
+  @Input() nextRefreshAt: number | null = null;
+
   screenUpdateTimer: any;
   count: number = 0;
   timeToNextTrigger: number = 0;
@@ -23,33 +25,17 @@ export class RefreshTimerComponent implements OnDestroy {
 
   ngOnInit(): void {
     this.screenUpdateTimer = setInterval(() => {
-      this.timeToNextTrigger -= 500;
+      this.timeToNextTrigger = this.nextRefreshAt ? Math.max(0, this.nextRefreshAt - Date.now()) : 0;
       this.countdownToNextRefresh();
     }, 500)
   }
 
   ngOnDestroy(): void {
     clearInterval(this.screenUpdateTimer);
-    this.stopTimer();
-  }
-
-  setTimer(interval: number) {
-    this.interval = interval;
-    this.stopTimer();
-    this.count = 0;
-    this.timer = setInterval(() => {
-      this.triggerTimer();
-    }, interval)
-    this.timeToNextTrigger = interval;
-  }
-
-  stopTimer (): void {
-    clearInterval(this.timer)
   }
 
   triggerTimer() {
     this.timerTriggered.emit(this.count);
-    this.timeToNextTrigger = this.interval;
   }
 
   countdownToNextRefresh(): void {

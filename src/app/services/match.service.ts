@@ -3,7 +3,7 @@ import { Fixture, Match, Status } from '../models/match';
 import { BattingInningsDetail, PlayerLineup } from '../models/batting-innings-detail';
 import { Partnership } from '../models/partnership';
 import { WebSportsAPIService } from './web-sports-api.service';
-import { BehaviorSubject, catchError, concatMap, map, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, concatMap, finalize, interval, map, Observable, of, Subscription, throwError } from 'rxjs';
 import { TeamScore } from '../models/team-score';
 import { RunComparison, RunComparisonFactory } from '../models/run-comparison';
 import { BattingScorecard, BowlingScorecard } from '../models/scorecard';
@@ -19,6 +19,8 @@ import { isApiErrorResponse } from '../models/api-response';
   providedIn: 'root'
 })
 export class MatchService {
+  public static readonly REFRESH_INTERVAL_MS = 30000;
+
   // Map-based storage for multiple matches
   private matches = new Map<string, Match>();
   private fixtureSubjects = new Map<string, BehaviorSubject<Fixture>>();
@@ -38,6 +40,15 @@ export class MatchService {
   private bowlingLineupSubjects = new Map<string, BehaviorSubject<PlayerLineup>>();
   private runComparisonSubjects = new Map<string, BehaviorSubject<RunComparison>>();
   private wagonWheelSubjects = new Map<string, BehaviorSubject<WagonWheel>>();
+
+  // Polling state: ref-counted per gameId, driven by one shared clock
+  private pollCounts = new Map<string, number>();
+  private pollClock?: Subscription;
+  private reloading = new Set<string>();
+  private nextRefreshAtSubject = new BehaviorSubject<number | null>(null);
+
+  /** Epoch ms of the next scheduled refresh tick; null when nothing is being polled. */
+  public readonly nextRefreshAt$: Observable<number | null> = this.nextRefreshAtSubject.asObservable();
 
   constructor(public webSportsApi: WebSportsAPIService, private toasterMessage: ToasterMessageService) { }
 
@@ -252,7 +263,53 @@ export class MatchService {
       result.includes('abandoned');
   }
 
+  /**
+   * Keep a match fresh for as long as the returned observable is subscribed.
+   * Ref-counted per gameId. Never emits.
+   */
+  public pollMatch(gameId: string): Observable<never> {
+    return new Observable<never>(() => {
+      this.pollCounts.set(gameId, (this.pollCounts.get(gameId) ?? 0) + 1);
+      if (!this.pollClock) {
+        this.startPollClock();
+      }
+      return () => {
+        const count = (this.pollCounts.get(gameId) ?? 1) - 1;
+        if (count > 0) {
+          this.pollCounts.set(gameId, count);
+        } else {
+          this.pollCounts.delete(gameId);
+        }
+        if (this.pollCounts.size === 0) {
+          this.stopPollClock();
+        }
+      };
+    });
+  }
+
+  private startPollClock() {
+    this.nextRefreshAtSubject.next(Date.now() + MatchService.REFRESH_INTERVAL_MS);
+    this.pollClock = interval(MatchService.REFRESH_INTERVAL_MS).subscribe(() => {
+      for (const gameId of this.pollCounts.keys()) {
+        if (!this.isMatchComplete(gameId)) {
+          this.reloadMatchData(gameId);
+        }
+      }
+      this.nextRefreshAtSubject.next(Date.now() + MatchService.REFRESH_INTERVAL_MS);
+    });
+  }
+
+  private stopPollClock() {
+    this.pollClock?.unsubscribe();
+    this.pollClock = undefined;
+    this.nextRefreshAtSubject.next(null);
+  }
+
   public reloadMatchData(gameId: string) {
+    if (this.reloading.has(gameId)) {
+      return;
+    }
+    this.reloading.add(gameId);
     const match = this.getOrCreateMatch(gameId);
 
     this.loadFixture(gameId).pipe(
@@ -301,8 +358,9 @@ export class MatchService {
       concatMap(x => this.loadRunComparison(gameId)),
       // Load team scores for both innings
       concatMap(x => this.loadTeamScores(gameId, 1)),
-      concatMap(x => this.loadTeamScores(gameId, 2))
-    ).subscribe()
+      concatMap(x => this.loadTeamScores(gameId, 2)),
+      finalize(() => this.reloading.delete(gameId))
+    ).subscribe({ error: () => { } })
   }
 
   private loadFixture(gameId: string): Observable<any> {
