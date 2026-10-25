@@ -17,6 +17,7 @@ import { RunComparisonComponent } from "../run-comparison/run-comparison.compone
 import { MatchService } from '../../services/match.service';
 import { EventDetectionService } from '../../services/event-detection.service';
 import { ToasterMessageService } from '../../services/toaster-message.service';
+import { RefreshTimerComponent } from '../refresh-timer/refresh-timer.component';
 
 @Component({
   selector: 'app-match-details',
@@ -29,7 +30,8 @@ import { ToasterMessageService } from '../../services/toaster-message.service';
     BattingScorecardComponent,
     BowlingScorecardComponent,
     RunComparisonComponent,
-    BallByBallCommentaryComponent
+    BallByBallCommentaryComponent,
+    RefreshTimerComponent
   ],
   providers: [HttpClient,],
   templateUrl: './match-details.component.html',
@@ -51,6 +53,8 @@ export class MatchDetailsComponent {
   public actualGameId: string = ''; // Store the resolved gameId
   public componentId: string = Math.random().toString(36).substring(7); // Unique ID for this instance
   public hasSecondInnings: boolean = false;
+  public isStandalone: boolean = false; // True when routed directly (no gameId input)
+  public nextRefreshAt$ = this.matchService.nextRefreshAt$;
   private subscriptions = new Subscription();
 
   constructor(
@@ -64,6 +68,8 @@ export class MatchDetailsComponent {
   ) { }
 
   ngOnInit() {
+    this.isStandalone = !this.gameId;
+
     // Use input gameId if provided (modal usage), otherwise use route param
     if (this.gameId) {
       this.actualGameId = this.gameId;
@@ -113,9 +119,16 @@ export class MatchDetailsComponent {
         )
       );
 
+      // Keep the match fresh while this component is alive
+      this.subscriptions.add(this.matchService.pollMatch(this.actualGameId).subscribe());
+
       // Load the match data
       this.matchService.loadMatch(this.actualGameId);
     }
+  }
+
+  onManualRefresh() {
+    this.matchService.reloadMatchData(this.actualGameId);
   }
 
   /**

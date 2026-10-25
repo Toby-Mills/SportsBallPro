@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 
 import { MatchDetailsComponent } from './match-details.component';
 import { MatchService } from '../../services/match.service';
@@ -21,6 +21,7 @@ describe('MatchDetailsComponent', () => {
   let matchServiceSpy: jasmine.SpyObj<MatchService>;
   let matchKeyServiceSpy: jasmine.SpyObj<MatchKeyService>;
   let eventDetectionServiceSpy: jasmine.SpyObj<EventDetectionService>;
+  let pollTeardown: jasmine.Spy;
 
   beforeEach(async () => {
     fixtureUpdates$ = new Subject<Fixture>();
@@ -32,8 +33,12 @@ describe('MatchDetailsComponent', () => {
       'getFixtureUpdates',
       'getStatusUpdates',
       'getBattingLineupUpdates',
-      'loadMatch'
-    ]);
+      'loadMatch',
+      'pollMatch',
+      'reloadMatchData'
+    ], { nextRefreshAt$: of(null) });
+    pollTeardown = jasmine.createSpy('pollTeardown');
+    matchServiceSpy.pollMatch.and.callFake(() => new Observable<never>(() => pollTeardown));
     matchServiceSpy.getFixtureUpdates.and.returnValue(fixtureUpdates$.asObservable());
     matchServiceSpy.getStatusUpdates.and.returnValue(statusUpdates$.asObservable());
     matchServiceSpy.getBattingLineupUpdates.and.returnValue(lineupUpdates$.asObservable() as any);
@@ -109,5 +114,35 @@ describe('MatchDetailsComponent', () => {
 
     expect(component.viewingBattingInnings).toBe(3);
     expect(eventDetectionServiceSpy.startMonitoring).toHaveBeenCalledWith('resolved-game-id');
+  });
+
+  it('polls the resolved game and releases the poll on destroy', () => {
+    expect(matchServiceSpy.pollMatch).toHaveBeenCalledOnceWith('resolved-game-id');
+    expect(pollTeardown).not.toHaveBeenCalled();
+
+    fixture.destroy();
+
+    expect(pollTeardown).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the refresh timer when routed without a gameId', () => {
+    expect(component.isStandalone).toBeTrue();
+    expect(fixture.nativeElement.querySelector('app-refresh-timer')).not.toBeNull();
+  });
+
+  it('hides the refresh timer when embedded with a gameId', () => {
+    const embedded = TestBed.createComponent(MatchDetailsComponent);
+    embedded.componentRef.setInput('gameId', 'embedded-id');
+    embedded.detectChanges();
+
+    expect(embedded.componentInstance.isStandalone).toBeFalse();
+    expect(embedded.nativeElement.querySelector('app-refresh-timer')).toBeNull();
+    expect(matchServiceSpy.pollMatch).toHaveBeenCalledWith('embedded-id');
+  });
+
+  it('reloads the resolved game on manual refresh', () => {
+    component.onManualRefresh();
+
+    expect(matchServiceSpy.reloadMatchData).toHaveBeenCalledOnceWith('resolved-game-id');
   });
 });

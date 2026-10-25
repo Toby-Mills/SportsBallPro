@@ -1,4 +1,5 @@
 <div class="container">
+    <app-refresh-timer *ngIf="isStandalone" [nextRefreshAt]="nextRefreshAt$ | async" (timerTriggered)="onManualRefresh()"></app-refresh-timer>
     <div class="pin-icon" (click)="toggleWakeLock()" *ngIf="showWakeLock">
         <span [ngClass]="isWakeLockActive ? 'material-icons' : 'material-icons-outlined'">push_pin</span>
     </div>
