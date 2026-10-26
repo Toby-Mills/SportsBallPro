@@ -5,6 +5,13 @@
 		<span>Innings {{battingInningsNumber}}</span> • 
 		<span>{{ type === 'batting' ? 'Batting' : 'Bowling' }}</span>
 	</div>
+	<div *ngIf="howOut" class="how-out">{{howOut}}</div>
+</div>
+<div *ngIf="stats.length > 0" class="player-stats">
+	<div *ngFor="let stat of stats" class="stat">
+		<span class="stat-value">{{stat.value}}</span>
+		<span class="stat-label">{{stat.label}}</span>
+	</div>
 </div>
 <div class="wagon-wheel-svg" [innerHTML]="svgContent"></div>
 <div *ngIf="wagonWheelData.events.length === 0" style="text-align: center; margin-top: 20px; color: #666;">

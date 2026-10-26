@@ -18,6 +18,8 @@ export class WagonWheelComponent implements OnInit, OnChanges, OnDestroy {
   @Input() playerName: string = '';
   @Input() battingInningsNumber: 1 | 2 | 3 | 4 = 1;
   @Input() type: 'batting' | 'bowling' = 'batting';
+  @Input() stats: { label: string; value: string | number }[] = [];
+  @Input() howOut: string = '';
 
   public wagonWheelData: WagonWheel = new WagonWheel();
   public svgContent: SafeHtml = '';

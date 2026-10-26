@@ -104,6 +104,25 @@ export class BattingScorecardComponent implements OnChanges, OnDestroy {
     }
   }
 
+  get selectedStats(): { label: string; value: string | number }[] {
+    const batter = this.scorecard.batters.find(b => `${b.firstname} ${b.surname}`.trim() === this.selectedPlayerName.trim());
+    if (!batter) {
+      return [];
+    }
+    return [
+      { label: 'R', value: batter.runs },
+      { label: 'B', value: batter.balls },
+      { label: '4', value: batter.fours },
+      { label: '6', value: batter.sixes },
+      { label: 'SR', value: Math.round(batter.strikeRate) },
+    ];
+  }
+
+  get selectedHowOut(): string {
+    const batter = this.scorecard.batters.find(b => `${b.firstname} ${b.surname}`.trim() === this.selectedPlayerName.trim());
+    return batter?.howOutFull ?? '';
+  }
+
   onCloseWagonWheel(): void {
     this.showWagonWheel = false;
     this.selectedPlayerId = '';

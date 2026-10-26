@@ -96,6 +96,22 @@ export class BowlingScorecardComponent implements OnChanges, OnDestroy {
     }
   }
 
+  get selectedStats(): { label: string; value: string | number }[] {
+    const bowler = this.scorecard.bowlers.find(b => `${b.firstname} ${b.surname}`.trim() === this.selectedPlayerName.trim());
+    if (!bowler) {
+      return [];
+    }
+    return [
+      { label: 'O', value: bowler.overs },
+      { label: 'M', value: bowler.maidens },
+      { label: 'R', value: bowler.runs },
+      { label: 'W', value: bowler.wickets },
+      { label: 'NB', value: bowler.noBalls },
+      { label: 'WB', value: bowler.wides },
+      { label: 'Ec', value: (Math.round(bowler.economy * 10) / 10).toFixed(1) },
+    ];
+  }
+
   onCloseWagonWheel(): void {
     this.showWagonWheel = false;
     this.selectedPlayerId = '';
